@@ -25,11 +25,11 @@ input,select,textarea{width:100%;padding:13px;margin:8px 0;border:1px solid #ccd
 .card h3{margin:5px 0}
 .tag{color:#17618b;font-size:13px;font-weight:bold}
 .contact{display:inline-block;background:#16834b;color:white;text-decoration:none;padding:10px 14px;border-radius:7px;margin-top:8px}
-form{background:white;padding:18px;border-radius:12px}
+form{background:white;padding:18px;border-radius:12px;margin-bottom:25px}
 .submit{background:#f6c644;border:0;padding:13px 18px;border-radius:8px;font-weight:bold;font-size:16px}
 footer{text-align:center;background:#123a70;color:white;padding:20px;margin-top:30px}
 .note{font-size:12px;color:#64748b;line-height:1.5}
-#message{font-weight:bold}
+#message,#demandeMessage{font-weight:bold}
 </style>
 </head>
 <body>
@@ -49,6 +49,24 @@ footer{text-align:center;background:#123a70;color:white;padding:20px;margin-top:
 <input id="search" placeholder="Rechercher un métier ou un quartier...">
 <div class="categories" id="categories"></div>
 <div id="results">Chargement des professionnels...</div>
+
+<h2>Faire une demande de service</h2>
+<p>Décrivez votre besoin. SERVICE KIN recevra votre demande.</p>
+
+<form id="demandeForm">
+<input name="client_nom" placeholder="Votre nom complet" required>
+<input name="telephone" type="tel" placeholder="Votre numéro de téléphone ou WhatsApp" required>
+<input name="quartier" placeholder="Votre commune ou quartier" required>
+
+<select name="professionnel_id" id="choixProfessionnel">
+<option value="">Choisir un professionnel (facultatif)</option>
+</select>
+
+<textarea name="description" placeholder="Décrivez le travail dont vous avez besoin..." rows="4" required></textarea>
+
+<button class="submit" type="submit">Envoyer ma demande</button>
+<p id="demandeMessage" class="note"></p>
+</form>
 
 <h2>Vous êtes professionnel ?</h2>
 <p>Présentez votre activité dans SERVICE KIN.</p>
@@ -96,6 +114,27 @@ const headers = {
   "apikey": SUPABASE_KEY,
   "Content-Type": "application/json"
 };
+
+function remplirChoixProfessionnels() {
+  const select = document.getElementById("choixProfessionnel");
+  const ancienneValeur = select.value;
+
+  select.replaceChildren();
+
+  const optionVide = document.createElement("option");
+  optionVide.value = "";
+  optionVide.textContent = "Choisir un professionnel (facultatif)";
+  select.appendChild(optionVide);
+
+  professionnels.forEach(p => {
+    const option = document.createElement("option");
+    option.value = p.id;
+    option.textContent = `${p.nom} - ${p.metier} (${p.quartier || "Kinshasa"})`;
+    select.appendChild(option);
+  });
+
+  select.value = ancienneValeur;
+}
 
 function afficher() {
   const q = document.getElementById("search").value.toLowerCase();
@@ -166,7 +205,7 @@ async function chargerProfessionnels() {
 
   try {
     const response = await fetch(
-      SUPABASE_URL + "/rest/v1/professionnels?select=nom,metier,quartier,telephone,services",
+      SUPABASE_URL + "/rest/v1/professionnels?select=id,nom,metier,quartier,telephone,services",
       { headers: headers }
     );
 
@@ -176,6 +215,7 @@ async function chargerProfessionnels() {
 
     professionnels = await response.json();
     afficher();
+    remplirChoixProfessionnels();
 
   } catch (error) {
     results.textContent = "Impossible de charger les professionnels. Vérifiez la connexion.";
@@ -183,8 +223,52 @@ async function chargerProfessionnels() {
   }
 }
 
-document.getElementById("search").addEventListener("input", afficher);
+/* ENVOI DES DEMANDES DES CLIENTS */
+document.getElementById("demandeForm").addEventListener("submit", async e => {
+  e.preventDefault();
 
+  const form = e.target;
+  const message = document.getElementById("demandeMessage");
+  const d = Object.fromEntries(new FormData(form));
+
+  message.textContent = "Envoi de votre demande en cours...";
+
+  const nouvelleDemande = {
+    client_nom: d.client_nom.trim(),
+    telephone: d.telephone.trim(),
+    quartier: d.quartier.trim(),
+    description: d.description.trim(),
+    professionnel_id: d.professionnel_id ? Number(d.professionnel_id) : null
+  };
+
+  try {
+    const response = await fetch(
+      SUPABASE_URL + "/rest/v1/demandes",
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(nouvelleDemande)
+      }
+    );
+
+    if (!response.ok) {
+      const detail = await response.text();
+      throw new Error(detail || "Erreur " + response.status);
+    }
+
+    message.textContent = "Votre demande a bien été envoyée. Merci de faire confiance à SERVICE KIN !";
+    form.reset();
+
+  } catch (error) {
+    message.textContent = "Échec de l'envoi. Veuillez réessayer.";
+    console.error(error);
+  }
+});
+
+/* INSCRIPTION DES PROFESSIONNELS */
 document.getElementById("form").addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -231,11 +315,14 @@ document.getElementById("form").addEventListener("submit", async e => {
   }
 });
 
+document.getElementById("search").addEventListener("input", afficher);
+
 chargerProfessionnels();
 </script>
 
 </body>
 </html>
+
 
 
 
