@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administration - SERVICE KIN</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:Arial,sans-serif;background:#f1f5f9;margin:0;padding:20px;color:#172554}
+header{background:#123c75;color:white;padding:20px;border-radius:12px}
+main{max-width:750px;margin:20px auto}
+section,.pro{background:white;padding:18px;margin:15px 0;border-radius:12px}
+input{display:block;width:100%;box-sizing:border-box;padding:12px;margin:10px 0;border:1px solid #ccc;border-radius:7px}
+button{padding:12px 18px;border:0;border-radius:7px;background:#eab308;color:#172554;font-weight:bold;margin:5px;cursor:pointer}
+.delete{background:#dc2626;color:white}
+.hidden{display:none}
+.pro{border-left:5px solid #eab308}
+small{color:#475569}
+</style>
+</head>
+<body>
+<header>
+<h1>SERVICE KIN</h1>
+<p>Espace administrateur</p>
+</header>
+
+<main>
+<section id="login">
+<h2>Connexion propriétaire</h2>
+<input id="email" type="email" placeholder="Adresse e-mail">
+<input id="password" type="password" placeholder="Mot de passe">
+<button id="loginBtn">Se connecter</button>
+<p id="message"></p>
+</section>
+
+<section id="dashboard" class="hidden">
+<h2>Tableau de bord</h2>
+<p>Bienvenue dans l'administration de SERVICE KIN.</p>
+<h3>Professionnels inscrits</h3>
+<p id="count">Chargement...</p>
+<div id="professionals"></div>
+<button id="logoutBtn">Se déconnecter</button>
+</section>
+</main>
+
+<script>
+const SUPABASE_URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
+const SUPABASE_KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const login = document.getElementById("login");
+const dashboard = document.getElementById("dashboard");
+const message = document.getElementById("message");
+
+async function openDashboard() {
+  const {data:{user}} = await db.auth.getUser();
+  if (!user) return;
+
+  const {data:admin,error} = await db
+    .from("admins")
+    .select("role")
+    .eq("id",user.id)
+    .maybeSingle();
+
+  if(error || !admin || admin.role !== "owner") {
+    message.textContent = "Accès réservé au propriétaire.";
+    await db.auth.signOut();
+    return;
+  }
+
+  login.classList.add("hidden");
+  dashboard.classList.remove("hidden");
+  loadProfessionals();
+}
+
+async function loadProfessionals() {
+  const area = document.getElementById("professionals");
+  area.textContent = "Chargement des professionnels...";
+
+  const {data,error} = await db
+    .from("professionnels")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error) {
+    area.textContent = "Erreur de chargement : " + error.message;
+    return;
+  }
+
+  document.getElementById("count").textContent =
+    data.length + " professionnel(s) inscrit(s)";
+
+  area.replaceChildren();
+
+  data.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "pro";
+
+    const title = document.createElement("h3");
+    title.textContent = p.nom || "Sans nom";
+    card.appendChild(title);
+
+    ["nom","metier","quartier","telephone","services"].forEach(field => {
+      const label = document.createElement("label");
+      label.textContent = field;
+      const input = document.createElement("input");
+      input.value = p[field] || "";
+      input.dataset.field = field;
+      label.appendChild(input);
+      card.appendChild(label);
+    });
+
+    const save = document.createElement("button");
+    save.textContent = "Enregistrer les modifications";
+    save.onclick = async () => {
+      const changes = {};
+      card.querySelectorAll("input").forEach(input => {
+        changes[input.dataset.field] = input.value;
+      });
+      const {error} = await db.from("professionnels")
+        .update(changes).eq("id",p.id);
+      alert(error ? error.message : "Modifications enregistrées !");
+      if(!error) loadProfessionals();
+    };
+    card.appendChild(save);
+
+    const del = document.createElement("button");
+    del.textContent = "Supprimer";
+    del.className = "delete";
+    del.onclick = async () => {
+      if(!confirm("Supprimer ce professionnel ?")) return;
+      const {error} = await db.from("professionnels")
+        .delete().eq("id",p.id);
+      alert(error ? error.message : "Professionnel supprimé.");
+      if(!error) loadProfessionals();
+    };
+    card.appendChild(del);
+    area.appendChild(card);
+  });
+}
+
+document.getElementById("loginBtn").onclick = async () => {
+  message.textContent = "Connexion en cours...";
+  const {error} = await db.auth.signInWithPassword({
+    email:document.getElementById("email").value,
+    password:document.getElementById("password").value
+  });
+  if(error) {
+    message.textContent = "Erreur : " + error.message;
+    return;
+  }
+  await openDashboard();
+};
+
+document.getElementById("logoutBtn").onclick = async () => {
+  await db.auth.signOut();
+  dashboard.classList.add("hidden");
+  login.classList.remove("hidden");
+};
+
+db.auth.getSession().then(({data}) => {
+  if(data.session) openDashboard();
+});
+</script>
+</body>
+</html>
