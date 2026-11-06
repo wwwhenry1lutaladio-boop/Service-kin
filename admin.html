@@ -6,25 +6,29 @@
 <title>Administration - SERVICE KIN</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-body{font-family:Arial,sans-serif;background:#f1f5f9;margin:0;padding:20px;color:#172554}
-header{background:#123c75;color:white;padding:20px;border-radius:12px}
-main{max-width:750px;margin:20px auto}
+*{box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#f1f5f9;margin:0;color:#172554}
+header{background:#123c75;color:white;padding:22px}
+main{max-width:850px;margin:20px auto;padding:12px}
 section,.pro{background:white;padding:18px;margin:15px 0;border-radius:12px}
-input{display:block;width:100%;box-sizing:border-box;padding:12px;margin:10px 0;border:1px solid #ccc;border-radius:7px}
+input,select{display:block;width:100%;padding:12px;margin:10px 0;border:1px solid #ccc;border-radius:7px}
 button{padding:12px 18px;border:0;border-radius:7px;background:#eab308;color:#172554;font-weight:bold;margin:5px;cursor:pointer}
 .delete{background:#dc2626;color:white}
 .hidden{display:none}
 .pro{border-left:5px solid #eab308}
-small{color:#475569}
+h2{color:#123c75}
+.stat{background:#e0edff;padding:15px;border-radius:10px;margin:10px 0}
 </style>
 </head>
 <body>
+
 <header>
 <h1>SERVICE KIN</h1>
-<p>Espace administrateur</p>
+<p>Espace administrateur propriétaire</p>
 </header>
 
 <main>
+
 <section id="login">
 <h2>Connexion propriétaire</h2>
 <input id="email" type="email" placeholder="Adresse e-mail">
@@ -36,18 +40,38 @@ small{color:#475569}
 <section id="dashboard" class="hidden">
 <h2>Tableau de bord</h2>
 <p>Bienvenue dans l'administration de SERVICE KIN.</p>
-<h3>Professionnels inscrits</h3>
-<p id="count">Chargement...</p>
-<div id="professionals"></div>
+
+<div class="stat">
+Professionnels inscrits :
+<strong id="count">0</strong>
+</div>
+
+<h2>Gestion des professionnels</h2>
+<button id="refreshBtn">Actualiser</button>
+<div id="professionals">Chargement...</div>
+
+<hr>
+
+<h2>Demandes des clients</h2>
+<div class="stat">
+Demandes reçues :
+<strong id="demandesCount">0</strong>
+</div>
+<div id="demandes">Chargement...</div>
+
 <button id="logoutBtn">Se déconnecter</button>
 </section>
+
 </main>
 
 <script>
 const SUPABASE_URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
 
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 const login = document.getElementById("login");
 const dashboard = document.getElementById("dashboard");
@@ -55,6 +79,7 @@ const message = document.getElementById("message");
 
 async function openDashboard() {
   const {data:{user}} = await db.auth.getUser();
+
   if (!user) return;
 
   const {data:admin,error} = await db
@@ -71,12 +96,14 @@ async function openDashboard() {
 
   login.classList.add("hidden");
   dashboard.classList.remove("hidden");
+
   loadProfessionals();
+  loadDemandes();
 }
 
 async function loadProfessionals() {
   const area = document.getElementById("professionals");
-  area.textContent = "Chargement des professionnels...";
+  area.textContent = "Chargement...";
 
   const {data,error} = await db
     .from("professionnels")
@@ -84,14 +111,17 @@ async function loadProfessionals() {
     .order("created_at",{ascending:false});
 
   if(error) {
-    area.textContent = "Erreur de chargement : " + error.message;
+    area.textContent = "Erreur : " + error.message;
     return;
   }
 
-  document.getElementById("count").textContent =
-    data.length + " professionnel(s) inscrit(s)";
-
+  document.getElementById("count").textContent = data.length;
   area.replaceChildren();
+
+  if(data.length === 0) {
+    area.textContent = "Aucun professionnel inscrit.";
+    return;
+  }
 
   data.forEach(p => {
     const card = document.createElement("div");
@@ -104,52 +134,147 @@ async function loadProfessionals() {
     ["nom","metier","quartier","telephone","services"].forEach(field => {
       const label = document.createElement("label");
       label.textContent = field;
+
       const input = document.createElement("input");
       input.value = p[field] || "";
       input.dataset.field = field;
+
       label.appendChild(input);
       card.appendChild(label);
     });
 
     const save = document.createElement("button");
     save.textContent = "Enregistrer les modifications";
+
     save.onclick = async () => {
       const changes = {};
+
       card.querySelectorAll("input").forEach(input => {
         changes[input.dataset.field] = input.value;
       });
-      const {error} = await db.from("professionnels")
-        .update(changes).eq("id",p.id);
+
+      const {error} = await db
+        .from("professionnels")
+        .update(changes)
+        .eq("id",p.id);
+
       alert(error ? error.message : "Modifications enregistrées !");
       if(!error) loadProfessionals();
     };
+
     card.appendChild(save);
 
     const del = document.createElement("button");
     del.textContent = "Supprimer";
     del.className = "delete";
+
     del.onclick = async () => {
       if(!confirm("Supprimer ce professionnel ?")) return;
-      const {error} = await db.from("professionnels")
-        .delete().eq("id",p.id);
+
+      const {error} = await db
+        .from("professionnels")
+        .delete()
+        .eq("id",p.id);
+
       alert(error ? error.message : "Professionnel supprimé.");
       if(!error) loadProfessionals();
     };
+
     card.appendChild(del);
+    area.appendChild(card);
+  });
+}
+
+async function loadDemandes() {
+  const area = document.getElementById("demandes");
+  area.textContent = "Chargement...";
+
+  const {data,error} = await db
+    .from("demandes")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error) {
+    area.textContent = "Erreur : " + error.message;
+    return;
+  }
+
+  document.getElementById("demandesCount").textContent = data.length;
+  area.replaceChildren();
+
+  if(data.length === 0) {
+    area.textContent = "Aucune demande reçue pour le moment.";
+    return;
+  }
+
+  data.forEach(d => {
+    const card = document.createElement("div");
+    card.className = "pro";
+
+    const title = document.createElement("h3");
+    title.textContent = d.client_nom;
+    card.appendChild(title);
+
+    const details = document.createElement("p");
+    details.textContent =
+      "Téléphone : " + d.telephone +
+      " | Quartier : " + (d.quartier || "Non précisé");
+
+    card.appendChild(details);
+
+    const description = document.createElement("p");
+    description.textContent = "Demande : " + d.description;
+    card.appendChild(description);
+
+    const status = document.createElement("select");
+
+    [
+      ["nouvelle","Nouvelle"],
+      ["contactée","Contactée"],
+      ["en_cours","En cours"],
+      ["terminée","Terminée"],
+      ["annulée","Annulée"]
+    ].forEach(([value,label]) => {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      status.appendChild(option);
+    });
+
+    status.value = d.statut || "nouvelle";
+    card.appendChild(status);
+
+    const save = document.createElement("button");
+    save.textContent = "Enregistrer le statut";
+
+    save.onclick = async () => {
+      const {error} = await db
+        .from("demandes")
+        .update({statut:status.value})
+        .eq("id",d.id);
+
+      alert(error ? error.message : "Statut mis à jour !");
+      if(!error) loadDemandes();
+    };
+
+    card.appendChild(save);
     area.appendChild(card);
   });
 }
 
 document.getElementById("loginBtn").onclick = async () => {
   message.textContent = "Connexion en cours...";
+
   const {error} = await db.auth.signInWithPassword({
     email:document.getElementById("email").value,
     password:document.getElementById("password").value
   });
+
   if(error) {
     message.textContent = "Erreur : " + error.message;
     return;
   }
+
   await openDashboard();
 };
 
@@ -159,9 +284,15 @@ document.getElementById("logoutBtn").onclick = async () => {
   login.classList.remove("hidden");
 };
 
+document.getElementById("refreshBtn").onclick = () => {
+  loadProfessionals();
+  loadDemandes();
+};
+
 db.auth.getSession().then(({data}) => {
   if(data.session) openDashboard();
 });
 </script>
 </body>
 </html>
+   
