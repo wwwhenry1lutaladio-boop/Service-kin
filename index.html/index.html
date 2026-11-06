@@ -4,41 +4,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SERVICE KIN - Kinshasa</title>
+<title>SERVICE KIN</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6f8;color:#243447}
-header{background:#073b66;color:white;padding:28px 16px;text-align:center}
-header h1{margin:0;font-size:32px}
-header p{margin-bottom:0}
-main{max-width:750px;margin:22px auto;padding:0 14px}
-section{background:white;padding:20px;margin-bottom:18px;border-radius:12px}
-h2{color:#073b66}
-input,select,textarea{width:100%;padding:13px;margin:7px 0 13px;border:1px solid #ccd5dd;border-radius:7px;font-size:16px}
-button{background:#087a55;color:white;border:0;padding:14px;border-radius:7px;font-size:16px;width:100%;cursor:pointer}
-.card{border:1px solid #dce3e9;padding:14px;margin:12px 0;border-radius:9px}
-.card h3{margin:5px 0;color:#073b66}
-.contact{display:inline-block;background:#087a55;color:white;padding:10px 14px;border-radius:6px;text-decoration:none;margin-top:8px}
-#message{font-weight:bold;margin-top:12px}
-footer{text-align:center;padding:20px;color:#667}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#17243a}
+header{background:#123a70;color:white;padding:18px}
+.logo{font-size:24px;font-weight:bold}
+.logo span{color:#f6c644}
+header p{margin:5px 0 0;font-size:13px}
+.hero{background:#17618b;color:white;text-align:center;padding:45px 20px}
+.hero h1{font-size:32px}
+.hero p{line-height:1.6}
+main{max-width:850px;margin:auto;padding:20px}
+h2{color:#123a70}
+input,select,textarea{width:100%;padding:13px;margin:8px 0;border:1px solid #ccd5e0;border-radius:8px;font-size:16px}
+.categories{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0}
+.categories button{padding:9px 13px;border:1px solid #123a70;border-radius:20px;background:white;color:#123a70}
+.categories button.active{background:#123a70;color:white}
+.card{background:white;padding:17px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #00000010}
+.card h3{margin:5px 0}
+.tag{color:#17618b;font-size:13px;font-weight:bold}
+.contact{display:inline-block;background:#16834b;color:white;text-decoration:none;padding:10px 14px;border-radius:7px;margin-top:8px}
+form{background:white;padding:18px;border-radius:12px}
+.submit{background:#f6c644;border:0;padding:13px 18px;border-radius:8px;font-weight:bold;font-size:16px}
+footer{text-align:center;background:#123a70;color:white;padding:20px;margin-top:30px}
+.note{font-size:12px;color:#64748b;line-height:1.5}
+#message{font-weight:bold}
 </style>
 </head>
-
 <body>
+
 <header>
-<h1>SERVICE KIN</h1>
-<p>La plateforme des professionnels et des services à Kinshasa</p>
+<div class="logo">SERVICE <span>KIN</span></div>
+<p>Les professionnels à votre service à Kinshasa</p>
 </header>
 
-<main>
-<section>
-<h2>Trouver un professionnel</h2>
-<input id="search" placeholder="Rechercher un métier ou un quartier">
-<div id="results">Chargement des professionnels...</div>
+<section class="hero">
+<h1>Trouvez le bon professionnel</h1>
+<p>Électricité, plomberie, maçonnerie, forage, géologie et construction : trouvez des services près de chez vous.</p>
 </section>
 
-<section>
-<h2>Inscrire un professionnel</h2>
+<main>
+<h2>Rechercher un service</h2>
+<input id="search" placeholder="Rechercher un métier ou un quartier...">
+<div class="categories" id="categories"></div>
+<div id="results">Chargement des professionnels...</div>
+
+<h2>Vous êtes professionnel ?</h2>
+<p>Présentez votre activité dans SERVICE KIN.</p>
+
 <form id="form">
 <input name="name" placeholder="Votre nom ou entreprise" required>
 
@@ -51,147 +65,177 @@ footer{text-align:center;padding:20px;color:#667}
 <option>Géologie</option>
 <option>Ingénierie bâtiment</option>
 <option>Fournitures</option>
+<option>Staffeur en bâtiment</option>
 <option>Autre</option>
 </select>
 
 <input name="area" placeholder="Votre commune ou quartier" required>
-<input name="phone" placeholder="Votre numéro WhatsApp" required>
-<textarea name="services" placeholder="Décrivez vos services"></textarea>
+<input name="phone" type="tel" placeholder="Votre numéro WhatsApp" required>
+<textarea name="services" placeholder="Décrivez vos services" rows="3"></textarea>
 
-<button type="submit">Enregistrer mon profil</button>
+<button class="submit" type="submit">Ajouter mon profil</button>
+<p id="message" class="note"></p>
 </form>
-<p id="message"></p>
-</section>
 </main>
 
 <footer>© SERVICE KIN - Kinshasa, RDC</footer>
 
 <script>
-const SUPABASE_URL="https://ikhjunfdqjnhonxisjeh.supabase.co";
-const SUPABASE_KEY="sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
+const SUPABASE_URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
+const SUPABASE_KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
 
-let professionnels=[];
+const categories = [
+"Tous","Électricité","Plomberie","Maçonnerie","Forage",
+"Géologie","Ingénierie bâtiment","Fournitures","Staffeur en bâtiment"
+];
 
-async function chargerProfessionnels(){
-const zone=document.getElementById("results");
-zone.textContent="Chargement...";
+let active = "Tous";
+let professionnels = [];
 
-try{
-const response=await fetch(
-SUPABASE_URL+"/rest/v1/professionnels?select=nom,metier,quartier,telephone,services",
-{headers:{"apikey":SUPABASE_KEY}}
-);
+const headers = {
+  "apikey": SUPABASE_KEY,
+  "Content-Type": "application/json"
+};
 
-if(!response.ok) throw new Error("Erreur "+response.status);
+function afficher() {
+  const q = document.getElementById("search").value.toLowerCase();
 
-professionnels=await response.json();
-afficherProfessionnels();
+  const cat = document.getElementById("categories");
+  cat.replaceChildren();
 
-}catch(error){
-zone.textContent="Impossible de charger les professionnels. Vérifiez la connexion.";
-console.error(error);
-}
-}
+  categories.forEach(c => {
+    const btn = document.createElement("button");
+    btn.textContent = c;
+    btn.className = active === c ? "active" : "";
+    btn.onclick = () => {
+      active = c;
+      afficher();
+    };
+    cat.appendChild(btn);
+  });
 
-function afficherProfessionnels(){
-const zone=document.getElementById("results");
-const recherche=document.getElementById("search").value.toLowerCase();
+  const liste = professionnels.filter(p => {
+    const correspondCategorie = active === "Tous" || p.metier === active;
+    const texte = `${p.nom || ""} ${p.metier || ""} ${p.quartier || ""} ${p.services || ""}`.toLowerCase();
+    return correspondCategorie && texte.includes(q);
+  });
 
-zone.replaceChildren();
+  const results = document.getElementById("results");
+  results.replaceChildren();
 
-const liste=professionnels.filter(p=>
-[p.nom,p.metier,p.quartier,p.services].join(" ").toLowerCase().includes(recherche)
-);
+  if (!liste.length) {
+    results.textContent = "Aucun professionnel trouvé.";
+    return;
+  }
 
-if(liste.length===0){
-zone.textContent="Aucun professionnel trouvé.";
-return;
-}
+  liste.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "card";
 
-liste.forEach(p=>{
-const carte=document.createElement("div");
-carte.className="card";
+    const tag = document.createElement("span");
+    tag.className = "tag";
+    tag.textContent = p.metier || "Professionnel";
 
-const titre=document.createElement("h3");
-titre.textContent=p.nom||"Professionnel";
+    const title = document.createElement("h3");
+    title.textContent = p.nom || "";
 
-const metier=document.createElement("p");
-metier.textContent="Métier : "+(p.metier||"Non précisé");
+    const quartier = document.createElement("p");
+    quartier.textContent = p.quartier || "";
 
-const quartier=document.createElement("p");
-quartier.textContent="Quartier : "+(p.quartier||"Non précisé");
+    const services = document.createElement("p");
+    services.textContent = p.services || "";
 
-const services=document.createElement("p");
-services.textContent="Services : "+(p.services||"Non précisés");
+    card.append(tag, title, quartier, services);
 
-carte.append(titre,metier,quartier,services);
+    if (p.telephone) {
+      const contact = document.createElement("a");
+      contact.className = "contact";
+      contact.textContent = "Contacter sur WhatsApp";
+      contact.href = "https://wa.me/" + p.telephone.replace(/\D/g, "");
+      contact.target = "_blank";
+      contact.rel = "noopener";
+      card.appendChild(contact);
+    }
 
-if(p.telephone){
-const contact=document.createElement("a");
-contact.className="contact";
-contact.textContent="Contacter sur WhatsApp";
-contact.href="https://wa.me/"+p.telephone.replace(/\D/g,"");
-contact.target="_blank";
-contact.rel="noopener";
-carte.append(contact);
-}
-
-zone.append(carte);
-});
-}
-
-document.getElementById("search").addEventListener("input",afficherProfessionnels);
-
-document.getElementById("form").addEventListener("submit",async e=>{
-e.preventDefault();
-
-const bouton=e.target.querySelector("button");
-const message=document.getElementById("message");
-const d=Object.fromEntries(new FormData(e.target));
-
-bouton.disabled=true;
-bouton.textContent="Enregistrement...";
-message.textContent="";
-
-try{
-const response=await fetch(SUPABASE_URL+"/rest/v1/professionnels",{
-method:"POST",
-headers:{
-"apikey":SUPABASE_KEY,
-"Content-Type":"application/json",
-"Prefer":"return=representation"
-},
-body:JSON.stringify({
-nom:d.name,
-metier:d.job,
-quartier:d.area,
-telephone:d.phone,
-services:d.services
-})
-});
-
-if(!response.ok){
-const erreur=await response.text();
-throw new Error(erreur);
+    results.appendChild(card);
+  });
 }
 
-message.textContent="Profil enregistré avec succès !";
-e.target.reset();
-await chargerProfessionnels();
+async function chargerProfessionnels() {
+  const results = document.getElementById("results");
 
-}catch(error){
-message.textContent="Échec de l'enregistrement. Réessayez.";
-console.error(error);
+  try {
+    const response = await fetch(
+      SUPABASE_URL + "/rest/v1/professionnels?select=nom,metier,quartier,telephone,services",
+      { headers: headers }
+    );
 
-}finally{
-bouton.disabled=false;
-bouton.textContent="Enregistrer mon profil";
+    if (!response.ok) {
+      throw new Error("Erreur de chargement : " + response.status);
+    }
+
+    professionnels = await response.json();
+    afficher();
+
+  } catch (error) {
+    results.textContent = "Impossible de charger les professionnels. Vérifiez la connexion.";
+    console.error(error);
+  }
 }
+
+document.getElementById("search").addEventListener("input", afficher);
+
+document.getElementById("form").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const message = document.getElementById("message");
+  const form = e.target;
+  const d = Object.fromEntries(new FormData(form));
+
+  message.textContent = "Enregistrement en cours...";
+
+  const nouveauProfil = {
+    nom: d.name.trim(),
+    metier: d.job,
+    quartier: d.area.trim(),
+    telephone: d.phone.trim(),
+    services: d.services.trim()
+  };
+
+  try {
+    const response = await fetch(
+      SUPABASE_URL + "/rest/v1/professionnels",
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(nouveauProfil)
+      }
+    );
+
+    if (!response.ok) {
+      const detail = await response.text();
+      throw new Error(detail || "Erreur " + response.status);
+    }
+
+    message.textContent = "Votre profil a été enregistré avec succès !";
+    form.reset();
+    active = "Tous";
+    await chargerProfessionnels();
+
+  } catch (error) {
+    message.textContent = "Échec de l'enregistrement. Vérifiez votre connexion.";
+    console.error(error);
+  }
 });
 
 chargerProfessionnels();
 </script>
+
 </body>
 </html>
+
 
 
