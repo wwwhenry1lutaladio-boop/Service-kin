@@ -1,10 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SERVICE KIN - Kinshasa</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6f8;color:#243447}
+header{background:#073b66;color:white;padding:28px 16px;text-align:center}
+header h1{margin:0;font-size:32px}
+header p{margin-bottom:0}
+main{max-width:750px;margin:22px auto;padding:0 14px}
+section{background:white;padding:20px;margin-bottom:18px;border-radius:12px}
+h2{color:#073b66}
+input,select,textarea{width:100%;padding:13px;margin:7px 0 13px;border:1px solid #ccd5dd;border-radius:7px;font-size:16px}
+button{background:#087a55;color:white;border:0;padding:14px;border-radius:7px;font-size:16px;width:100%;cursor:pointer}
+.card{border:1px solid #dce3e9;padding:14px;margin:12px 0;border-radius:9px}
+.card h3{margin:5px 0;color:#073b66}
+.contact{display:inline-block;background:#087a55;color:white;padding:10px 14px;border-radius:6px;text-decoration:none;margin-top:8px}
+#message{font-weight:bold;margin-top:12px}
+footer{text-align:center;padding:20px;color:#667}
+</style>
+</head>
+
+<body>
+<header>
+<h1>SERVICE KIN</h1>
+<p>La plateforme des professionnels et des services à Kinshasa</p>
+</header>
+
+<main>
+<section>
+<h2>Trouver un professionnel</h2>
+<input id="search" placeholder="Rechercher un métier ou un quartier">
+<div id="results">Chargement des professionnels...</div>
+</section>
+
+<section>
+<h2>Inscrire un professionnel</h2>
+<form id="form">
+<input name="name" placeholder="Votre nom ou entreprise" required>
+
+<select name="job" required>
+<option value="">Choisir votre métier</option>
+<option>Électricité</option>
+<option>Plomberie</option>
+<option>Maçonnerie</option>
+<option>Forage</option>
+<option>Géologie</option>
+<option>Ingénierie bâtiment</option>
+<option>Fournitures</option>
+<option>Autre</option>
+</select>
+
+<input name="area" placeholder="Votre commune ou quartier" required>
+<input name="phone" placeholder="Votre numéro WhatsApp" required>
+<textarea name="services" placeholder="Décrivez vos services"></textarea>
+
+<button type="submit">Enregistrer mon profil</button>
+</form>
+<p id="message"></p>
+</section>
+</main>
+
+<footer>© SERVICE KIN - Kinshasa, RDC</footer>
+
+<script>
+const SUPABASE_URL="https://ikhjunfdqjnhonxisjeh.supabase.co";
+const SUPABASE_KEY="sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
+
+let professionnels=[];
+
+async function chargerProfessionnels(){
+const zone=document.getElementById("results");
+zone.textContent="Chargement...";
+
+try{
+const response=await fetch(
+SUPABASE_URL+"/rest/v1/professionnels?select=nom,metier,quartier,telephone,services",
+{headers:{"apikey":SUPABASE_KEY}}
+);
+
+if(!response.ok) throw new Error("Erreur "+response.status);
+
+professionnels=await response.json();
+afficherProfessionnels();
+
+}catch(error){
+zone.textContent="Impossible de charger les professionnels. Vérifiez la connexion.";
+console.error(error);
+}
+}
+
+function afficherProfessionnels(){
+const zone=document.getElementById("results");
+const recherche=document.getElementById("search").value.toLowerCase();
+
+zone.replaceChildren();
+
+const liste=professionnels.filter(p=>
+[p.nom,p.metier,p.quartier,p.services].join(" ").toLowerCase().includes(recherche)
+);
+
+if(liste.length===0){
+zone.textContent="Aucun professionnel trouvé.";
+return;
+}
+
+liste.forEach(p=>{
+const carte=document.createElement("div");
+carte.className="card";
+
+const titre=document.createElement("h3");
+titre.textContent=p.nom||"Professionnel";
+
+const metier=document.createElement("p");
+metier.textContent="Métier : "+(p.metier||"Non précisé");
+
+const quartier=document.createElement("p");
+quartier.textContent="Quartier : "+(p.quartier||"Non précisé");
+
+const services=document.createElement("p");
+services.textContent="Services : "+(p.services||"Non précisés");
+
+carte.append(titre,metier,quartier,services);
+
+if(p.telephone){
+const contact=document.createElement("a");
+contact.className="contact";
+contact.textContent="Contacter sur WhatsApp";
+contact.href="https://wa.me/"+p.telephone.replace(/\D/g,"");
+contact.target="_blank";
+contact.rel="noopener";
+carte.append(contact);
+}
+
+zone.append(carte);
+});
+}
+
+document.getElementById("search").addEventListener("input",afficherProfessionnels);
+
 document.getElementById("form").addEventListener("submit",async e=>{
 e.preventDefault();
 
+const bouton=e.target.querySelector("button");
+const message=document.getElementById("message");
 const d=Object.fromEntries(new FormData(e.target));
 
-const SUPABASE_URL="https://ikhjunfdqjnhonxisjeh.supabase.co";
-const SUPABASE_KEY="sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
+bouton.disabled=true;
+bouton.textContent="Enregistrement...";
+message.textContent="";
 
 try{
 const response=await fetch(SUPABASE_URL+"/rest/v1/professionnels",{
@@ -19,20 +166,32 @@ nom:d.name,
 metier:d.job,
 quartier:d.area,
 telephone:d.phone,
-services:""
+services:d.services
 })
 });
 
 if(!response.ok){
-throw new Error("Erreur "+response.status);
+const erreur=await response.text();
+throw new Error(erreur);
 }
 
-document.getElementById("message").textContent="Profil enregistré avec succès !";
+message.textContent="Profil enregistré avec succès !";
 e.target.reset();
+await chargerProfessionnels();
 
 }catch(error){
-document.getElementById("message").textContent="Échec de l'enregistrement. Vérifie ta connexion.";
+message.textContent="Échec de l'enregistrement. Réessayez.";
 console.error(error);
+
+}finally{
+bouton.disabled=false;
+bouton.textContent="Enregistrer mon profil";
 }
 });
+
+chargerProfessionnels();
+</script>
+</body>
+</html>
+
 
