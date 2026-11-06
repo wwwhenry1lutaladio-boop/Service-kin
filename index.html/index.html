@@ -1,102 +1,44 @@
-
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SERVICE KIN</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#17243a}
-header{background:#123a70;color:white;padding:18px}
-.logo{font-size:24px;font-weight:bold}
-.logo span{color:#f6c644}
-header p{margin:5px 0 0;font-size:13px}
-.hero{background:#17618b;color:white;text-align:center;padding:45px 20px}
-.hero h1{font-size:32px}
-.hero p{line-height:1.6}
-main{max-width:850px;margin:auto;padding:20px}
-h2{color:#123a70}
-input,select{width:100%;padding:13px;margin:8px 0;border:1px solid #ccd5e0;border-radius:8px;font-size:16px}
-.categories{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0}
-.categories button{padding:9px 13px;border:1px solid #123a70;border-radius:20px;background:white;color:#123a70}
-.categories button.active{background:#123a70;color:white}
-.card{background:white;padding:17px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #00000010}
-.card h3{margin:5px 0}
-.tag{color:#17618b;font-size:13px;font-weight:bold}
-.contact{display:inline-block;background:#16834b;color:white;text-decoration:none;padding:10px 14px;border-radius:7px;margin-top:8px}
-form{background:white;padding:18px;border-radius:12px}
-.submit{background:#f6c644;border:0;padding:13px 18px;border-radius:8px;font-weight:bold;font-size:16px}
-footer{text-align:center;background:#123a70;color:white;padding:20px;margin-top:30px}
-.note{font-size:12px;color:#64748b;line-height:1.5}
-</style>
-</head>
-<body>
-<header>
-<div class="logo">SERVICE <span>KIN</span></div>
-<p>Les professionnels à votre service à Kinshasa</p>
-</header>
-<section class="hero">
-<h1>Trouvez le bon professionnel</h1>
-<p>Électricité, plomberie, maçonnerie, forage, géologie et construction : trouvez des services près de chez vous.</p>
-</section>
-<main>
-<h2>Rechercher un service</h2>
-<input id="search" placeholder="Rechercher un métier ou un quartier...">
-<div class="categories" id="categories"></div>
-<div id="results"></div>
-<p class="note">Les profils de démonstration ci-dessous sont fictifs. Vérifiez toujours les références d'un professionnel avant de l'engager.</p>
-<h2>Vous êtes professionnel ?</h2>
-<p>Présentez votre activité dans SERVICE KIN.</p>
-<form id="form">
-<input name="name" placeholder="Votre nom ou entreprise" required>
-<select name="job" required>
-<option value="">Choisir votre métier</option>
-<option>Électricité</option>
-<option>Plomberie</option>
-<option>Maçonnerie</option>
-<option>Forage</option>
-<option>Géologie</option>
-<option>Ingénierie bâtiment</option>
-<option>Fournitures</option>
-<option>Autre</option>
-</select>
-<input name="area" placeholder="Votre commune ou quartier" required>
-<input name="phone" placeholder="Votre numéro WhatsApp" required>
-<button class="submit">Ajouter mon profil</button>
-<p id="message" class="note"></p>
-</form>
-</main>
-<footer>© SERVICE KIN - Kinshasa, RDC</footer>
-<script>
-const demo=[
-{name:"Électricien de démonstration",job:"Électricité",area:"Gombe"},
-{name:"Plombier de démonstration",job:"Plomberie",area:"Ngaliema"},
-{name:"Maçon de démonstration",job:"Maçonnerie",area:"Limete"},
-{name:"Service de forage démo",job:"Forage",area:"Mont-Ngafula"},
-{name:"Conseil géologique démo",job:"Géologie",area:"Kinshasa"}
-];
-let active="Tous";
-const categories=["Tous","Électricité","Plomberie","Maçonnerie","Forage","Géologie","Ingénierie bâtiment","Fournitures"];
-function show(){
-const saved=JSON.parse(localStorage.getItem("skProfiles")||"[]");
-const q=document.getElementById("search").value.toLowerCase();
-document.getElementById("categories").innerHTML=categories.map(c=>`<button class="${active===c?'active':''}" onclick="active='${c}';show()">${c}</button>`).join("");
-const items=[...saved,...demo].filter(x=>(active==="Tous"||x.job===active)&&(`${x.name} ${x.job} ${x.area}`).toLowerCase().includes(q));
-document.getElementById("results").innerHTML=items.map(x=>`<div class="card"><span class="tag">${x.job}</span><h3>${x.name}</h3><p>${x.area}</p>${x.phone?`<a class="contact" href="https://wa.me/${x.phone.replace(/\D/g,'')}" target="_blank">Contacter sur WhatsApp</a>`:""}</div>`).join("")||"Aucun résultat.";
-}
-document.getElementById("search").addEventListener("input",show);
-document.getElementById("form").addEventListener("submit",e=>{
+document.getElementById("form").addEventListener("submit",async e=>{
 e.preventDefault();
 const d=Object.fromEntries(new FormData(e.target));
+
+const SUPABASE_https://ikhjunfdqjnhonxisjeh.supabase.co/rest/v1/
+const SUPABASE_sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE
+
+try{
+const response=await fetch(SUPABASE_URL+"/rest/v1/professionnels",{
+method:"POST",
+headers:{
+"apikey":SUPABASE_KEY,
+"Authorization":"Bearer "+SUPABASE_KEY,
+"Content-Type":"application/json",
+"Prefer":"return=representation"
+},
+body:JSON.stringify({
+nom:d.name,
+metier:d.job,
+quartier:d.area,
+telephone:d.phone,
+services:""
+})
+});
+
+if(!response.ok){
+throw new Error("Erreur "+response.status);
+}
+
 const saved=JSON.parse(localStorage.getItem("skProfiles")||"[]");
 saved.push({name:d.name,job:d.job,area:d.area,phone:d.phone});
 localStorage.setItem("skProfiles",JSON.stringify(saved));
-document.getElementById("message").textContent="Profil enregistré sur cet appareil uniquement. Il n'est pas encore partagé en ligne.";
-e.target.reset();active="Tous";show();
-});
+
+document.getElementById("message").textContent="Profil enregistré avec succès !";
+e.target.reset();
+active="Tous";
 show();
-</script>
-</body>
-</html>
+
+}catch(error){
+document.getElementById("message").textContent="Échec de l'enregistrement. Vérifie ta connexion.";
+console.error(error);
+}
+});
 
