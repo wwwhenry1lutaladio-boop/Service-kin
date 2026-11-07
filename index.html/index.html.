@@ -3,70 +3,75 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#082f63">
 <title>SERVICE KIN - Les professionnels à votre service à Kinshasa</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root {
-  --blue:#082f63; --blue2:#104b89; --yellow:#ffc400;
-  --light:#f3f6fb; --text:#17243a; --muted:#64748b;
-  --green:#079447; --white:#fff;
+  --blue:#082f63;
+  --blue2:#104b89;
+  --yellow:#ffc400;
+  --light:#f3f6fb;
+  --text:#17243a;
+  --muted:#64748b;
+  --green:#079447;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:Arial,sans-serif;background:var(--light);color:var(--text)}
 button,input,select,textarea{font:inherit}
 a{color:inherit}
+
 header{
   background:white;padding:13px 5%;display:flex;align-items:center;
-  justify-content:space-between;gap:20px;box-shadow:0 2px 12px #0000000c;
-  position:relative;z-index:2;
+  justify-content:space-between;gap:15px;box-shadow:0 2px 12px #0000000c;
 }
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none}
 .logo-icon{
-  width:54px;height:48px;display:grid;place-items:center;
+  width:50px;height:48px;display:grid;place-items:center;
   background:var(--blue);color:var(--yellow);border-radius:12px;
   font-size:29px;font-weight:bold;
 }
-.logo{font-size:29px;font-weight:900;color:var(--blue);letter-spacing:-1px}
+.logo{font-size:27px;font-weight:900;color:var(--blue)}
 .logo span{color:var(--yellow)}
 .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
-nav{display:flex;align-items:center;gap:22px}
-nav a{text-decoration:none;font-size:14px;font-weight:bold;color:var(--blue)}
-nav a:hover{color:#d99c00}
-.header-actions{display:flex;gap:9px}
+nav{display:flex;gap:17px}
+nav a{text-decoration:none;font-size:13px;font-weight:bold;color:var(--blue)}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap}
 .header-btn{
-  text-decoration:none;border-radius:30px;padding:12px 17px;
-  background:var(--blue);color:white;font-size:13px;font-weight:bold;
+  text-decoration:none;border-radius:30px;padding:11px 15px;
+  background:var(--blue);color:white;font-size:12px;font-weight:bold;
 }
 .header-btn.yellow{background:var(--yellow);color:#17243a}
+
 .hero{
   background:radial-gradient(circle at 80% 30%,#287eb3 0,transparent 35%),
   linear-gradient(120deg,#062957,#104e8c);
-  color:white;padding:65px 5%;overflow:hidden;position:relative;
+  color:white;padding:60px 5%;
 }
 .hero-inner{
   max-width:1250px;margin:auto;display:grid;
-  grid-template-columns:1.4fr .8fr;align-items:center;gap:35px;
+  grid-template-columns:1.4fr .8fr;align-items:center;gap:30px;
 }
-.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.08;margin:0 0 18px;font-weight:900}
+.hero h1{font-size:clamp(34px,5vw,58px);line-height:1.08;margin:0 0 18px}
 .hero h1 span{color:var(--yellow)}
-.hero p{font-size:18px;line-height:1.6;max-width:650px;color:#e4efff}
+.hero p{font-size:17px;line-height:1.6;color:#e4efff}
 .hero-button{
-  display:inline-block;margin-top:15px;background:var(--yellow);color:#15243a;
-  text-decoration:none;font-weight:bold;padding:15px 24px;border-radius:30px;
+  display:inline-block;margin-top:15px;background:var(--yellow);
+  color:#15243a;text-decoration:none;font-weight:bold;
+  padding:15px 24px;border-radius:30px;
 }
-.hero-button.pro{background:white;color:var(--blue);margin-left:8px}
 .hero-visual{
-  min-height:220px;border:1px solid #ffffff40;border-radius:24px;
-  background:#ffffff12;display:flex;flex-direction:column;justify-content:center;
-  align-items:center;text-align:center;padding:25px;
+  min-height:210px;border:1px solid #ffffff40;border-radius:24px;
+  background:#ffffff12;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;padding:25px;
 }
-.hero-visual .symbol{font-size:76px;margin-bottom:10px}
-.hero-visual strong{font-size:23px;color:var(--yellow)}
+.hero-visual .symbol{font-size:70px}
+.hero-visual strong{font-size:22px;color:var(--yellow)}
 .hero-visual span{margin-top:9px;color:#e4efff;line-height:1.5}
+
 main{max-width:1300px;margin:auto;padding:30px 22px}
 .section-title{color:var(--blue);font-size:25px;margin:0 0 8px}
 .section-intro{color:var(--muted);line-height:1.6;margin:0 0 20px}
@@ -75,30 +80,30 @@ main{max-width:1300px;margin:auto;padding:30px 22px}
   gap:10px;margin:20px 0;
 }
 .category-btn{
-  background:white;border:1px solid #dce5f0;border-radius:13px;padding:14px 7px;
-  color:var(--blue);font-size:12px;font-weight:bold;cursor:pointer;min-height:95px;
-  box-shadow:0 2px 7px #00000008;
+  background:white;border:1px solid #dce5f0;border-radius:13px;
+  padding:14px 7px;color:var(--blue);font-size:12px;font-weight:bold;
+  cursor:pointer;min-height:90px;
 }
 .category-btn .emoji{display:block;font-size:25px;margin-bottom:8px}
 .category-btn.active{background:var(--blue);color:white;border-color:var(--blue)}
-.category-btn:hover{border-color:var(--yellow)}
+
 .search-box{
   display:flex;gap:10px;background:white;border:1px solid #dce5f0;
-  border-radius:40px;padding:7px;box-shadow:0 3px 12px #00000008;margin:20px 0 32px;
+  border-radius:40px;padding:7px;margin:20px 0 30px;
 }
-.search-box input{flex:1;border:0;outline:0;padding:12px 17px;min-width:0;font-size:15px}
+.search-box input{flex:1;border:0;outline:0;padding:12px;min-width:0}
 .search-box button{
-  border:0;border-radius:30px;background:var(--blue);color:white;
-  padding:0 24px;font-weight:bold;cursor:pointer;
+  border:0;border-radius:30px;background:var(--blue);
+  color:white;padding:0 22px;font-weight:bold;
 }
-.results-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:15px}
-.results-heading h2{margin:0;color:var(--blue);font-size:25px}
-.results-heading span{color:var(--blue2);font-size:13px;font-weight:bold}
-.results-layout{display:grid;grid-template-columns:minmax(0,1fr) 270px;gap:20px}
-#results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;align-content:start}
+.results-heading{display:flex;justify-content:space-between;gap:10px;margin-bottom:15px}
+.results-heading h2{margin:0;color:var(--blue);font-size:23px}
+.results-heading span{color:var(--blue2);font-size:13px}
+.results-layout{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:20px}
+#results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
 .card{
-  background:white;border-radius:16px;overflow:hidden;
-  box-shadow:0 4px 15px #0000000c;border:1px solid #e6edf5;padding:18px;
+  background:white;border-radius:16px;padding:18px;
+  box-shadow:0 4px 15px #0000000c;border:1px solid #e6edf5;
 }
 .card .tag{
   display:inline-block;background:#e8f1ff;color:var(--blue2);
@@ -107,108 +112,88 @@ main{max-width:1300px;margin:auto;padding:30px 22px}
 .card h3{color:var(--blue);font-size:19px;margin:12px 0 7px}
 .card p{color:#526174;font-size:14px;line-height:1.5;margin:7px 0}
 .gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:13px}
-.gallery img{width:100%;height:145px;object-fit:cover;border-radius:9px;background:#eef2f7}
+.gallery img{width:100%;height:145px;object-fit:cover;border-radius:9px}
 .photo-caption{font-size:12px!important;color:var(--muted)!important}
 .contact{
   display:block;text-align:center;background:var(--green);color:white;
-  text-decoration:none;padding:12px;border-radius:9px;font-weight:bold;
-  font-size:14px;margin-top:15px;
+  text-decoration:none;padding:12px;border-radius:9px;
+  font-weight:bold;font-size:14px;margin-top:15px;
 }
-.contact:hover{background:#06783a}
 .empty-message{
-  grid-column:1/-1;background:white;padding:25px;border-radius:13px;
-  color:var(--muted);text-align:center;
+  grid-column:1/-1;background:white;padding:25px;
+  border-radius:13px;color:var(--muted);text-align:center;
 }
 .side-card{
-  background:linear-gradient(160deg,#07356e,#0b5796);color:white;
-  padding:24px 19px;border-radius:17px;text-align:center;align-self:start;
-  position:sticky;top:15px;
+  background:linear-gradient(160deg,#07356e,#0b5796);
+  color:white;padding:24px 19px;border-radius:17px;
+  text-align:center;align-self:start;
 }
 .side-card .symbol{font-size:43px}
-.side-card h3{font-size:22px;margin:12px 0}
+.side-card h3{font-size:22px}
 .side-card p{font-size:14px;line-height:1.6;color:#e5efff}
 .side-card a{
-  display:block;background:var(--yellow);color:#17243a;text-decoration:none;
-  padding:13px 10px;border-radius:25px;font-weight:bold;margin-top:17px;
+  display:block;background:var(--yellow);color:#17243a;
+  text-decoration:none;padding:13px;border-radius:25px;
+  font-weight:bold;margin-top:17px;
 }
 .form-section{
-  margin-top:45px;background:white;border-radius:18px;padding:28px;
-  box-shadow:0 4px 18px #00000009;
+  margin-top:35px;background:white;border-radius:18px;
+  padding:28px;box-shadow:0 4px 18px #00000009;
 }
 .form-section h2{color:var(--blue);margin:0 0 8px;font-size:24px}
 .form-section form{margin-top:20px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 input,select,textarea{
-  width:100%;padding:14px;border:1px solid #d5dfeb;border-radius:9px;
-  font-size:15px;background:white;color:var(--text);margin:6px 0;
+  width:100%;padding:14px;border:1px solid #d5dfeb;
+  border-radius:9px;font-size:15px;background:white;
+  color:var(--text);margin:6px 0;
 }
-input:focus,select:focus,textarea:focus{outline:2px solid #b8d3f5;border-color:var(--blue2)}
 textarea{resize:vertical}
 .submit{
-  background:var(--yellow);color:#17243a;border:0;padding:14px 22px;
-  border-radius:9px;font-size:15px;font-weight:bold;cursor:pointer;margin-top:10px;
+  background:var(--yellow);color:#17243a;border:0;
+  padding:14px 22px;border-radius:9px;font-weight:bold;
+  cursor:pointer;margin-top:10px;
 }
-.submit:hover{background:#f0b800}
 .note{font-size:13px;color:var(--muted);line-height:1.5}
-#demandeMessage{font-weight:bold}
-.pro-access{
-  margin-top:45px;background:linear-gradient(120deg,#082f63,#104e8c);
-  color:white;border-radius:18px;padding:30px;text-align:center;
-}
-.pro-access h2{font-size:25px;margin:0 0 12px;color:var(--yellow)}
-.pro-access p{line-height:1.6;color:#e4efff;max-width:650px;margin:0 auto 18px}
-.pro-access a{
-  display:inline-block;background:var(--yellow);color:#17243a;
-  text-decoration:none;padding:14px 25px;border-radius:30px;font-weight:bold;
-}
-.pro-access small{display:block;margin-top:13px;color:#e4efff}
 .benefits{
-  background:#e8f0fb;padding:25px 5%;display:flex;justify-content:center;
-  flex-wrap:wrap;gap:35px;color:var(--blue);font-size:14px;font-weight:bold;
+  background:#e8f0fb;padding:25px 5%;display:flex;
+  justify-content:center;flex-wrap:wrap;gap:25px;
+  color:var(--blue);font-size:14px;font-weight:bold;
 }
-.benefits span{display:flex;align-items:center;gap:8px}
-footer{background:#062957;color:white;padding:25px 15px;text-align:center;font-size:13px}
+footer{background:#062957;color:white;padding:25px;text-align:center;font-size:13px}
 footer strong{color:var(--yellow)}
+
 @media(max-width:950px){
   nav{display:none}
   .categories{grid-template-columns:repeat(4,minmax(0,1fr))}
   .results-layout{grid-template-columns:1fr}
-  .side-card{position:static}
 }
 @media(max-width:600px){
-  header{padding:12px 14px;flex-wrap:wrap}
+  header{padding:12px;flex-wrap:wrap}
   .logo{font-size:23px}
-  .logo-icon{width:43px;height:42px;font-size:24px}
+  .logo-icon{width:42px;height:42px;font-size:24px}
   .brand p{font-size:10px}
-  .header-actions{gap:5px}
-  .header-btn{padding:10px 11px;font-size:11px}
-  .hero{padding:42px 20px}
-  .hero-inner{grid-template-columns:1fr;gap:20px}
+  .header-btn{padding:10px;font-size:11px}
+  .hero{padding:40px 18px}
+  .hero-inner{grid-template-columns:1fr}
   .hero h1{font-size:35px}
   .hero p{font-size:15px}
-  .hero-visual{min-height:160px}
-  .hero-visual .symbol{font-size:48px}
-  .hero-button{padding:13px 16px;font-size:13px}
-  .hero-button.pro{margin-left:0}
-  main{padding:23px 13px}
+  main{padding:22px 12px}
   .categories{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
-  .category-btn{min-height:85px;font-size:11px;padding:10px 4px}
+  .category-btn{min-height:82px;font-size:11px;padding:9px 4px}
   .category-btn .emoji{font-size:22px}
-  .search-box{border-radius:13px;gap:3px}
+  .search-box{border-radius:12px;gap:3px}
   .search-box input{padding:10px;font-size:13px}
-  .search-box button{padding:0 13px;border-radius:9px;font-size:12px}
-  .results-heading h2{font-size:20px}
+  .search-box button{padding:0 12px;border-radius:8px;font-size:12px}
   #results{grid-template-columns:1fr}
-  .gallery img{height:130px}
-  .form-section{padding:20px 14px;margin-top:30px}
-  .form-grid{grid-template-columns:1fr;gap:0}
-  .benefits{gap:15px;justify-content:flex-start;padding:22px}
-  .pro-access{padding:24px 16px}
+  .form-section{padding:20px 14px}
+  .form-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
+
 <header>
   <a class="brand" href="#accueil">
     <div class="logo-icon">⌂</div>
@@ -217,6 +202,7 @@ footer strong{color:var(--yellow)}
       <p>Les professionnels à votre service à Kinshasa</p>
     </div>
   </a>
+
   <nav>
     <a href="#accueil">Accueil</a>
     <a href="#professionnels">Professionnels</a>
@@ -224,9 +210,10 @@ footer strong{color:var(--yellow)}
     <a href="#apropos">À propos</a>
     <a href="#contact">Contact</a>
   </nav>
+
   <div class="header-actions">
-    <a class="header-btn" href="https://wwwhenry1lututaladio-boop.github.io/Service-kin/espace-professionnel.html">Espace Pro</a>
-    <a class="header-btn yellow" href="#demande">Faire une demande</a>
+    <a class="header-btn" href="espace-professionnel.html">Espace Pro</a>
+    <a class="header-btn yellow" href="admin.html">Connexion</a>
   </div>
 </header>
 
@@ -236,7 +223,6 @@ footer strong{color:var(--yellow)}
       <h1>Trouvez le bon professionnel <span>à Kinshasa !</span></h1>
       <p>Découvrez des professionnels qualifiés pour vos travaux, vos achats et vos besoins quotidiens.</p>
       <a class="hero-button" href="#professionnels">⌕ Rechercher un service →</a>
-      <a class="hero-button pro" href="https://wwwhenry1lututaladio-boop.github.io/Service-kin/espace-professionnel.html">Espace professionnel →</a>
     </div>
     <div class="hero-visual">
       <div class="symbol">🤝</div>
@@ -247,62 +233,89 @@ footer strong{color:var(--yellow)}
 </section>
 
 <main>
-  <section id="professionnels">
-    <h2 class="section-title">Nos services</h2>
-    <p class="section-intro">Choisissez une catégorie ou recherchez directement un professionnel.</p>
-    <div class="categories" id="categories"></div>
-    <div class="search-box">
-      <input id="search" placeholder="Rechercher un métier, un professionnel ou un quartier...">
-      <button type="button" onclick="document.getElementById('search').focus()">Rechercher</button>
-    </div>
-    <div class="results-heading">
-      <h2>Nos professionnels à la une</h2>
-      <span>Kinshasa, RDC</span>
-    </div>
-    <div class="results-layout">
-      <div id="results">Chargement des professionnels...</div>
-      <aside class="side-card">
-        <div class="symbol">🤝</div>
-        <h3>Vous êtes professionnel ?</h3>
-        <p>Présentez votre activité dans SERVICE KIN et permettez à de nouveaux clients de vous découvrir.</p>
-        <a href="https://wwwhenry1lututaladio-boop.github.io/Service-kin/espace-professionnel.html">Accéder à mon espace Pro →</a>
-      </aside>
-    </div>
-  </section>
+<section id="professionnels">
+  <h2 class="section-title">Nos services</h2>
+  <p class="section-intro">Choisissez une catégorie ou recherchez directement un professionnel.</p>
+  <div class="categories" id="categories"></div>
 
-  <section class="form-section" id="demande">
-    <h2>Faire une demande de service</h2>
-    <p class="section-intro">Décrivez votre besoin. SERVICE KIN recevra votre demande.</p>
-    <form id="demandeForm">
-      <div class="form-grid">
-        <input name="client_nom" placeholder="Votre nom complet" required>
-        <input name="telephone" type="tel" placeholder="Votre numéro de téléphone ou WhatsApp" required>
-        <input name="quartier" placeholder="Votre commune ou quartier" required>
-        <select name="professionnel_id" id="choixProfessionnel">
-          <option value="">Choisir un professionnel (facultatif)</option>
-        </select>
-      </div>
-      <textarea name="description" placeholder="Décrivez le travail dont vous avez besoin..." rows="4" required></textarea>
-      <button class="submit" type="submit">Envoyer ma demande →</button>
-      <p id="demandeMessage" class="note"></p>
-    </form>
-  </section>
+  <div class="search-box">
+    <input id="search" placeholder="Rechercher un métier, un professionnel ou un quartier...">
+    <button type="button" onclick="document.getElementById('search').focus()">Rechercher</button>
+  </div>
 
-  <section class="pro-access" id="espace-pro">
-    <h2>Vous êtes professionnel à Kinshasa ?</h2>
-    <p>Rejoignez SERVICE KIN, créez votre compte professionnel et présentez vos services et vos réalisations aux clients.</p>
-    <a href="https://wwwhenry1lututaladio-boop.github.io/Service-kin/espace-professionnel.html">Créer mon compte / Me connecter →</a>
-    <small>Inscription gratuite pendant la phase de lancement.</small>
-  </section>
+  <div class="results-heading">
+    <h2>Nos professionnels à la une</h2>
+    <span>Kinshasa, RDC</span>
+  </div>
 
-  <section id="apropos" class="form-section">
-    <h2>À propos de SERVICE KIN</h2>
-    <p class="section-intro">
-      SERVICE KIN facilite la mise en relation entre les habitants de Kinshasa
-      et les professionnels, commerçants et prestataires de services.
-      Notre ambition : rendre les services plus accessibles et valoriser les talents locaux.
-    </p>
-  </section>
+  <div class="results-layout">
+    <div id="results">Chargement des professionnels...</div>
+    <aside class="side-card">
+      <div class="symbol">🤝</div>
+      <h3>Vous êtes professionnel ?</h3>
+      <p>Présentez votre activité dans SERVICE KIN et permettez à de nouveaux clients de vous découvrir.</p>
+      <a href="espace-professionnel.html">Accéder à mon espace Pro →</a>
+    </aside>
+  </div>
+</section>
+
+<section class="form-section" id="demande">
+  <h2>Faire une demande de service</h2>
+  <p class="section-intro">Décrivez votre besoin. SERVICE KIN recevra votre demande.</p>
+  <form id="demandeForm">
+    <div class="form-grid">
+      <input name="client_nom" placeholder="Votre nom complet" required>
+      <input name="telephone" type="tel" placeholder="Votre numéro de téléphone ou WhatsApp" required>
+      <input name="quartier" placeholder="Votre commune ou quartier" required>
+      <select name="professionnel_id" id="choixProfessionnel">
+        <option value="">Choisir un professionnel (facultatif)</option>
+      </select>
+    </div>
+    <textarea name="description" placeholder="Décrivez le travail dont vous avez besoin..." rows="4" required></textarea>
+    <button class="submit" type="submit">Envoyer ma demande →</button>
+    <p id="demandeMessage" class="note"></p>
+  </form>
+</section>
+
+<section class="form-section" id="inscription">
+  <h2>Vous êtes professionnel ?</h2>
+  <p class="section-intro">Inscrivez votre activité pour être visible auprès des clients de Kinshasa.</p>
+  <form id="form">
+    <div class="form-grid">
+      <input name="name" placeholder="Votre nom ou entreprise" required>
+      <select name="job" required>
+        <option value="">Choisir votre métier</option>
+        <option>Électricité</option>
+        <option>Plomberie</option>
+        <option>Maçonnerie</option>
+        <option>Forage</option>
+        <option>Géologie</option>
+        <option>Ingénierie bâtiment</option>
+        <option>Fournitures</option>
+        <option>Staffeur en bâtiment</option>
+        <option>Commerce en ligne</option>
+        <option>Mode et accessoires féminins</option>
+        <option>Photographie et production vidéo</option>
+        <option>Marketing et communication</option>
+        <option>Autre</option>
+      </select>
+      <input name="area" placeholder="Votre commune ou quartier" required>
+      <input name="phone" type="tel" placeholder="Votre numéro WhatsApp" required>
+    </div>
+    <textarea name="services" placeholder="Décrivez vos services" rows="3"></textarea>
+    <button class="submit" type="submit">Ajouter mon profil →</button>
+    <p id="message" class="note"></p>
+  </form>
+</section>
+
+<section id="apropos" class="form-section">
+  <h2>À propos de SERVICE KIN</h2>
+  <p class="section-intro">
+    SERVICE KIN facilite la mise en relation entre les habitants de Kinshasa
+    et les professionnels, commerçants et prestataires de services.
+    Notre ambition : rendre les services plus accessibles et valoriser les talents locaux.
+  </p>
+</section>
 </main>
 
 <div class="benefits">
@@ -316,13 +329,21 @@ footer strong{color:var(--yellow)}
   <strong>SERVICE KIN</strong> - Kinshasa, RDC
   <p>Ensemble, construisons une ville plus forte !</p>
   © SERVICE KIN - Tous droits réservés
+  <p>
+    <a href="admin-photos.html">Gestion des photos</a>
+  </p>
 </footer>
 
 <script>
 const SUPABASE_URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
+
+/* CLÉ SUPABASE CORRIGÉE */
 const SUPABASE_KEY = "sb_publishable_afY2FCUMd8FevvoqJ9rg_AvGeY0hE";
 
-const photoClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const photoClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 const categories = [
   "Tous",
@@ -365,9 +386,37 @@ const headers = {
   "Content-Type": "application/json"
 };
 
+function remplirCategories() {
+  const cat = document.getElementById("categories");
+  cat.replaceChildren();
+
+  categories.forEach(c => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "category-btn" + (active === c ? " active" : "");
+
+    const emoji = document.createElement("span");
+    emoji.className = "emoji";
+    emoji.textContent = categoryIcons[c];
+
+    const texte = document.createElement("span");
+    texte.textContent = c;
+
+    btn.append(emoji, texte);
+
+    btn.onclick = () => {
+      active = c;
+      afficher();
+    };
+
+    cat.appendChild(btn);
+  });
+}
+
 function remplirChoixProfessionnels() {
   const select = document.getElementById("choixProfessionnel");
   const ancienneValeur = select.value;
+
   select.replaceChildren();
 
   const optionVide = document.createElement("option");
@@ -386,29 +435,9 @@ function remplirChoixProfessionnels() {
 }
 
 function afficher() {
+  remplirCategories();
+
   const q = document.getElementById("search").value.toLowerCase();
-  const cat = document.getElementById("categories");
-  cat.replaceChildren();
-
-  categories.forEach(c => {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "category-btn" + (active === c ? " active" : "");
-
-    const emoji = document.createElement("span");
-    emoji.className = "emoji";
-    emoji.textContent = categoryIcons[c] || "🔧";
-
-    const texte = document.createElement("span");
-    texte.textContent = c;
-
-    btn.append(emoji, texte);
-    btn.onclick = () => {
-      active = c;
-      afficher();
-    };
-    cat.appendChild(btn);
-  });
 
   const liste = professionnels.filter(p => {
     const correspondCategorie = active === "Tous" || p.metier === active;
@@ -424,7 +453,7 @@ function afficher() {
     vide.className = "empty-message";
     vide.textContent = professionnels.length
       ? "Aucun professionnel trouvé pour cette recherche."
-      : "Les catégories sont disponibles. Les professionnels seront affichés dès que le chargement sera possible.";
+      : "Les professionnels seront affichés ici dès leur chargement.";
     results.appendChild(vide);
     return;
   }
@@ -449,7 +478,8 @@ function afficher() {
     card.append(tag, title, quartier, services);
 
     const galerie = photosApprouvees[p.id] || [];
-    if (galerie.length > 0) {
+
+    if (galerie.length) {
       const titreGalerie = document.createElement("h4");
       titreGalerie.textContent = "Quelques réalisations";
       card.appendChild(titreGalerie);
@@ -460,9 +490,11 @@ function afficher() {
       galerie.forEach(photo => {
         const bloc = document.createElement("div");
         const img = document.createElement("img");
+
         img.src = photo.url;
         img.alt = photo.description || "Réalisation de " + p.nom;
         img.loading = "lazy";
+
         bloc.appendChild(img);
 
         if (photo.description) {
@@ -471,8 +503,10 @@ function afficher() {
           legende.textContent = photo.description;
           bloc.appendChild(legende);
         }
+
         grille.appendChild(bloc);
       });
+
       card.appendChild(grille);
     }
 
@@ -490,7 +524,6 @@ function afficher() {
   });
 }
 
-/* Chargement des photos approuvées */
 async function chargerPhotosApprouvees() {
   photosApprouvees = {};
 
@@ -498,10 +531,12 @@ async function chargerPhotosApprouvees() {
     const response = await fetch(
       SUPABASE_URL +
       "/rest/v1/realisations?select=id,professionnel_id,photo_path,description&statut=eq.approuvee&order=created_at.desc",
-      { headers: headers }
+      { headers }
     );
 
-    if (!response.ok) throw new Error("Erreur photos : " + response.status);
+    if (!response.ok) {
+      throw new Error("Erreur photos : " + response.status);
+    }
 
     const photos = await response.json();
 
@@ -530,31 +565,34 @@ async function chargerPhotosApprouvees() {
 }
 
 async function chargerProfessionnels() {
+  const results = document.getElementById("results");
+
   try {
     const response = await fetch(
-      SUPABASE_URL + "/rest/v1/professionnels?select=id,nom,metier,quartier,telephone,services",
-      { headers: headers }
+      SUPABASE_URL +
+      "/rest/v1/professionnels?select=id,nom,metier,quartier,telephone,services",
+      { headers }
     );
 
-    if (!response.ok) throw new Error("Erreur de chargement : " + response.status);
+    if (!response.ok) {
+      throw new Error("Erreur de chargement : " + response.status);
+    }
 
     professionnels = await response.json();
+
     await chargerPhotosApprouvees();
 
     afficher();
     remplirChoixProfessionnels();
 
   } catch (error) {
-    console.error("Chargement des professionnels impossible :", error);
-
-    // Même si Supabase ne répond pas, les catégories restent visibles.
-    afficher();
-    document.getElementById("results").innerHTML =
-      '<div class="empty-message">Impossible de charger les professionnels pour le moment. Les catégories restent disponibles.</div>';
+    results.textContent =
+      "Impossible de charger les professionnels. Vérifiez la connexion.";
+    console.error(error);
   }
 }
 
-/* Envoi des demandes des clients */
+/* DEMANDES DES CLIENTS */
 document.getElementById("demandeForm").addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -586,11 +624,11 @@ document.getElementById("demandeForm").addEventListener("submit", async e => {
     );
 
     if (!response.ok) {
-      const detail = await response.text();
-      throw new Error(detail || "Erreur " + response.status);
+      throw new Error(await response.text());
     }
 
-    message.textContent = "Votre demande a bien été envoyée. Merci de faire confiance à SERVICE KIN !";
+    message.textContent =
+      "Votre demande a bien été envoyée. Merci de faire confiance à SERVICE KIN !";
     form.reset();
 
   } catch (error) {
@@ -599,14 +637,60 @@ document.getElementById("demandeForm").addEventListener("submit", async e => {
   }
 });
 
+/* INSCRIPTION DES PROFESSIONNELS */
+document.getElementById("form").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const message = document.getElementById("message");
+  const form = e.target;
+  const d = Object.fromEntries(new FormData(form));
+
+  message.textContent = "Enregistrement en cours...";
+
+  const nouveauProfil = {
+    nom: d.name.trim(),
+    metier: d.job,
+    quartier: d.area.trim(),
+    telephone: d.phone.trim(),
+    services: d.services.trim()
+  };
+
+  try {
+    const response = await fetch(
+      SUPABASE_URL + "/rest/v1/professionnels",
+      {
+        method: "POST",
+        headers: {
+          ...headers,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(nouveauProfil)
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+
+    message.textContent = "Votre profil a été enregistré avec succès !";
+    form.reset();
+    active = "Tous";
+    await chargerProfessionnels();
+
+  } catch (error) {
+    message.textContent =
+      "Échec de l'enregistrement. Vérifiez votre connexion.";
+    console.error(error);
+  }
+});
+
 document.getElementById("search").addEventListener("input", afficher);
 
-/* AFFICHER LES CATÉGORIES IMMÉDIATEMENT, SANS ATTENDRE SUPABASE */
+/* Afficher les catégories immédiatement, même pendant le chargement */
 afficher();
-
-/* Charger ensuite les professionnels et leurs photos */
 chargerProfessionnels();
 </script>
+
 </body>
 </html>
 
