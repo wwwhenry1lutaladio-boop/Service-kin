@@ -1,266 +1,239 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Validation des photos - SERVICE KIN</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f2f4f6;
-      margin: 0;
-      padding: 18px;
-      color: #222;
-    }
-    main {
-      max-width: 650px;
-      margin: 20px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-    }
-    h1 { color: #087b55; }
-    input, button {
-      width: 100%;
-      box-sizing: border-box;
-      padding: 13px;
-      margin: 8px 0;
-      font-size: 16px;
-    }
-    button {
-      border: 0;
-      border-radius: 7px;
-      color: white;
-      background: #087b55;
-    }
-    button.refuser { background: #b7791f; }
-    button.supprimer { background: #b42318; }
-    .photo {
-      border: 1px solid #ddd;
-      border-radius: 9px;
-      padding: 12px;
-      margin: 15px 0;
-    }
-    .photo img {
-      width: 100%;
-      max-height: 350px;
-      object-fit: contain;
-      background: #eee;
-    }
-    .hidden { display: none; }
-    #message { white-space: pre-wrap; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validation des photos - SERVICE KIN</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:Arial;background:#f2f4f7;margin:0;padding:20px}
+main{max-width:750px;margin:auto}
+h1{color:#123b65}
+.card{background:white;padding:18px;margin:15px 0;border-radius:12px}
+input,button{width:100%;padding:13px;margin:8px 0;box-sizing:border-box}
+button{background:#123b65;color:white;border:0;border-radius:7px;font-weight:bold}
+.photo{width:100%;max-height:350px;object-fit:contain}
+.approve{background:green}
+.reject{background:#c47b00}
+.delete{background:#b42318}
+#app{display:none}
+#message{color:#b42318}
+</style>
 </head>
 <body>
 <main>
-  <h1>SERVICE KIN</h1>
-  <h2>Administration des photos</h2>
+<h1>SERVICE KIN</h1>
+<h2>Administration des photos</h2>
 
-  <section id="connexion">
-    <p>Connecte-toi avec ton compte administrateur.</p>
-    <input id="email" type="email" placeholder="Adresse e-mail">
-    <input id="password" type="password" placeholder="Mot de passe">
-    <button onclick="connecter()">Se connecter</button>
-  </section>
+<section id="login" class="card">
+<h3>Connexion administrateur</h3>
+<input id="email" type="email" placeholder="Adresse e-mail">
+<input id="password" type="password" placeholder="Mot de passe">
+<button id="loginBtn" onclick="connexion()">Se connecter</button>
+<p id="message"></p>
+</section>
 
-  <section id="gestion" class="hidden">
-    <p>Photos envoyées par les professionnels :</p>
-    <button onclick="chargerPhotos()">Actualiser les photos</button>
-    <div id="photos"></div>
-    <button onclick="deconnecter()">Se déconnecter</button>
-  </section>
-
-  <p id="message"></p>
+<section id="app">
+<button onclick="deconnexion()">Déconnexion</button>
+<h3>Photos des professionnels</h3>
+<div id="photos">Chargement...</div>
+</section>
 </main>
 
 <script>
 const URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
-const CLE = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
-const db = supabase.createClient(URL, CLE);
+const KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
+const db = supabase.createClient(URL, KEY);
 
-function afficherMessage(texte) {
-  document.getElementById("message").textContent = texte;
-}
+const loginBox = document.getElementById("login");
+const app = document.getElementById("app");
+const message = document.getElementById("message");
 
-async function verifierAdmin() {
-  const { data: { user } } = await db.auth.getUser();
-
-  if (!user) return false;
-
-  const { data, error } = await db
+async function verifierAdmin(user) {
+  const {data,error} = await db
     .from("admins")
-    .select("id, role")
-    .eq("id", user.id)
-    .eq("role", "owner")
+    .select("id,role")
+    .eq("id",user.id)
+    .eq("role","owner")
     .maybeSingle();
 
-  return !error && !!data;
+  if(error) throw error;
+  if(!data) throw new Error("Ce compte n'a pas les droits administrateur.");
 }
 
-async function connecter() {
-  afficherMessage("Connexion en cours...");
+async function connexion() {
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true;
+  btn.textContent = "Connexion...";
+  message.textContent = "";
 
-  const { error } = await db.auth.signInWithPassword({
-    email: document.getElementById("email").value.trim(),
-    password: document.getElementById("password").value
-  });
+  try {
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
 
-  if (error) {
-    afficherMessage("Erreur de connexion : " + error.message);
-    return;
+    if(!email || !password) {
+      throw new Error("Entre ton adresse e-mail et ton mot de passe.");
+    }
+
+    const {data,error} = await db.auth.signInWithPassword({
+      email,password
+    });
+
+    if(error) throw error;
+
+    await verifierAdmin(data.user);
+
+    loginBox.style.display = "none";
+    app.style.display = "block";
+    await chargerPhotos();
+
+  } catch(error) {
+    message.textContent = error.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "Se connecter";
   }
-
-  if (!await verifierAdmin()) {
-    await db.auth.signOut();
-    afficherMessage("Accès refusé : ce compte n'est pas administrateur.");
-    return;
-  }
-
-  document.getElementById("connexion").classList.add("hidden");
-  document.getElementById("gestion").classList.remove("hidden");
-  afficherMessage("");
-  await chargerPhotos();
 }
 
 async function chargerPhotos() {
   const zone = document.getElementById("photos");
-  zone.textContent = "Chargement...";
+  zone.textContent = "Chargement des photos...";
 
-  const { data, error } = await db
+  const {data,error} = await db
     .from("realisations")
-    .select("id, professionnel_id, photo_path, description, statut, created_at")
-    .order("created_at", { ascending: false });
+    .select("*")
+    .order("created_at",{ascending:false});
 
-  if (error) {
+  if(error) {
     zone.textContent = "Erreur : " + error.message;
-    return;
-  }
-
-  if (!data.length) {
-    zone.textContent = "Aucune photo pour le moment.";
     return;
   }
 
   zone.innerHTML = "";
 
-  for (const photo of data) {
-    const { data: lien, error: erreurLien } = await db.storage
-      .from("realisations")
-      .createSignedUrl(photo.photo_path, 3600);
+  if(!data || data.length === 0) {
+    zone.textContent = "Aucune photo envoyée pour le moment.";
+    return;
+  }
 
-    const carte = document.createElement("div");
-    carte.className = "photo";
+  for(const photo of data) {
+    const {data:urlData,error:urlError} = await db.storage
+      .from("realisations")
+      .createSignedUrl(photo.photo_path,3600);
+
+    const card = document.createElement("div");
+    card.className = "card";
 
     const titre = document.createElement("h3");
     titre.textContent = "Professionnel n° " + photo.professionnel_id;
-    carte.appendChild(titre);
+    card.appendChild(titre);
 
-    const statut = document.createElement("p");
-    statut.textContent = "Statut : " + photo.statut;
-    carte.appendChild(statut);
+    if(!urlError && urlData) {
+      const img = document.createElement("img");
+      img.src = urlData.signedUrl;
+      img.className = "photo";
+      img.alt = "Photo envoyée";
+      card.appendChild(img);
+    } else {
+      const erreur = document.createElement("p");
+      erreur.textContent = "Photo inaccessible : " + (urlError?.message || "");
+      card.appendChild(erreur);
+    }
 
     const description = document.createElement("p");
     description.textContent = photo.description || "Sans description";
-    carte.appendChild(description);
+    card.appendChild(description);
 
-    if (!erreurLien && lien && lien.signedUrl) {
-      const image = document.createElement("img");
-      image.src = lien.signedUrl;
-      image.alt = "Photo de réalisation";
-      carte.appendChild(image);
-    } else {
-      const erreur = document.createElement("p");
-      erreur.textContent = "Image non disponible : " +
-        (erreurLien?.message || "");
-      carte.appendChild(erreur);
-    }
+    const statut = document.createElement("p");
+    statut.textContent = "Statut : " + photo.statut;
+    card.appendChild(statut);
 
-    if (photo.statut === "en_attente") {
-      carte.appendChild(creerBouton("Approuver", async () => {
-        await changerStatut(photo.id, "approuvee");
-      }));
+    const approuver = document.createElement("button");
+    approuver.className = "approve";
+    approuver.textContent = "Approuver";
+    approuver.onclick = () => modifier(photo.id,"approuvee");
+    card.appendChild(approuver);
 
-      carte.appendChild(creerBouton("Refuser", async () => {
-        await changerStatut(photo.id, "refusee");
-      }, "refuser"));
-    }
+    const refuser = document.createElement("button");
+    refuser.className = "reject";
+    refuser.textContent = "Refuser";
+    refuser.onclick = () => modifier(photo.id,"refusee");
+    card.appendChild(refuser);
 
-    carte.appendChild(creerBouton(
-      "Supprimer définitivement",
-      async () => {
-        if (confirm("Supprimer définitivement cette photo ?")) {
-          await supprimerPhoto(photo.id, photo.photo_path);
-        }
-      },
-      "supprimer"
-    ));
+    const supprimer = document.createElement("button");
+    supprimer.className = "delete";
+    supprimer.textContent = "Supprimer";
+    supprimer.onclick = () => supprimerPhoto(photo);
+    card.appendChild(supprimer);
 
-    zone.appendChild(carte);
+    zone.appendChild(card);
   }
 }
 
-function creerBouton(texte, action, classe = "") {
-  const bouton = document.createElement("button");
-  bouton.textContent = texte;
-  if (classe) bouton.className = classe;
-  bouton.onclick = action;
-  return bouton;
-}
-
-async function changerStatut(id, statut) {
-  afficherMessage("Enregistrement...");
-
-  const { error } = await db
+async function modifier(id,statut) {
+  const {error} = await db
     .from("realisations")
-    .update({ statut })
-    .eq("id", id);
+    .update({statut})
+    .eq("id",id);
 
-  if (error) {
-    afficherMessage("Erreur : " + error.message);
+  if(error) {
+    alert("Erreur : " + error.message);
     return;
   }
 
-  afficherMessage("Statut mis à jour.");
+  alert("Statut mis à jour !");
   await chargerPhotos();
 }
 
-async function supprimerPhoto(id, chemin) {
-  afficherMessage("Suppression en cours...");
+async function supprimerPhoto(photo) {
+  if(!confirm("Veux-tu vraiment supprimer cette photo ?")) return;
 
-  const { error: erreurFichier } = await db.storage
+  const {error:storageError} = await db.storage
     .from("realisations")
-    .remove([chemin]);
+    .remove([photo.photo_path]);
 
-  if (erreurFichier) {
-    afficherMessage("Erreur de suppression du fichier : " +
-      erreurFichier.message);
+  if(storageError) {
+    alert("Erreur de suppression : " + storageError.message);
     return;
   }
 
-  const { error } = await db
+  const {error} = await db
     .from("realisations")
     .delete()
-    .eq("id", id);
+    .eq("id",photo.id);
 
-  if (error) {
-    afficherMessage("Erreur de suppression de la fiche : " +
-      error.message);
+  if(error) {
+    alert("Erreur : " + error.message);
     return;
   }
 
-  afficherMessage("Photo supprimée.");
   await chargerPhotos();
 }
 
-async function deconnecter() {
+async function deconnexion() {
   await db.auth.signOut();
-  document.getElementById("gestion").classList.add("hidden");
-  document.getElementById("connexion").classList.remove("hidden");
-  document.getElementById("photos").innerHTML = "";
-  afficherMessage("Déconnexion effectuée.");
+  app.style.display = "none";
+  loginBox.style.display = "block";
 }
+
+async function verifierSession() {
+  const {data} = await db.auth.getSession();
+
+  if(!data.session) return;
+
+  try {
+    await verifierAdmin(data.session.user);
+    loginBox.style.display = "none";
+    app.style.display = "block";
+    await chargerPhotos();
+  } catch(error) {
+    message.textContent = error.message;
+    await db.auth.signOut();
+  }
+}
+
+verifierSession();
 </script>
 </body>
 </html>
+    
