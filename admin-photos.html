@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Validation des photos - SERVICE KIN</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f6;
+      margin: 0;
+      padding: 18px;
+      color: #222;
+    }
+    main {
+      max-width: 650px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    h1 { color: #087b55; }
+    input, button {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 13px;
+      margin: 8px 0;
+      font-size: 16px;
+    }
+    button {
+      border: 0;
+      border-radius: 7px;
+      color: white;
+      background: #087b55;
+    }
+    button.refuser { background: #b7791f; }
+    button.supprimer { background: #b42318; }
+    .photo {
+      border: 1px solid #ddd;
+      border-radius: 9px;
+      padding: 12px;
+      margin: 15px 0;
+    }
+    .photo img {
+      width: 100%;
+      max-height: 350px;
+      object-fit: contain;
+      background: #eee;
+    }
+    .hidden { display: none; }
+    #message { white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>SERVICE KIN</h1>
+  <h2>Administration des photos</h2>
+
+  <section id="connexion">
+    <p>Connecte-toi avec ton compte administrateur.</p>
+    <input id="email" type="email" placeholder="Adresse e-mail">
+    <input id="password" type="password" placeholder="Mot de passe">
+    <button onclick="connecter()">Se connecter</button>
+  </section>
+
+  <section id="gestion" class="hidden">
+    <p>Photos envoyées par les professionnels :</p>
+    <button onclick="chargerPhotos()">Actualiser les photos</button>
+    <div id="photos"></div>
+    <button onclick="deconnecter()">Se déconnecter</button>
+  </section>
+
+  <p id="message"></p>
+</main>
+
+<script>
+const URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
+const CLE = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
+const db = supabase.createClient(URL, CLE);
+
+function afficherMessage(texte) {
+  document.getElementById("message").textContent = texte;
+}
+
+async function verifierAdmin() {
+  const { data: { user } } = await db.auth.getUser();
+
+  if (!user) return false;
+
+  const { data, error } = await db
+    .from("admins")
+    .select("id, role")
+    .eq("id", user.id)
+    .eq("role", "owner")
+    .maybeSingle();
+
+  return !error && !!data;
+}
+
+async function connecter() {
+  afficherMessage("Connexion en cours...");
+
+  const { error } = await db.auth.signInWithPassword({
+    email: document.getElementById("email").value.trim(),
+    password: document.getElementById("password").value
+  });
+
+  if (error) {
+    afficherMessage("Erreur de connexion : " + error.message);
+    return;
+  }
+
+  if (!await verifierAdmin()) {
+    await db.auth.signOut();
+    afficherMessage("Accès refusé : ce compte n'est pas administrateur.");
+    return;
+  }
+
+  document.getElementById("connexion").classList.add("hidden");
+  document.getElementById("gestion").classList.remove("hidden");
+  afficherMessage("");
+  await chargerPhotos();
+}
+
+async function chargerPhotos() {
+  const zone = document.getElementById("photos");
+  zone.textContent = "Chargement...";
+
+  const { data, error } = await db
+    .from("realisations")
+    .select("id, professionnel_id, photo_path, description, statut, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    zone.textContent = "Erreur : " + error.message;
+    return;
+  }
+
+  if (!data.length) {
+    zone.textContent = "Aucune photo pour le moment.";
+    return;
+  }
+
+  zone.innerHTML = "";
+
+  for (const photo of data) {
+    const { data: lien, error: erreurLien } = await db.storage
+      .from("realisations")
+      .createSignedUrl(photo.photo_path, 3600);
+
+    const carte = document.createElement("div");
+    carte.className = "photo";
+
+    const titre = document.createElement("h3");
+    titre.textContent = "Professionnel n° " + photo.professionnel_id;
+    carte.appendChild(titre);
+
+    const statut = document.createElement("p");
+    statut.textContent = "Statut : " + photo.statut;
+    carte.appendChild(statut);
+
+    const description = document.createElement("p");
+    description.textContent = photo.description || "Sans description";
+    carte.appendChild(description);
+
+    if (!erreurLien && lien && lien.signedUrl) {
+      const image = document.createElement("img");
+      image.src = lien.signedUrl;
+      image.alt = "Photo de réalisation";
+      carte.appendChild(image);
+    } else {
+      const erreur = document.createElement("p");
+      erreur.textContent = "Image non disponible : " +
+        (erreurLien?.message || "");
+      carte.appendChild(erreur);
+    }
+
+    if (photo.statut === "en_attente") {
+      carte.appendChild(creerBouton("Approuver", async () => {
+        await changerStatut(photo.id, "approuvee");
+      }));
+
+      carte.appendChild(creerBouton("Refuser", async () => {
+        await changerStatut(photo.id, "refusee");
+      }, "refuser"));
+    }
+
+    carte.appendChild(creerBouton(
+      "Supprimer définitivement",
+      async () => {
+        if (confirm("Supprimer définitivement cette photo ?")) {
+          await supprimerPhoto(photo.id, photo.photo_path);
+        }
+      },
+      "supprimer"
+    ));
+
+    zone.appendChild(carte);
+  }
+}
+
+function creerBouton(texte, action, classe = "") {
+  const bouton = document.createElement("button");
+  bouton.textContent = texte;
+  if (classe) bouton.className = classe;
+  bouton.onclick = action;
+  return bouton;
+}
+
+async function changerStatut(id, statut) {
+  afficherMessage("Enregistrement...");
+
+  const { error } = await db
+    .from("realisations")
+    .update({ statut })
+    .eq("id", id);
+
+  if (error) {
+    afficherMessage("Erreur : " + error.message);
+    return;
+  }
+
+  afficherMessage("Statut mis à jour.");
+  await chargerPhotos();
+}
+
+async function supprimerPhoto(id, chemin) {
+  afficherMessage("Suppression en cours...");
+
+  const { error: erreurFichier } = await db.storage
+    .from("realisations")
+    .remove([chemin]);
+
+  if (erreurFichier) {
+    afficherMessage("Erreur de suppression du fichier : " +
+      erreurFichier.message);
+    return;
+  }
+
+  const { error } = await db
+    .from("realisations")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    afficherMessage("Erreur de suppression de la fiche : " +
+      error.message);
+    return;
+  }
+
+  afficherMessage("Photo supprimée.");
+  await chargerPhotos();
+}
+
+async function deconnecter() {
+  await db.auth.signOut();
+  document.getElementById("gestion").classList.add("hidden");
+  document.getElementById("connexion").classList.remove("hidden");
+  document.getElementById("photos").innerHTML = "";
+  afficherMessage("Déconnexion effectuée.");
+}
+</script>
+</body>
+</html>
