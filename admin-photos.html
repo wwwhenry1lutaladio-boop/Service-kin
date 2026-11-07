@@ -12,10 +12,10 @@ main{max-width:850px;margin:auto}
 .box,.photo{background:white;padding:16px;margin:12px 0;border-radius:10px}
 input,button{padding:12px;margin:5px 0;width:100%;box-sizing:border-box}
 button{background:#075e42;color:white;border:0;border-radius:6px;font-weight:bold}
+button:disabled{opacity:.5}
 button.refuse{background:#b45309}
 button.delete{background:#b42318}
 img{width:100%;max-height:300px;object-fit:contain}
-small{color:#555}
 #message{white-space:pre-wrap;font-weight:bold}
 .hidden{display:none}
 </style>
@@ -29,7 +29,7 @@ small{color:#555}
 <input id="email" type="email" placeholder="Adresse e-mail">
 <input id="password" type="password" placeholder="Mot de passe">
 <button id="loginBtn" onclick="connexion()">Se connecter</button>
-<p id="message">En attente de connexion.</p>
+<p id="message">Initialisation...</p>
 </section>
 
 <section id="app" class="hidden">
@@ -40,193 +40,207 @@ small{color:#555}
 </main>
 
 <script>
-const URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
-const KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
+(function () {
+  const URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
+  const KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
 
-const db = supabase.createClient(URL, KEY);
-
-function message(texte) {
-  document.getElementById("message").textContent = texte;
-}
-
-function delai(promise, ms, nom) {
-  return Promise.race([
-    promise,
-    new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Délai dépassé pendant : " + nom)), ms)
-    )
-  ]);
-}
-
-async function verifierAdmin(user) {
-  message("Étape 2/3 : vérification des droits administrateur...");
-
-  const resultat = await delai(
-    db.from("admins")
-      .select("id, role")
-      .eq("id", user.id)
-      .maybeSingle(),
-    15000,
-    "vérification administrateur"
-  );
-
-  if (resultat.error) throw resultat.error;
-
-  if (!resultat.data || resultat.data.role !== "owner") {
-    throw new Error("Ce compte n'a pas les droits administrateur owner.");
+  function message(texte) {
+    document.getElementById("message").textContent = texte;
   }
 
-  return true;
-}
+  if (!window.supabase || !window.supabase.createClient) {
+    message("ERREUR : impossible de charger Supabase. Vérifie ta connexion Internet.");
+    return;
+  }
 
-async function connexion() {
-  const bouton = document.getElementById("loginBtn");
-  bouton.disabled = true;
+  window.serviceKinClient = window.supabase.createClient(URL, KEY);
 
-  try {
-    message("Étape 1/3 : connexion à Supabase...");
+  function delai(promise, ms, nom) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("Délai dépassé : " + nom)), ms);
+      })
+    ]);
+  }
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-
-    if (!email || !password) {
-      throw new Error("Entre ton adresse e-mail et ton mot de passe.");
-    }
+  async function verifierAdmin(user) {
+    message("Étape 2 : vérification des droits administrateur...");
 
     const resultat = await delai(
-      db.auth.signInWithPassword({ email, password }),
+      window.serviceKinClient
+        .from("admins")
+        .select("id, role")
+        .eq("id", user.id)
+        .maybeSingle(),
       15000,
-      "connexion Supabase"
+      "vérification administrateur"
     );
 
     if (resultat.error) throw resultat.error;
 
-    await verifierAdmin(resultat.data.user);
-
-    message("Étape 3/3 : chargement des photos...");
-    document.getElementById("login").classList.add("hidden");
-    document.getElementById("app").classList.remove("hidden");
-
-    await chargerPhotos();
-
-  } catch (erreur) {
-    message("ERREUR : " + (erreur.message || "Erreur inconnue"));
-    bouton.disabled = false;
-  }
-}
-
-async function chargerPhotos() {
-  const zone = document.getElementById("photos");
-  zone.innerHTML = "<p>Chargement des photos...</p>";
-
-  try {
-    const resultat = await delai(
-      db.from("realisations")
-        .select("id, professionnel_id, photo_path, description, statut, created_at")
-        .order("created_at", { ascending: false }),
-      15000,
-      "chargement des photos"
-    );
-
-    if (resultat.error) throw resultat.error;
-
-    zone.innerHTML = "";
-
-    if (!resultat.data || resultat.data.length === 0) {
-      zone.innerHTML = "<p>Aucune photo pour le moment.</p>";
-      return;
+    if (!resultat.data || resultat.data.role !== "owner") {
+      throw new Error("Ce compte ne possède pas les droits administrateur owner.");
     }
+  }
 
-    for (const photo of resultat.data) {
-      const urlResult = await db.storage
-        .from("realisations")
-        .createSignedUrl(photo.photo_path, 3600);
+  window.connexion = async function () {
+    const bouton = document.getElementById("loginBtn");
+    bouton.disabled = true;
 
-      const carte = document.createElement("div");
-      carte.className = "photo box";
+    try {
+      message("Étape 1 : connexion à Supabase...");
 
-      const titre = document.createElement("h3");
-      titre.textContent = "Professionnel n° " + photo.professionnel_id;
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
 
-      const statut = document.createElement("p");
-      statut.textContent = "Statut : " + photo.statut;
-
-      const description = document.createElement("p");
-      description.textContent = photo.description || "Sans description";
-
-      carte.append(titre, statut, description);
-
-      if (urlResult.data && urlResult.data.signedUrl) {
-        const img = document.createElement("img");
-        img.src = urlResult.data.signedUrl;
-        img.alt = "Réalisation professionnelle";
-        carte.appendChild(img);
-      } else {
-        const erreurPhoto = document.createElement("p");
-        erreurPhoto.textContent = "Image inaccessible : " +
-          (urlResult.error?.message || "URL indisponible");
-        carte.appendChild(erreurPhoto);
+      if (!email || !password) {
+        throw new Error("Entre ton adresse e-mail et ton mot de passe.");
       }
 
-      const approuver = document.createElement("button");
-      approuver.textContent = "Approuver";
-      approuver.onclick = () => changerStatut(photo.id, "approuvee");
+      const resultat = await delai(
+        window.serviceKinClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        }),
+        15000,
+        "connexion Supabase"
+      );
 
-      const refuser = document.createElement("button");
-      refuser.textContent = "Refuser";
-      refuser.className = "refuse";
-      refuser.onclick = () => changerStatut(photo.id, "refusee");
+      if (resultat.error) throw resultat.error;
 
-      const supprimer = document.createElement("button");
-      supprimer.textContent = "Supprimer";
-      supprimer.className = "delete";
-      supprimer.onclick = () => supprimerPhoto(photo.id, photo.photo_path);
+      await verifierAdmin(resultat.data.user);
 
-      carte.append(approuver, refuser, supprimer);
-      zone.appendChild(carte);
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("app").classList.remove("hidden");
+
+      await window.chargerPhotos();
+
+    } catch (erreur) {
+      message("ERREUR : " + (erreur.message || "Erreur inconnue"));
+      bouton.disabled = false;
     }
+  };
 
-  } catch (erreur) {
-    zone.textContent = "Erreur de chargement : " + erreur.message;
-  }
-}
+  window.chargerPhotos = async function () {
+    const zone = document.getElementById("photos");
+    zone.innerHTML = "<p>Chargement des photos...</p>";
 
-async function changerStatut(id, statut) {
-  const resultat = await db.from("realisations")
-    .update({ statut })
-    .eq("id", id);
+    try {
+      const resultat = await delai(
+        window.serviceKinClient
+          .from("realisations")
+          .select("id, professionnel_id, photo_path, description, statut, created_at")
+          .order("created_at", { ascending: false }),
+        15000,
+        "chargement des photos"
+      );
 
-  if (resultat.error) {
-    alert("Erreur : " + resultat.error.message);
-    return;
-  }
+      if (resultat.error) throw resultat.error;
 
-  alert("Statut mis à jour.");
-  chargerPhotos();
-}
+      zone.innerHTML = "";
 
-async function supprimerPhoto(id, chemin) {
-  if (!confirm("Veux-tu vraiment supprimer cette photo ?")) return;
+      if (!resultat.data || resultat.data.length === 0) {
+        zone.innerHTML = "<p>Aucune photo pour le moment.</p>";
+        return;
+      }
 
-  const stockage = await db.storage.from("realisations").remove([chemin]);
+      for (const photo of resultat.data) {
+        const carte = document.createElement("div");
+        carte.className = "photo box";
 
-  if (stockage.error) {
-    alert("Erreur stockage : " + stockage.error.message);
-    return;
-  }
+        const titre = document.createElement("h3");
+        titre.textContent = "Professionnel n° " + photo.professionnel_id;
 
-  const resultat = await db.from("realisations").delete().eq("id", id);
+        const statut = document.createElement("p");
+        statut.textContent = "Statut : " + photo.statut;
 
-  if (resultat.error) {
-    alert("Erreur base de données : " + resultat.error.message);
-    return;
-  }
+        const description = document.createElement("p");
+        description.textContent = photo.description || "Sans description";
 
-  alert("Photo supprimée.");
-  chargerPhotos();
-}
+        carte.append(titre, statut, description);
+
+        const urlResult = await window.serviceKinClient.storage
+          .from("realisations")
+          .createSignedUrl(photo.photo_path, 3600);
+
+        if (urlResult.data && urlResult.data.signedUrl) {
+          const img = document.createElement("img");
+          img.src = urlResult.data.signedUrl;
+          img.alt = "Réalisation professionnelle";
+          carte.appendChild(img);
+        } else {
+          const erreurPhoto = document.createElement("p");
+          erreurPhoto.textContent = "Image inaccessible : " +
+            (urlResult.error?.message || "URL indisponible");
+          carte.appendChild(erreurPhoto);
+        }
+
+        const approuver = document.createElement("button");
+        approuver.textContent = "Approuver";
+        approuver.onclick = () => window.changerStatut(photo.id, "approuvee");
+
+        const refuser = document.createElement("button");
+        refuser.textContent = "Refuser";
+        refuser.className = "refuse";
+        refuser.onclick = () => window.changerStatut(photo.id, "refusee");
+
+        const supprimer = document.createElement("button");
+        supprimer.textContent = "Supprimer";
+        supprimer.className = "delete";
+        supprimer.onclick = () => window.supprimerPhoto(photo.id, photo.photo_path);
+
+        carte.append(approuver, refuser, supprimer);
+        zone.appendChild(carte);
+      }
+
+    } catch (erreur) {
+      zone.textContent = "ERREUR DE CHARGEMENT : " + erreur.message;
+    }
+  };
+
+  window.changerStatut = async function (id, statut) {
+    try {
+      const resultat = await window.serviceKinClient
+        .from("realisations")
+        .update({ statut: statut })
+        .eq("id", id);
+
+      if (resultat.error) throw resultat.error;
+
+      alert("Statut mis à jour.");
+      window.chargerPhotos();
+    } catch (erreur) {
+      alert("Erreur : " + erreur.message);
+    }
+  };
+
+  window.supprimerPhoto = async function (id, chemin) {
+    if (!confirm("Veux-tu vraiment supprimer cette photo ?")) return;
+
+    try {
+      const stockage = await window.serviceKinClient.storage
+        .from("realisations")
+        .remove([chemin]);
+
+      if (stockage.error) throw stockage.error;
+
+      const resultat = await window.serviceKinClient
+        .from("realisations")
+        .delete()
+        .eq("id", id);
+
+      if (resultat.error) throw resultat.error;
+
+      alert("Photo supprimée.");
+      window.chargerPhotos();
+    } catch (erreur) {
+      alert("Erreur : " + erreur.message);
+    }
+  };
+
+  message("Prêt. Tu peux te connecter.");
+})();
 </script>
 </body>
 </html>
-
-    
