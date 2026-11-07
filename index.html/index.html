@@ -4,32 +4,42 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SERVICE KIN</title>
+<title>SERVICE KIN - Trouvez un professionnel à Kinshasa</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box}
 body{margin:0;font-family:Arial,sans-serif;background:#f3f6fb;color:#17243a}
 header{background:#123a70;color:white;padding:18px}
-.logo{font-size:24px;font-weight:bold}
+.logo{font-size:27px;font-weight:bold;letter-spacing:1px}
 .logo span{color:#f6c644}
 header p{margin:5px 0 0;font-size:13px}
-.hero{background:#17618b;color:white;text-align:center;padding:45px 20px}
-.hero h1{font-size:32px}
-.hero p{line-height:1.6}
-main{max-width:850px;margin:auto;padding:20px}
-h2{color:#123a70}
-input,select,textarea{width:100%;padding:13px;margin:8px 0;border:1px solid #ccd5e0;border-radius:8px;font-size:16px}
+.hero{background:linear-gradient(135deg,#123a70,#17618b);color:white;text-align:center;padding:48px 20px}
+.hero h1{font-size:32px;margin:0 0 12px}
+.hero p{line-height:1.6;max-width:650px;margin:auto}
+main{max-width:900px;margin:auto;padding:20px}
+h2{color:#123a70;margin-top:30px}
+input,select,textarea{width:100%;padding:13px;margin:8px 0;border:1px solid #ccd5e0;border-radius:8px;font-size:16px;background:white}
 .categories{display:flex;flex-wrap:wrap;gap:8px;margin:15px 0}
 .categories button{padding:9px 13px;border:1px solid #123a70;border-radius:20px;background:white;color:#123a70}
 .categories button.active{background:#123a70;color:white}
-.card{background:white;padding:17px;margin:12px 0;border-radius:12px;box-shadow:0 2px 8px #00000010}
-.card h3{margin:5px 0}
+.card{background:white;padding:17px;margin:14px 0;border-radius:12px;box-shadow:0 2px 10px #00000010}
+.card h3{margin:7px 0}
 .tag{color:#17618b;font-size:13px;font-weight:bold}
 .contact{display:inline-block;background:#16834b;color:white;text-decoration:none;padding:10px 14px;border-radius:7px;margin-top:8px}
-form{background:white;padding:18px;border-radius:12px;margin-bottom:25px}
-.submit{background:#f6c644;border:0;padding:13px 18px;border-radius:8px;font-weight:bold;font-size:16px}
+form{background:white;padding:18px;border-radius:12px;margin-bottom:25px;box-shadow:0 2px 10px #00000008}
+.submit{background:#f6c644;border:0;padding:13px 18px;border-radius:8px;font-weight:bold;font-size:16px;color:#17243a}
 footer{text-align:center;background:#123a70;color:white;padding:20px;margin-top:30px}
 .note{font-size:12px;color:#64748b;line-height:1.5}
 #message,#demandeMessage{font-weight:bold}
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:14px}
+.gallery img{width:100%;height:160px;object-fit:cover;border-radius:8px;background:#eef2f7}
+.photo-caption{font-size:12px;color:#64748b;margin-top:4px}
+.section-intro{color:#64748b;line-height:1.5}
+@media(max-width:500px){
+.hero h1{font-size:26px}
+.gallery{grid-template-columns:1fr 1fr}
+.gallery img{height:125px}
+}
 </style>
 </head>
 <body>
@@ -41,17 +51,17 @@ footer{text-align:center;background:#123a70;color:white;padding:20px;margin-top:
 
 <section class="hero">
 <h1>Trouvez le bon professionnel</h1>
-<p>Électricité, plomberie, maçonnerie, forage, géologie et construction : trouvez des services près de chez vous.</p>
+<p>Découvrez des professionnels qualifiés pour vos travaux, vos achats et vos besoins quotidiens à Kinshasa.</p>
 </section>
 
 <main>
 <h2>Rechercher un service</h2>
-<input id="search" placeholder="Rechercher un métier ou un quartier...">
+<input id="search" placeholder="Rechercher un métier, un professionnel ou un quartier...">
 <div class="categories" id="categories"></div>
 <div id="results">Chargement des professionnels...</div>
 
 <h2>Faire une demande de service</h2>
-<p>Décrivez votre besoin. SERVICE KIN recevra votre demande.</p>
+<p class="section-intro">Décrivez votre besoin. SERVICE KIN recevra votre demande.</p>
 
 <form id="demandeForm">
 <input name="client_nom" placeholder="Votre nom complet" required>
@@ -69,7 +79,7 @@ footer{text-align:center;background:#123a70;color:white;padding:20px;margin-top:
 </form>
 
 <h2>Vous êtes professionnel ?</h2>
-<p>Présentez votre activité dans SERVICE KIN.</p>
+<p class="section-intro">Présentez votre activité dans SERVICE KIN et permettez aux clients de vous découvrir.</p>
 
 <form id="form">
 <input name="name" placeholder="Votre nom ou entreprise" required>
@@ -84,6 +94,10 @@ footer{text-align:center;background:#123a70;color:white;padding:20px;margin-top:
 <option>Ingénierie bâtiment</option>
 <option>Fournitures</option>
 <option>Staffeur en bâtiment</option>
+<option>Commerce en ligne</option>
+<option>Mode et accessoires féminins</option>
+<option>Photographie et production vidéo</option>
+<option>Marketing et communication</option>
 <option>Autre</option>
 </select>
 
@@ -102,13 +116,30 @@ footer{text-align:center;background:#123a70;color:white;padding:20px;margin-top:
 const SUPABASE_URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
 
+const photoClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
 const categories = [
-"Tous","Électricité","Plomberie","Maçonnerie","Forage",
-"Géologie","Ingénierie bâtiment","Fournitures","Staffeur en bâtiment"
+  "Tous",
+  "Électricité",
+  "Plomberie",
+  "Maçonnerie",
+  "Forage",
+  "Géologie",
+  "Ingénierie bâtiment",
+  "Fournitures",
+  "Staffeur en bâtiment",
+  "Commerce en ligne",
+  "Mode et accessoires féminins",
+  "Photographie et production vidéo",
+  "Marketing et communication"
 ];
 
 let active = "Tous";
 let professionnels = [];
+let photosApprouvees = {};
 
 const headers = {
   "apikey": SUPABASE_KEY,
@@ -186,6 +217,39 @@ function afficher() {
 
     card.append(tag, title, quartier, services);
 
+    const galerie = photosApprouvees[p.id] || [];
+
+    if (galerie.length > 0) {
+      const titreGalerie = document.createElement("h4");
+      titreGalerie.textContent = "Quelques réalisations";
+      card.appendChild(titreGalerie);
+
+      const grille = document.createElement("div");
+      grille.className = "gallery";
+
+      galerie.forEach(photo => {
+        const bloc = document.createElement("div");
+
+        const img = document.createElement("img");
+        img.src = photo.url;
+        img.alt = photo.description || "Réalisation de " + p.nom;
+        img.loading = "lazy";
+
+        bloc.appendChild(img);
+
+        if (photo.description) {
+          const legende = document.createElement("p");
+          legende.className = "photo-caption";
+          legende.textContent = photo.description;
+          bloc.appendChild(legende);
+        }
+
+        grille.appendChild(bloc);
+      });
+
+      card.appendChild(grille);
+    }
+
     if (p.telephone) {
       const contact = document.createElement("a");
       contact.className = "contact";
@@ -198,6 +262,48 @@ function afficher() {
 
     results.appendChild(card);
   });
+}
+
+/* CHARGEMENT DES PHOTOS APPROUVÉES */
+async function chargerPhotosApprouvees() {
+  photosApprouvees = {};
+
+  try {
+    const response = await fetch(
+      SUPABASE_URL +
+      "/rest/v1/realisations?select=id,professionnel_id,photo_path,description&statut=eq.approuvee&order=created_at.desc",
+      { headers: headers }
+    );
+
+    if (!response.ok) {
+      throw new Error("Erreur photos : " + response.status);
+    }
+
+    const photos = await response.json();
+
+    for (const photo of photos) {
+      const resultat = await photoClient.storage
+        .from("realisations")
+        .createSignedUrl(photo.photo_path, 3600);
+
+      if (resultat.error || !resultat.data?.signedUrl) {
+        console.error("Photo inaccessible :", resultat.error);
+        continue;
+      }
+
+      if (!photosApprouvees[photo.professionnel_id]) {
+        photosApprouvees[photo.professionnel_id] = [];
+      }
+
+      photosApprouvees[photo.professionnel_id].push({
+        url: resultat.data.signedUrl,
+        description: photo.description || ""
+      });
+    }
+
+  } catch (error) {
+    console.error("Chargement des photos impossible :", error);
+  }
 }
 
 async function chargerProfessionnels() {
@@ -214,6 +320,9 @@ async function chargerProfessionnels() {
     }
 
     professionnels = await response.json();
+
+    await chargerPhotosApprouvees();
+
     afficher();
     remplirChoixProfessionnels();
 
@@ -324,5 +433,4 @@ chargerProfessionnels();
 </html>
 
 
-
-
+    
