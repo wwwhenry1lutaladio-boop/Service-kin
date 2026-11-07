@@ -10,21 +10,15 @@
 
 <style>
 :root {
-  --blue:#082f63;
-  --blue2:#104b89;
-  --yellow:#ffc400;
-  --light:#f3f6fb;
-  --text:#17243a;
-  --muted:#64748b;
-  --green:#079447;
-  --white:#fff;
+  --blue:#082f63; --blue2:#104b89; --yellow:#ffc400;
+  --light:#f3f6fb; --text:#17243a; --muted:#64748b;
+  --green:#079447; --white:#fff;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:Arial,sans-serif;background:var(--light);color:var(--text)}
 button,input,select,textarea{font:inherit}
 a{color:inherit}
-
 header{
   background:white;padding:13px 5%;display:flex;align-items:center;
   justify-content:space-between;gap:20px;box-shadow:0 2px 12px #0000000c;
@@ -48,7 +42,6 @@ nav a:hover{color:#d99c00}
   background:var(--blue);color:white;font-size:13px;font-weight:bold;
 }
 .header-btn.yellow{background:var(--yellow);color:#17243a}
-
 .hero{
   background:radial-gradient(circle at 80% 30%,#287eb3 0,transparent 35%),
   linear-gradient(120deg,#062957,#104e8c);
@@ -74,7 +67,6 @@ nav a:hover{color:#d99c00}
 .hero-visual .symbol{font-size:76px;margin-bottom:10px}
 .hero-visual strong{font-size:23px;color:var(--yellow)}
 .hero-visual span{margin-top:9px;color:#e4efff;line-height:1.5}
-
 main{max-width:1300px;margin:auto;padding:30px 22px}
 .section-title{color:var(--blue);font-size:25px;margin:0 0 8px}
 .section-intro{color:var(--muted);line-height:1.6;margin:0 0 20px}
@@ -139,7 +131,6 @@ main{max-width:1300px;margin:auto;padding:30px 22px}
   display:block;background:var(--yellow);color:#17243a;text-decoration:none;
   padding:13px 10px;border-radius:25px;font-weight:bold;margin-top:17px;
 }
-
 .form-section{
   margin-top:45px;background:white;border-radius:18px;padding:28px;
   box-shadow:0 4px 18px #00000009;
@@ -160,7 +151,6 @@ textarea{resize:vertical}
 .submit:hover{background:#f0b800}
 .note{font-size:13px;color:var(--muted);line-height:1.5}
 #demandeMessage{font-weight:bold}
-
 .pro-access{
   margin-top:45px;background:linear-gradient(120deg,#082f63,#104e8c);
   color:white;border-radius:18px;padding:30px;text-align:center;
@@ -172,7 +162,6 @@ textarea{resize:vertical}
   text-decoration:none;padding:14px 25px;border-radius:30px;font-weight:bold;
 }
 .pro-access small{display:block;margin-top:13px;color:#e4efff}
-
 .benefits{
   background:#e8f0fb;padding:25px 5%;display:flex;justify-content:center;
   flex-wrap:wrap;gap:35px;color:var(--blue);font-size:14px;font-weight:bold;
@@ -180,7 +169,6 @@ textarea{resize:vertical}
 .benefits span{display:flex;align-items:center;gap:8px}
 footer{background:#062957;color:white;padding:25px 15px;text-align:center;font-size:13px}
 footer strong{color:var(--yellow)}
-
 @media(max-width:950px){
   nav{display:none}
   .categories{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -221,7 +209,6 @@ footer strong{color:var(--yellow)}
 </head>
 
 <body>
-
 <header>
   <a class="brand" href="#accueil">
     <div class="logo-icon">⌂</div>
@@ -230,7 +217,6 @@ footer strong{color:var(--yellow)}
       <p>Les professionnels à votre service à Kinshasa</p>
     </div>
   </a>
-
   <nav>
     <a href="#accueil">Accueil</a>
     <a href="#professionnels">Professionnels</a>
@@ -238,9 +224,8 @@ footer strong{color:var(--yellow)}
     <a href="#apropos">À propos</a>
     <a href="#contact">Contact</a>
   </nav>
-
   <div class="header-actions">
-    <a class="header-btn" href="https://wwwhenry1lutaladio-boop.github.io/Service-kin/espace-professionnel.html">Espace Pro</a>
+    <a class="header-btn" href="https://wwwhenry1lututaladio-boop.github.io/Service-kin/espace-professionnel.html">Espace Pro</a>
     <a class="header-btn yellow" href="#demande">Faire une demande</a>
   </div>
 </header>
@@ -251,7 +236,7 @@ footer strong{color:var(--yellow)}
       <h1>Trouvez le bon professionnel <span>à Kinshasa !</span></h1>
       <p>Découvrez des professionnels qualifiés pour vos travaux, vos achats et vos besoins quotidiens.</p>
       <a class="hero-button" href="#professionnels">⌕ Rechercher un service →</a>
-      <a class="hero-button pro" href="https://wwwhenry1lutaladio-boop.github.io/Service-kin/espace-professionnel.html">Espace professionnel →</a>
+      <a class="hero-button pro" href="https://wwwhenry1lututaladio-boop.github.io/Service-kin/espace-professionnel.html">Espace professionnel →</a>
     </div>
     <div class="hero-visual">
       <div class="symbol">🤝</div>
@@ -265,22 +250,17 @@ footer strong{color:var(--yellow)}
   <section id="professionnels">
     <h2 class="section-title">Nos services</h2>
     <p class="section-intro">Choisissez une catégorie ou recherchez directement un professionnel.</p>
-
     <div class="categories" id="categories"></div>
-
     <div class="search-box">
       <input id="search" placeholder="Rechercher un métier, un professionnel ou un quartier...">
       <button type="button" onclick="document.getElementById('search').focus()">Rechercher</button>
     </div>
-
     <div class="results-heading">
       <h2>Nos professionnels à la une</h2>
       <span>Kinshasa, RDC</span>
     </div>
-
     <div class="results-layout">
       <div id="results">Chargement des professionnels...</div>
-
       <aside class="side-card">
         <div class="symbol">🤝</div>
         <h3>Vous êtes professionnel ?</h3>
@@ -293,7 +273,6 @@ footer strong{color:var(--yellow)}
   <section class="form-section" id="demande">
     <h2>Faire une demande de service</h2>
     <p class="section-intro">Décrivez votre besoin. SERVICE KIN recevra votre demande.</p>
-
     <form id="demandeForm">
       <div class="form-grid">
         <input name="client_nom" placeholder="Votre nom complet" required>
@@ -311,10 +290,7 @@ footer strong{color:var(--yellow)}
 
   <section class="pro-access" id="espace-pro">
     <h2>Vous êtes professionnel à Kinshasa ?</h2>
-    <p>
-      Rejoignez SERVICE KIN, créez votre compte professionnel et présentez
-      vos services et vos réalisations aux clients.
-    </p>
+    <p>Rejoignez SERVICE KIN, créez votre compte professionnel et présentez vos services et vos réalisations aux clients.</p>
     <a href="https://wwwhenry1lututaladio-boop.github.io/Service-kin/espace-professionnel.html">Créer mon compte / Me connecter →</a>
     <small>Inscription gratuite pendant la phase de lancement.</small>
   </section>
@@ -346,10 +322,7 @@ footer strong{color:var(--yellow)}
 const SUPABASE_URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_afY2FCUMd8FevvoqJ9rg_AvGeY0hE";
 
-const photoClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const photoClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const categories = [
   "Tous",
@@ -395,7 +368,6 @@ const headers = {
 function remplirChoixProfessionnels() {
   const select = document.getElementById("choixProfessionnel");
   const ancienneValeur = select.value;
-
   select.replaceChildren();
 
   const optionVide = document.createElement("option");
@@ -415,7 +387,6 @@ function remplirChoixProfessionnels() {
 
 function afficher() {
   const q = document.getElementById("search").value.toLowerCase();
-
   const cat = document.getElementById("categories");
   cat.replaceChildren();
 
@@ -436,7 +407,6 @@ function afficher() {
       active = c;
       afficher();
     };
-
     cat.appendChild(btn);
   });
 
@@ -452,7 +422,9 @@ function afficher() {
   if (!liste.length) {
     const vide = document.createElement("div");
     vide.className = "empty-message";
-    vide.textContent = "Aucun professionnel trouvé pour cette recherche.";
+    vide.textContent = professionnels.length
+      ? "Aucun professionnel trouvé pour cette recherche."
+      : "Les catégories sont disponibles. Les professionnels seront affichés dès que le chargement sera possible.";
     results.appendChild(vide);
     return;
   }
@@ -477,7 +449,6 @@ function afficher() {
     card.append(tag, title, quartier, services);
 
     const galerie = photosApprouvees[p.id] || [];
-
     if (galerie.length > 0) {
       const titreGalerie = document.createElement("h4");
       titreGalerie.textContent = "Quelques réalisations";
@@ -488,12 +459,10 @@ function afficher() {
 
       galerie.forEach(photo => {
         const bloc = document.createElement("div");
-
         const img = document.createElement("img");
         img.src = photo.url;
         img.alt = photo.description || "Réalisation de " + p.nom;
         img.loading = "lazy";
-
         bloc.appendChild(img);
 
         if (photo.description) {
@@ -502,10 +471,8 @@ function afficher() {
           legende.textContent = photo.description;
           bloc.appendChild(legende);
         }
-
         grille.appendChild(bloc);
       });
-
       card.appendChild(grille);
     }
 
@@ -523,7 +490,7 @@ function afficher() {
   });
 }
 
-/* CHARGEMENT DES PHOTOS APPROUVÉES */
+/* Chargement des photos approuvées */
 async function chargerPhotosApprouvees() {
   photosApprouvees = {};
 
@@ -534,9 +501,7 @@ async function chargerPhotosApprouvees() {
       { headers: headers }
     );
 
-    if (!response.ok) {
-      throw new Error("Erreur photos : " + response.status);
-    }
+    if (!response.ok) throw new Error("Erreur photos : " + response.status);
 
     const photos = await response.json();
 
@@ -559,39 +524,37 @@ async function chargerPhotosApprouvees() {
         description: photo.description || ""
       });
     }
-
   } catch (error) {
     console.error("Chargement des photos impossible :", error);
   }
 }
 
 async function chargerProfessionnels() {
-  const results = document.getElementById("results");
-
   try {
     const response = await fetch(
       SUPABASE_URL + "/rest/v1/professionnels?select=id,nom,metier,quartier,telephone,services",
       { headers: headers }
     );
 
-    if (!response.ok) {
-      throw new Error("Erreur de chargement : " + response.status);
-    }
+    if (!response.ok) throw new Error("Erreur de chargement : " + response.status);
 
     professionnels = await response.json();
-
     await chargerPhotosApprouvees();
 
     afficher();
     remplirChoixProfessionnels();
 
   } catch (error) {
-    results.textContent = "Impossible de charger les professionnels. Vérifiez la connexion.";
-    console.error(error);
+    console.error("Chargement des professionnels impossible :", error);
+
+    // Même si Supabase ne répond pas, les catégories restent visibles.
+    afficher();
+    document.getElementById("results").innerHTML =
+      '<div class="empty-message">Impossible de charger les professionnels pour le moment. Les catégories restent disponibles.</div>';
   }
 }
 
-/* ENVOI DES DEMANDES DES CLIENTS */
+/* Envoi des demandes des clients */
 document.getElementById("demandeForm").addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -638,10 +601,12 @@ document.getElementById("demandeForm").addEventListener("submit", async e => {
 
 document.getElementById("search").addEventListener("input", afficher);
 
+/* AFFICHER LES CATÉGORIES IMMÉDIATEMENT, SANS ATTENDRE SUPABASE */
+afficher();
+
+/* Charger ensuite les professionnels et leurs photos */
 chargerProfessionnels();
 </script>
-
 </body>
 </html>
 
-    
