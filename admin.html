@@ -1,68 +1,360 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#082f63">
 <title>Administration - SERVICE KIN</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
+:root{
+  --blue:#082f63;
+  --blue2:#104b89;
+  --yellow:#ffc400;
+  --bg:#f2f5fa;
+  --text:#17243a;
+  --muted:#64748b;
+  --green:#078b49;
+  --red:#dc2626;
+}
 *{box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#f1f5f9;margin:0;color:#172554}
-header{background:#123c75;color:white;padding:22px}
-main{max-width:850px;margin:20px auto;padding:12px}
-section,.pro{background:white;padding:18px;margin:15px 0;border-radius:12px}
-input,select{display:block;width:100%;padding:12px;margin:10px 0;border:1px solid #ccc;border-radius:7px}
-button{padding:12px 18px;border:0;border-radius:7px;background:#eab308;color:#172554;font-weight:bold;margin:5px;cursor:pointer}
-.delete{background:#dc2626;color:white}
-.hidden{display:none}
-.pro{border-left:5px solid #eab308}
-h2{color:#123c75}
-.stat{background:#e0edff;padding:15px;border-radius:10px;margin:10px 0}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+header{
+  background:linear-gradient(120deg,#062957,#104e8c);
+  color:white;
+  padding:22px 5%;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.logo-icon{
+  background:var(--yellow);
+  color:var(--blue);
+  width:49px;
+  height:49px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  font-size:27px;
+  font-weight:bold;
+}
+header h1{
+  margin:0;
+  font-size:27px;
+  letter-spacing:-1px;
+}
+header h1 span{color:var(--yellow)}
+header p{
+  margin:5px 0 0;
+  font-size:13px;
+  color:#dceaff;
+}
+.header-label{
+  background:#ffffff20;
+  border:1px solid #ffffff40;
+  padding:10px 14px;
+  border-radius:25px;
+  font-size:13px;
+}
+main{
+  max-width:1150px;
+  margin:25px auto;
+  padding:0 16px;
+}
+.hidden{display:none!important}
+.panel{
+  background:white;
+  padding:24px;
+  border-radius:16px;
+  margin-bottom:20px;
+  box-shadow:0 4px 15px #00000009;
+}
+h2{
+  color:var(--blue);
+  margin:0 0 12px;
+  font-size:23px;
+}
+h3{color:var(--blue)}
+input,select{
+  display:block;
+  width:100%;
+  padding:12px;
+  margin:9px 0;
+  border:1px solid #d5dfeb;
+  border-radius:8px;
+  background:white;
+  font-size:15px;
+  color:var(--text);
+}
+input:focus,select:focus{
+  outline:2px solid #b8d3f5;
+  border-color:var(--blue2);
+}
+button,.action-link{
+  display:inline-block;
+  padding:12px 17px;
+  border:0;
+  border-radius:8px;
+  background:var(--yellow);
+  color:#17243a;
+  font-weight:bold;
+  margin:5px 4px 5px 0;
+  cursor:pointer;
+  text-decoration:none;
+  font-size:14px;
+}
+button:hover,.action-link:hover{filter:brightness(.96)}
+button:disabled{opacity:.6;cursor:wait}
+.primary{background:var(--blue);color:white}
+.green{background:var(--green);color:white}
+.delete{background:var(--red);color:white}
+.logout{background:#ffffff20;color:white;border:1px solid #ffffff60}
+.login-panel{
+  max-width:460px;
+  margin:45px auto;
+}
+.login-icon{
+  font-size:42px;
+  margin-bottom:10px;
+}
+.muted{
+  color:var(--muted);
+  line-height:1.5;
+  font-size:14px;
+}
+#message{
+  color:var(--red);
+  font-size:14px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+.welcome{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  flex-wrap:wrap;
+}
+.welcome p{color:var(--muted);margin:5px 0}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:15px;
+  margin:20px 0;
+}
+.stat{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  border-left:5px solid var(--yellow);
+  box-shadow:0 3px 12px #00000008;
+}
+.stat .symbol{font-size:26px}
+.stat strong{
+  display:block;
+  font-size:30px;
+  color:var(--blue);
+  margin-top:8px;
+}
+.stat span{
+  font-size:13px;
+  color:var(--muted);
+}
+.section-heading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-bottom:15px;
+}
+.pro{
+  background:#fff;
+  padding:19px;
+  margin:13px 0;
+  border:1px solid #e2eaf3;
+  border-left:5px solid var(--yellow);
+  border-radius:12px;
+}
+.pro h3{margin:0 0 12px}
+.pro label{
+  display:block;
+  font-size:12px;
+  font-weight:bold;
+  color:var(--muted);
+  margin-top:8px;
+}
+.pro input{margin:5px 0}
+.pro p{
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+.status-label{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:20px;
+  background:#e8f1ff;
+  color:var(--blue);
+  font-size:12px;
+  font-weight:bold;
+}
+.status-nouvelle{background:#fff3c4;color:#805900}
+.status-contactee{background:#e0edff;color:#104b89}
+.status-encours{background:#e9e2ff;color:#6236a1}
+.status-terminee{background:#d9f7e5;color:#08753c}
+.status-annulee{background:#fee2e2;color:#b91c1c}
+.empty{
+  text-align:center;
+  padding:22px;
+  color:var(--muted);
+  background:#f8fafc;
+  border-radius:10px;
+}
+hr{
+  border:0;
+  border-top:1px solid #e2e8f0;
+  margin:25px 0;
+}
+footer{
+  background:var(--blue);
+  color:white;
+  padding:22px;
+  text-align:center;
+  font-size:13px;
+  margin-top:40px;
+}
+footer strong{color:var(--yellow)}
+@media(max-width:650px){
+  header{padding:18px 15px}
+  header h1{font-size:23px}
+  main{padding:0 11px;margin:16px auto}
+  .panel{padding:17px}
+  .stats{grid-template-columns:1fr 1fr;gap:9px}
+  .stat{padding:14px}
+  .stat strong{font-size:25px}
+  .stat span{font-size:12px}
+  .welcome{align-items:flex-start}
+  button,.action-link{font-size:13px;padding:11px 13px}
+}
+@media(max-width:380px){
+  .stats{grid-template-columns:1fr}
+}
 </style>
 </head>
+
 <body>
 
 <header>
-<h1>SERVICE KIN</h1>
-<p>Espace administrateur propriétaire</p>
+  <div class="brand">
+    <div class="logo-icon">⌂</div>
+    <div>
+      <h1>SERVICE <span>KIN</span></h1>
+      <p>Administration de la plateforme</p>
+    </div>
+  </div>
+  <div class="header-label">👑 Espace propriétaire</div>
 </header>
 
 <main>
 
-<section id="login">
-<h2>Connexion propriétaire</h2>
-<input id="email" type="email" placeholder="Adresse e-mail">
-<input id="password" type="password" placeholder="Mot de passe">
-<button id="loginBtn">Se connecter</button>
-<p id="message"></p>
-</section>
+  <!-- CONNEXION -->
+  <section id="login" class="panel login-panel">
+    <div class="login-icon">🔐</div>
+    <h2>Connexion administrateur</h2>
+    <p class="muted">Connectez-vous pour gérer votre plateforme SERVICE KIN.</p>
 
-<section id="dashboard" class="hidden">
-<h2>Tableau de bord</h2>
-<p>Bienvenue dans l'administration de SERVICE KIN.</p>
+    <form id="loginForm">
+      <input id="email" type="email" placeholder="Adresse e-mail" autocomplete="username" required>
+      <input id="password" type="password" placeholder="Mot de passe" autocomplete="current-password" required>
+      <button class="primary" id="loginBtn" type="submit">Se connecter →</button>
+    </form>
+    <p id="message"></p>
+  </section>
 
-<div class="stat">
-Professionnels inscrits :
-<strong id="count">0</strong>
-</div>
+  <!-- TABLEAU DE BORD -->
+  <section id="dashboard" class="hidden">
 
-<h2>Gestion des professionnels</h2>
-<button id="refreshBtn">Actualiser</button>
-<div id="professionals">Chargement...</div>
+    <div class="panel welcome">
+      <div>
+        <h2>Tableau de bord</h2>
+        <p>Bienvenue dans l'administration de SERVICE KIN.</p>
+      </div>
+      <button class="logout" id="logoutBtn">Se déconnecter</button>
+    </div>
 
-<hr>
+    <!-- STATISTIQUES -->
+    <div class="stats">
+      <div class="stat">
+        <div class="symbol">👷</div>
+        <strong id="count">0</strong>
+        <span>Professionnels inscrits</span>
+      </div>
 
-<h2>Demandes des clients</h2>
-<div class="stat">
-Demandes reçues :
-<strong id="demandesCount">0</strong>
-</div>
-<div id="demandes">Chargement...</div>
+      <div class="stat">
+        <div class="symbol">📩</div>
+        <strong id="demandesCount">0</strong>
+        <span>Demandes reçues</span>
+      </div>
 
-<button id="logoutBtn">Se déconnecter</button>
-</section>
+      <div class="stat">
+        <div class="symbol">⏳</div>
+        <strong id="pendingCount">0</strong>
+        <span>Demandes nouvelles</span>
+      </div>
+    </div>
 
+    <!-- PROFESSIONNELS -->
+    <section class="panel">
+      <div class="section-heading">
+        <div>
+          <h2>👷 Gestion des professionnels</h2>
+          <p class="muted">Modifier ou supprimer les profils inscrits.</p>
+        </div>
+        <button class="primary" id="refreshBtn">↻ Actualiser</button>
+      </div>
+      <div id="professionals">Chargement...</div>
+    </section>
+
+    <!-- DEMANDES -->
+    <section class="panel">
+      <div class="section-heading">
+        <div>
+          <h2>📩 Demandes des clients</h2>
+          <p class="muted">Consulter les demandes et mettre à jour leur statut.</p>
+        </div>
+        <button class="primary" id="refreshDemandesBtn">↻ Actualiser</button>
+      </div>
+      <div id="demandes">Chargement...</div>
+    </section>
+
+    <!-- PHOTOS -->
+    <section class="panel">
+      <h2>📸 Gestion des photos</h2>
+      <p class="muted">Consulter les réalisations envoyées par les professionnels et valider celles qui peuvent apparaître sur le site.</p>
+      <a class="action-link primary" href="admin-photos.html">Ouvrir la gestion des photos →</a>
+    </section>
+
+  </section>
 </main>
+
+<footer>
+  <strong>SERVICE KIN</strong> - Administration
+  <p>Kinshasa, République démocratique du Congo</p>
+</footer>
 
 <script>
 const SUPABASE_URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
@@ -77,10 +369,21 @@ const login = document.getElementById("login");
 const dashboard = document.getElementById("dashboard");
 const message = document.getElementById("message");
 
-async function openDashboard() {
-  const {data:{user}} = await db.auth.getUser();
+let nombreDemandesNouvelles = 0;
 
-  if (!user) return;
+function afficherMessage(texte, erreur = false) {
+  message.textContent = texte;
+  message.style.color = erreur ? "#dc2626" : "#078b49";
+}
+
+async function openDashboard() {
+  const {data:{user},error:userError} = await db.auth.getUser();
+
+  if(userError || !user) {
+    login.classList.remove("hidden");
+    dashboard.classList.add("hidden");
+    return;
+  }
 
   const {data:admin,error} = await db
     .from("admins")
@@ -89,21 +392,26 @@ async function openDashboard() {
     .maybeSingle();
 
   if(error || !admin || admin.role !== "owner") {
-    message.textContent = "Accès réservé au propriétaire.";
+    afficherMessage("Accès réservé au propriétaire. Vérifiez les droits de ce compte.",true);
     await db.auth.signOut();
+    login.classList.remove("hidden");
+    dashboard.classList.add("hidden");
     return;
   }
 
   login.classList.add("hidden");
   dashboard.classList.remove("hidden");
 
-  loadProfessionals();
-  loadDemandes();
+  await Promise.all([
+    loadProfessionals(),
+    loadDemandes()
+  ]);
 }
 
+/* CHARGEMENT DES PROFESSIONNELS */
 async function loadProfessionals() {
   const area = document.getElementById("professionals");
-  area.textContent = "Chargement...";
+  area.textContent = "Chargement des professionnels...";
 
   const {data,error} = await db
     .from("professionnels")
@@ -119,7 +427,7 @@ async function loadProfessionals() {
   area.replaceChildren();
 
   if(data.length === 0) {
-    area.textContent = "Aucun professionnel inscrit.";
+    area.innerHTML = '<div class="empty">Aucun professionnel inscrit.</div>';
     return;
   }
 
@@ -128,12 +436,18 @@ async function loadProfessionals() {
     card.className = "pro";
 
     const title = document.createElement("h3");
-    title.textContent = p.nom || "Sans nom";
+    title.textContent = "👤 " + (p.nom || "Sans nom");
     card.appendChild(title);
 
     ["nom","metier","quartier","telephone","services"].forEach(field => {
       const label = document.createElement("label");
-      label.textContent = field;
+      label.textContent = {
+        nom:"Nom du professionnel",
+        metier:"Métier",
+        quartier:"Commune ou quartier",
+        telephone:"Téléphone / WhatsApp",
+        services:"Services proposés"
+      }[field];
 
       const input = document.createElement("input");
       input.value = p[field] || "";
@@ -144,22 +458,29 @@ async function loadProfessionals() {
     });
 
     const save = document.createElement("button");
+    save.className = "primary";
     save.textContent = "Enregistrer les modifications";
 
     save.onclick = async () => {
       const changes = {};
 
       card.querySelectorAll("input").forEach(input => {
-        changes[input.dataset.field] = input.value;
+        changes[input.dataset.field] = input.value.trim();
       });
+
+      save.disabled = true;
+      save.textContent = "Enregistrement...";
 
       const {error} = await db
         .from("professionnels")
         .update(changes)
         .eq("id",p.id);
 
-      alert(error ? error.message : "Modifications enregistrées !");
-      if(!error) loadProfessionals();
+      alert(error ? "Erreur : " + error.message : "Modifications enregistrées !");
+      if(!error) await loadProfessionals();
+
+      save.disabled = false;
+      save.textContent = "Enregistrer les modifications";
     };
 
     card.appendChild(save);
@@ -169,15 +490,22 @@ async function loadProfessionals() {
     del.className = "delete";
 
     del.onclick = async () => {
-      if(!confirm("Supprimer ce professionnel ?")) return;
+      if(!confirm("Attention : voulez-vous vraiment supprimer ce professionnel ?")) return;
+
+      del.disabled = true;
 
       const {error} = await db
         .from("professionnels")
         .delete()
         .eq("id",p.id);
 
-      alert(error ? error.message : "Professionnel supprimé.");
-      if(!error) loadProfessionals();
+      alert(error ? "Erreur : " + error.message : "Professionnel supprimé.");
+      if(!error) {
+        await loadProfessionals();
+        await loadDemandes();
+      }
+
+      del.disabled = false;
     };
 
     card.appendChild(del);
@@ -185,9 +513,10 @@ async function loadProfessionals() {
   });
 }
 
+/* CHARGEMENT DES DEMANDES */
 async function loadDemandes() {
   const area = document.getElementById("demandes");
-  area.textContent = "Chargement...";
+  area.textContent = "Chargement des demandes...";
 
   const {data,error} = await db
     .from("demandes")
@@ -200,10 +529,17 @@ async function loadDemandes() {
   }
 
   document.getElementById("demandesCount").textContent = data.length;
+
+  nombreDemandesNouvelles = data.filter(
+    d => !d.statut || d.statut === "nouvelle"
+  ).length;
+
+  document.getElementById("pendingCount").textContent = nombreDemandesNouvelles;
+
   area.replaceChildren();
 
   if(data.length === 0) {
-    area.textContent = "Aucune demande reçue pour le moment.";
+    area.innerHTML = '<div class="empty">Aucune demande reçue pour le moment.</div>';
     return;
   }
 
@@ -212,18 +548,18 @@ async function loadDemandes() {
     card.className = "pro";
 
     const title = document.createElement("h3");
-    title.textContent = d.client_nom;
+    title.textContent = "👤 " + (d.client_nom || "Client");
     card.appendChild(title);
 
     const details = document.createElement("p");
     details.textContent =
-      "Téléphone : " + d.telephone +
+      "Téléphone : " + (d.telephone || "Non précisé") +
       " | Quartier : " + (d.quartier || "Non précisé");
 
     card.appendChild(details);
 
     const description = document.createElement("p");
-    description.textContent = "Demande : " + d.description;
+    description.textContent = "Demande : " + (d.description || "Non précisée");
     card.appendChild(description);
 
     const status = document.createElement("select");
@@ -246,15 +582,23 @@ async function loadDemandes() {
 
     const save = document.createElement("button");
     save.textContent = "Enregistrer le statut";
+    save.className = "primary";
 
     save.onclick = async () => {
+      save.disabled = true;
+      save.textContent = "Enregistrement...";
+
       const {error} = await db
         .from("demandes")
         .update({statut:status.value})
         .eq("id",d.id);
 
-      alert(error ? error.message : "Statut mis à jour !");
-      if(!error) loadDemandes();
+      alert(error ? "Erreur : " + error.message : "Statut mis à jour !");
+
+      if(!error) await loadDemandes();
+
+      save.disabled = false;
+      save.textContent = "Enregistrer le statut";
     };
 
     card.appendChild(save);
@@ -262,37 +606,59 @@ async function loadDemandes() {
   });
 }
 
-document.getElementById("loginBtn").onclick = async () => {
-  message.textContent = "Connexion en cours...";
+/* CONNEXION */
+document.getElementById("loginForm").addEventListener("submit",async e => {
+  e.preventDefault();
+
+  const btn = document.getElementById("loginBtn");
+  btn.disabled = true;
+  btn.textContent = "Connexion en cours...";
+  afficherMessage("");
 
   const {error} = await db.auth.signInWithPassword({
-    email:document.getElementById("email").value,
+    email:document.getElementById("email").value.trim(),
     password:document.getElementById("password").value
   });
 
   if(error) {
-    message.textContent = "Erreur : " + error.message;
+    afficherMessage("Erreur de connexion : " + error.message,true);
+    btn.disabled = false;
+    btn.textContent = "Se connecter →";
     return;
   }
 
   await openDashboard();
-};
 
+  btn.disabled = false;
+  btn.textContent = "Se connecter →";
+});
+
+/* DÉCONNEXION */
 document.getElementById("logoutBtn").onclick = async () => {
   await db.auth.signOut();
   dashboard.classList.add("hidden");
   login.classList.remove("hidden");
+  document.getElementById("loginForm").reset();
+  afficherMessage("Vous êtes déconnecté.");
 };
 
-document.getElementById("refreshBtn").onclick = () => {
-  loadProfessionals();
-  loadDemandes();
+/* ACTUALISATION */
+document.getElementById("refreshBtn").onclick = async () => {
+  await loadProfessionals();
+  await loadDemandes();
 };
 
-db.auth.getSession().then(({data}) => {
+document.getElementById("refreshDemandesBtn").onclick = loadDemandes;
+
+/* VÉRIFICATION DE LA SESSION */
+db.auth.getSession().then(({data,error}) => {
+  if(error) {
+    afficherMessage("Impossible de vérifier la session.",true);
+    return;
+  }
   if(data.session) openDashboard();
 });
 </script>
+
 </body>
 </html>
-   
