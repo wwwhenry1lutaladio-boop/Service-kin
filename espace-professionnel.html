@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Espace professionnel - SERVICE KIN</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f3f5f7; margin:0; padding:20px; color:#222; }
+    main { max-width:520px; margin:25px auto; background:white; padding:22px; border-radius:12px; }
+    h1 { color:#087b55; }
+    input, button, textarea { width:100%; box-sizing:border-box; padding:13px; margin:9px 0; font-size:16px; }
+    button { background:#087b55; color:white; border:0; border-radius:7px; }
+    .hidden { display:none; }
+    .photo { padding:10px; background:#f3f5f7; margin:8px 0; border-radius:7px; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>SERVICE KIN</h1>
+  <h2>Espace professionnel</h2>
+  <p>Connecte-toi pour envoyer tes réalisations.</p>
+
+  <section id="connexion">
+    <input id="email" type="email" placeholder="Ton adresse e-mail">
+    <input id="password" type="password" placeholder="Ton mot de passe">
+    <button onclick="connecter()">Se connecter</button>
+    <p id="message"></p>
+  </section>
+
+  <section id="espace" class="hidden">
+    <h3>Mes réalisations</h3>
+    <p id="compteur"></p>
+    <input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+    <textarea id="description" placeholder="Décris tes réalisations"></textarea>
+    <button onclick="envoyer()">Envoyer mes photos</button>
+    <p id="resultat"></p>
+    <div id="liste"></div>
+    <button onclick="deconnecter()">Se déconnecter</button>
+  </section>
+</main>
+
+<script>
+const SUPABASE_URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
+const SUPABASE_KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let professionnelId = null;
+
+async function connecter() {
+  const message = document.getElementById("message");
+  message.textContent = "Connexion en cours...";
+
+  const { error } = await db.auth.signInWithPassword({
+    email: document.getElementById("email").value.trim(),
+    password: document.getElementById("password").value
+  });
+
+  if (error) {
+    message.textContent = "Erreur : " + error.message;
+    return;
+  }
+
+  await chargerEspace();
+}
+
+async function chargerEspace() {
+  const { data: { user } } = await db.auth.getUser();
+
+  if (!user) return;
+
+  const { data, error } = await db
+    .from("professionnels")
+    .select("id, nom")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (error || !data) {
+    document.getElementById("message").textContent =
+      "Ton compte doit d'abord être associé à ton profil par l'administrateur.";
+    await db.auth.signOut();
+    return;
+  }
+
+  professionnelId = data.id;
+  document.getElementById("connexion").classList.add("hidden");
+  document.getElementById("espace").classList.remove("hidden");
+  document.getElementById("message").textContent = "";
+  await chargerPhotos();
+}
+
+async function chargerPhotos() {
+  const { data, error } = await db
+    .from("realisations")
+    .select("id, description, statut, created_at")
+    .eq("professionnel_id", professionnelId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    document.getElementById("liste").textContent = error.message;
+    return;
+  }
+
+  document.getElementById("compteur").textContent =
+    "Photos enregistrées : " + data.length + " / 4";
+
+  document.getElementById("liste").innerHTML = data.map(photo =>
+    `<div class="photo">${photo.description || "Ma réalisation"} — ${photo.statut}</div>`
+  ).join("");
+}
+
+async function envoyer() {
+  const resultat = document.getElementById("resultat");
+  const fichiers = Array.from(document.getElementById("photos").files);
+  const description = document.getElementById("description").value.trim();
+
+  if (!fichiers.length) {
+    resultat.textContent = "Choisis au moins une photo.";
+    return;
+  }
+
+  const { data: existantes, error: erreurLecture } = await db
+    .from("realisations")
+    .select("id")
+    .eq("professionnel_id", professionnelId)
+    .neq("statut", "refusee");
+
+  if (erreurLecture) {
+    resultat.textContent = erreurLecture.message;
+    return;
+  }
+
+  if (existantes.length + fichiers.length > 4) {
+    resultat.textContent = "Maximum 4 photos. Il te reste " +
+      (4 - existantes.length) + " place(s).";
+    return;
+  }
+
+  for (const fichier of fichiers) {
+    if (!["image/jpeg", "image/png", "image/webp"].includes(fichier.type) ||
+        fichier.size > 5 * 1024 * 1024) {
+      resultat.textContent = "Chaque photo doit être JPG, PNG ou WEBP et faire 5 Mo maximum.";
+      return;
+    }
+  }
+
+  resultat.textContent = "Envoi en cours...";
+
+  for (const fichier of fichiers) {
+    const extension = fichier.name.split(".").pop().toLowerCase();
+    const chemin = professionnelId + "/" + crypto.randomUUID() + "." + extension;
+
+    const { error: erreurUpload } = await db.storage
+      .from("realisations")
+      .upload(chemin, fichier);
+
+    if (erreurUpload) {
+      resultat.textContent = "Erreur d'envoi : " + erreurUpload.message;
+      return;
+    }
+
+    const { error: erreurInsertion } = await db
+      .from("realisations")
+      .insert({
+        professionnel_id: professionnelId,
+        photo_path: chemin,
+        description: description || "Réalisation",
+        statut: "en_attente"
+      });
+
+    if (erreurInsertion) {
+      await db.storage.from("realisations").remove([chemin]);
+      resultat.textContent = "Erreur d'enregistrement : " + erreurInsertion.message;
+      return;
+    }
+  }
+
+  resultat.textContent = "Photos envoyées ! Elles attendent la validation de l'administrateur.";
+  document.getElementById("photos").value = "";
+  await chargerPhotos();
+}
+
+async function deconnecter() {
+  await db.auth.signOut();
+  professionnelId = null;
+  document.getElementById("espace").classList.add("hidden");
+  document.getElementById("connexion").classList.remove("hidden");
+}
+
+db.auth.getSession().then(async ({ data }) => {
+  if (data.session) await chargerEspace();
+});
+</script>
+</body>
+</html>
