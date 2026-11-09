@@ -1,0 +1,19 @@
+
+{
+  "id": "./",
+  "name": "SERVICE KIN",
+  "short_name": "SERVICE KIN",
+  "description": "La plateforme qui met en relation les clients et les professionnels à Kinshasa.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#0b2d59",
+  "categories": [
+    "business",
+    "shopping",
+    "lifestyle"
+  ]
+}
