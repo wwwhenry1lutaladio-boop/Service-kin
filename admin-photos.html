@@ -4,243 +4,588 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#082f63">
 <title>Administration des photos - SERVICE KIN</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-body{font-family:Arial,sans-serif;background:#f2f4f7;margin:0;padding:18px;color:#222}
-main{max-width:850px;margin:auto}
-.box,.photo{background:white;padding:16px;margin:12px 0;border-radius:10px}
-input,button{padding:12px;margin:5px 0;width:100%;box-sizing:border-box}
-button{background:#075e42;color:white;border:0;border-radius:6px;font-weight:bold}
-button:disabled{opacity:.5}
-button.refuse{background:#b45309}
-button.delete{background:#b42318}
-img{width:100%;max-height:300px;object-fit:contain}
-#message{white-space:pre-wrap;font-weight:bold}
-.hidden{display:none}
+:root{
+ --blue:#082f63;
+ --blue2:#104b89;
+ --yellow:#ffc400;
+ --bg:#f2f5fa;
+ --text:#17243a;
+ --muted:#64748b;
+ --green:#078b49;
+ --red:#b42318;
+}
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:var(--bg);
+ color:var(--text);
+}
+header{
+ background:linear-gradient(120deg,#062957,#104e8c);
+ color:white;
+ padding:20px 5%;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:12px;
+ flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+ width:48px;height:48px;
+ display:grid;place-items:center;
+ background:var(--yellow);
+ color:var(--blue);
+ border-radius:12px;
+ font-size:26px;font-weight:bold;
+}
+header h1{margin:0;font-size:25px}
+header h1 span{color:var(--yellow)}
+header p{margin:5px 0 0;color:#dceaff;font-size:13px}
+.header-label{
+ border:1px solid #ffffff55;
+ background:#ffffff20;
+ padding:9px 13px;
+ border-radius:25px;
+ font-size:13px;
+}
+main{max-width:1050px;margin:25px auto;padding:0 15px}
+.box,.photo{
+ background:white;
+ padding:20px;
+ margin:15px 0;
+ border-radius:13px;
+ box-shadow:0 4px 15px #00000009;
+}
+.login-box{max-width:460px;margin:45px auto}
+h2{color:var(--blue);margin:0 0 12px}
+h3{color:var(--blue);margin-top:0}
+.muted{color:var(--muted);font-size:14px;line-height:1.5}
+input,select{
+ display:block;
+ width:100%;
+ padding:12px;
+ margin:9px 0;
+ border:1px solid #d5dfeb;
+ border-radius:8px;
+ background:white;
+ font-size:15px;
+}
+button,.link{
+ display:inline-block;
+ padding:12px 16px;
+ margin:5px 4px 5px 0;
+ border:0;
+ border-radius:8px;
+ background:var(--blue);
+ color:white;
+ font-weight:bold;
+ font-size:14px;
+ cursor:pointer;
+ text-decoration:none;
+}
+button:hover,.link:hover{filter:brightness(.94)}
+button:disabled{opacity:.55;cursor:wait}
+.yellow{background:var(--yellow);color:var(--text)}
+.green{background:var(--green)}
+.refuse{background:#b45309}
+.delete{background:var(--red)}
+.logout{background:#ffffff20;border:1px solid #ffffff70}
+.hidden{display:none!important}
+#message{
+ padding:10px 0;
+ font-size:14px;
+ line-height:1.5;
+ overflow-wrap:anywhere;
+}
+.toolbar{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:12px;
+ flex-wrap:wrap;
+ margin-bottom:15px;
+}
+.toolbar select{max-width:260px}
+.photo{
+ border:1px solid #e2eaf3;
+ border-left:5px solid var(--yellow);
+}
+.photo img{
+ width:100%;
+ max-height:380px;
+ object-fit:contain;
+ background:#f8fafc;
+ border-radius:8px;
+ margin:10px 0;
+}
+.status{
+ display:inline-block;
+ padding:6px 10px;
+ border-radius:20px;
+ font-size:12px;
+ font-weight:bold;
+ margin:4px 0;
+}
+.pending{background:#fff3c4;color:#805900}
+.approved{background:#d9f7e5;color:#08753c}
+.refused-status{background:#fee2e2;color:#b91c1c}
+.empty{
+ text-align:center;
+ padding:25px;
+ background:#f8fafc;
+ border-radius:10px;
+ color:var(--muted);
+}
+footer{
+ background:var(--blue);
+ color:white;
+ text-align:center;
+ padding:22px;
+ margin-top:40px;
+ font-size:13px;
+}
+footer strong{color:var(--yellow)}
+@media(max-width:600px){
+ header{padding:17px}
+ header h1{font-size:22px}
+ main{padding:0 10px;margin:16px auto}
+ .box,.photo{padding:15px}
+ button,.link{font-size:13px;padding:11px 12px}
+ .toolbar select{max-width:100%}
+}
 </style>
 </head>
+
 <body>
+
+<header>
+ <div class="brand">
+  <div class="logo">⌂</div>
+  <div>
+   <h1>SERVICE <span>KIN</span></h1>
+   <p>Administration des réalisations photographiques</p>
+  </div>
+ </div>
+ <div class="header-label">👑 Espace propriétaire</div>
+</header>
+
 <main>
-<h2>Administration des photos SERVICE KIN</h2>
 
-<section id="login" class="box">
-<h3>Connexion administrateur</h3>
-<input id="email" type="email" placeholder="Adresse e-mail">
-<input id="password" type="password" placeholder="Mot de passe">
-<button id="loginBtn" onclick="connexion()">Se connecter</button>
-<p id="message">Initialisation...</p>
-</section>
+ <section id="login" class="box login-box">
+  <h2>🔐 Connexion administrateur</h2>
+  <p class="muted">Connecte-toi avec le compte propriétaire pour gérer les photos des professionnels.</p>
 
-<section id="app" class="hidden">
-<h3>Photos des professionnels</h3>
-<button onclick="chargerPhotos()">Actualiser les photos</button>
-<div id="photos"></div>
-</section>
+  <form id="loginForm">
+   <input id="email" type="email" placeholder="Adresse e-mail" autocomplete="username" required>
+   <input id="password" type="password" placeholder="Mot de passe" autocomplete="current-password" required>
+   <button id="loginBtn" type="submit">Se connecter →</button>
+  </form>
+
+  <p id="message">Vérification de la connexion...</p>
+ </section>
+
+ <section id="app" class="hidden">
+
+  <div class="box">
+   <div class="toolbar">
+    <div>
+     <h2>📸 Gestion des photos</h2>
+     <p class="muted">Consulte, approuve ou refuse les réalisations envoyées par les professionnels.</p>
+    </div>
+    <button class="logout" id="logoutBtn">Se déconnecter</button>
+   </div>
+  </div>
+
+  <div class="box">
+   <div class="toolbar">
+    <div>
+     <h3>Liste des réalisations</h3>
+     <p class="muted" id="photoCount">Chargement...</p>
+    </div>
+    <button class="yellow" id="refreshBtn">↻ Actualiser</button>
+   </div>
+
+   <label for="filter">Filtrer les photos :</label>
+   <select id="filter">
+    <option value="toutes">Toutes les photos</option>
+    <option value="en_attente">En attente</option>
+    <option value="approuvee">Approuvées</option>
+    <option value="refusee">Refusées</option>
+   </select>
+  </div>
+
+  <div id="photos"></div>
+
+ </section>
+
 </main>
 
+<footer>
+ <strong>SERVICE KIN</strong> - Administration des photos
+ <p>Kinshasa, République démocratique du Congo</p>
+</footer>
+
 <script>
-(function () {
-  const URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
-  const KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
+(function(){
 
-  function message(texte) {
-    document.getElementById("message").textContent = texte;
+const SUPABASE_URL="https://ikhjunfdqjnhonxisjeh.supabase.co";
+const SUPABASE_KEY="sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
+
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const login=document.getElementById("login");
+const app=document.getElementById("app");
+const message=document.getElementById("message");
+const photosZone=document.getElementById("photos");
+const photoCount=document.getElementById("photoCount");
+
+let photos=[];
+let filtre="toutes";
+let chargement=false;
+
+function afficherMessage(texte,erreur=false){
+ message.textContent=texte;
+ message.style.color=erreur?"#b42318":"#078b49";
+}
+
+function delai(promise,ms,nom){
+ let timer;
+ const timeout=new Promise((_,reject)=>{
+  timer=setTimeout(()=>reject(new Error("Délai dépassé : "+nom)),ms);
+ });
+ return Promise.race([promise,timeout]).finally(()=>clearTimeout(timer));
+}
+
+function afficherStatut(statut){
+ const infos={
+  en_attente:["En attente","pending"],
+  approuvee:["Approuvée","approved"],
+  refusee:["Refusée","refused-status"]
+ };
+ return infos[statut] || ["Statut inconnu","pending"];
+}
+
+async function verifierAdmin(user){
+ const resultat=await delai(
+  db.from("admins")
+   .select("id,role")
+   .eq("id",user.id)
+   .maybeSingle(),
+  15000,
+  "vérification administrateur"
+ );
+
+ if(resultat.error)throw resultat.error;
+
+ if(!resultat.data || resultat.data.role!=="owner"){
+  throw new Error("Accès refusé : ce compte ne possède pas les droits propriétaire.");
+ }
+}
+
+async function ouvrirAdministration(user){
+ await verifierAdmin(user);
+
+ login.classList.add("hidden");
+ app.classList.remove("hidden");
+
+ await chargerPhotos();
+}
+
+async function connexion(){
+ const bouton=document.getElementById("loginBtn");
+
+ bouton.disabled=true;
+ bouton.textContent="Connexion en cours...";
+ afficherMessage("Connexion à SERVICE KIN...");
+
+ try{
+  const email=document.getElementById("email").value.trim();
+  const password=document.getElementById("password").value;
+
+  if(!email || !password){
+   throw new Error("Entre ton adresse e-mail et ton mot de passe.");
   }
 
-  if (!window.supabase || !window.supabase.createClient) {
-    message("ERREUR : impossible de charger Supabase. Vérifie ta connexion Internet.");
-    return;
+  const resultat=await delai(
+   db.auth.signInWithPassword({email,password}),
+   15000,
+   "connexion"
+  );
+
+  if(resultat.error)throw resultat.error;
+
+  await ouvrirAdministration(resultat.data.user);
+
+ }catch(erreur){
+  afficherMessage("ERREUR : "+(erreur.message || "Erreur inconnue"),true);
+  await db.auth.signOut();
+  bouton.disabled=false;
+  bouton.textContent="Se connecter →";
+ }
+}
+
+async function chargerPhotos(){
+
+ if(chargement)return;
+ chargement=true;
+
+ photosZone.textContent="Chargement des photos...";
+ photoCount.textContent="Chargement...";
+
+ try{
+  const resultat=await delai(
+   db.from("realisations")
+    .select("id,professionnel_id,photo_path,description,statut,created_at")
+    .order("created_at",{ascending:false}),
+   20000,
+   "chargement des réalisations"
+  );
+
+  if(resultat.error)throw resultat.error;
+
+  photos=resultat.data || [];
+  afficherPhotos();
+
+ }catch(erreur){
+  photosZone.textContent="Impossible de charger les photos : "+erreur.message;
+  photoCount.textContent="Erreur de chargement";
+ }finally{
+  chargement=false;
+ }
+}
+
+function afficherPhotos(){
+
+ photosZone.replaceChildren();
+
+ const visibles=filtre==="toutes"
+  ?photos
+  :photos.filter(p=>p.statut===filtre);
+
+ photoCount.textContent=
+  photos.length+" photo(s) enregistrée(s) — "+visibles.length+" affichée(s)";
+
+ if(visibles.length===0){
+  const empty=document.createElement("div");
+  empty.className="empty";
+  empty.textContent="Aucune photo dans cette catégorie.";
+  photosZone.appendChild(empty);
+  return;
+ }
+
+ visibles.forEach(photo=>{
+
+  const carte=document.createElement("article");
+  carte.className="photo";
+
+  const titre=document.createElement("h3");
+  titre.textContent="Professionnel n° "+photo.professionnel_id;
+
+  const info=afficherStatut(photo.statut);
+  const badge=document.createElement("span");
+  badge.className="status "+info[1];
+  badge.textContent=info[0];
+
+  const description=document.createElement("p");
+  description.textContent=photo.description || "Aucune description fournie.";
+
+  carte.append(titre,badge,description);
+
+  if(photo.created_at){
+   const date=document.createElement("p");
+   date.className="muted";
+   date.textContent="Date d'envoi : "+new Date(photo.created_at).toLocaleString("fr-FR");
+   carte.appendChild(date);
   }
 
-  window.serviceKinClient = window.supabase.createClient(URL, KEY);
+  const chargementImage=document.createElement("p");
+  chargementImage.className="muted";
+  chargementImage.textContent="Chargement de l'image...";
+  carte.appendChild(chargementImage);
 
-  function delai(promise, ms, nom) {
-    return Promise.race([
-      promise,
-      new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Délai dépassé : " + nom)), ms);
-      })
-    ]);
+  const actions=document.createElement("div");
+
+  const approuver=document.createElement("button");
+  approuver.className="green";
+  approuver.textContent="Approuver";
+  approuver.disabled=photo.statut==="approuvee";
+  approuver.onclick=()=>changerStatut(photo.id,"approuvee",approuver);
+
+  const refuser=document.createElement("button");
+  refuser.className="refuse";
+  refuser.textContent="Refuser";
+  refuser.disabled=photo.statut==="refusee";
+  refuser.onclick=()=>changerStatut(photo.id,"refusee",refuser);
+
+  const supprimer=document.createElement("button");
+  supprimer.className="delete";
+  supprimer.textContent="Supprimer";
+  supprimer.onclick=()=>supprimerPhoto(photo.id,photo.photo_path,supprimer);
+
+  actions.append(approuver,refuser,supprimer);
+  carte.appendChild(actions);
+  photosZone.appendChild(carte);
+
+  chargerImage(photo,carte,chargementImage);
+
+ });
+}
+
+async function chargerImage(photo,carte,placeholder){
+
+ try{
+  const resultat=await delai(
+   db.storage.from("realisations")
+    .createSignedUrl(photo.photo_path,3600),
+   15000,
+   "création du lien de l'image"
+  );
+
+  if(resultat.error)throw resultat.error;
+
+  if(!resultat.data || !resultat.data.signedUrl){
+   throw new Error("Lien de l'image indisponible.");
   }
 
-  async function verifierAdmin(user) {
-    message("Étape 2 : vérification des droits administrateur...");
+  const img=document.createElement("img");
+  img.src=resultat.data.signedUrl;
+  img.alt="Réalisation d'un professionnel";
+  img.loading="lazy";
 
-    const resultat = await delai(
-      window.serviceKinClient
-        .from("admins")
-        .select("id, role")
-        .eq("id", user.id)
-        .maybeSingle(),
-      15000,
-      "vérification administrateur"
-    );
+  img.onerror=()=>{
+   placeholder.textContent="L'image n'a pas pu être affichée.";
+  };
 
-    if (resultat.error) throw resultat.error;
+  placeholder.replaceWith(img);
 
-    if (!resultat.data || resultat.data.role !== "owner") {
-      throw new Error("Ce compte ne possède pas les droits administrateur owner.");
-    }
+ }catch(erreur){
+  placeholder.textContent="Image inaccessible : "+erreur.message;
+ }
+}
+
+async function changerStatut(id,nouveauStatut,bouton){
+
+ const texte=nouveauStatut==="approuvee"
+  ?"Confirmer l'approbation de cette photo ?"
+  :"Confirmer le refus de cette photo ?";
+
+ if(!confirm(texte))return;
+
+ bouton.disabled=true;
+
+ try{
+  const resultat=await delai(
+   db.from("realisations")
+    .update({statut:nouveauStatut})
+    .eq("id",id),
+   15000,
+   "mise à jour du statut"
+  );
+
+  if(resultat.error)throw resultat.error;
+
+  alert("Le statut de la photo a été mis à jour.");
+  await chargerPhotos();
+
+ }catch(erreur){
+  alert("Erreur : "+erreur.message);
+  bouton.disabled=false;
+ }
+}
+
+async function supprimerPhoto(id,chemin,bouton){
+
+ if(!confirm("Attention : cette action supprimera définitivement la photo. Continuer ?"))return;
+
+ bouton.disabled=true;
+ bouton.textContent="Suppression...";
+
+ try{
+
+  const stockage=await delai(
+   db.storage.from("realisations").remove([chemin]),
+   15000,
+   "suppression du fichier photo"
+  );
+
+  if(stockage.error)throw stockage.error;
+
+  const resultat=await delai(
+   db.from("realisations").delete().eq("id",id),
+   15000,
+   "suppression de l'enregistrement"
+  );
+
+  if(resultat.error){
+   throw new Error("Le fichier a été supprimé du stockage, mais l'enregistrement reste présent : "+resultat.error.message);
   }
 
-  window.connexion = async function () {
-    const bouton = document.getElementById("loginBtn");
-    bouton.disabled = true;
+  alert("Photo supprimée.");
+  await chargerPhotos();
 
-    try {
-      message("Étape 1 : connexion à Supabase...");
+ }catch(erreur){
+  alert("Erreur : "+erreur.message);
+  bouton.disabled=false;
+  bouton.textContent="Supprimer";
+ }
+}
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+async function deconnexion(){
+ await db.auth.signOut();
+ photos=[];
+ app.classList.add("hidden");
+ login.classList.remove("hidden");
+ document.getElementById("loginForm").reset();
+ afficherMessage("Tu es déconnecté.");
+}
 
-      if (!email || !password) {
-        throw new Error("Entre ton adresse e-mail et ton mot de passe.");
-      }
+document.getElementById("loginForm").addEventListener("submit",function(e){
+ e.preventDefault();
+ connexion();
+});
 
-      const resultat = await delai(
-        window.serviceKinClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        }),
-        15000,
-        "connexion Supabase"
-      );
+document.getElementById("refreshBtn").addEventListener("click",chargerPhotos);
+document.getElementById("logoutBtn").addEventListener("click",deconnexion);
 
-      if (resultat.error) throw resultat.error;
+document.getElementById("filter").addEventListener("change",function(){
+ filtre=this.value;
+ afficherPhotos();
+});
 
-      await verifierAdmin(resultat.data.user);
+/* Vérifier la session existante */
+async function verifierSession(){
 
-      document.getElementById("login").classList.add("hidden");
-      document.getElementById("app").classList.remove("hidden");
+ try{
+  const resultat=await delai(
+   db.auth.getSession(),
+   15000,
+   "vérification de session"
+  );
 
-      await window.chargerPhotos();
+  if(resultat.error)throw resultat.error;
 
-    } catch (erreur) {
-      message("ERREUR : " + (erreur.message || "Erreur inconnue"));
-      bouton.disabled = false;
-    }
-  };
+  if(resultat.data.session){
+   await ouvrirAdministration(resultat.data.session.user);
+  }else{
+   afficherMessage("Prêt. Connecte-toi avec ton compte propriétaire.");
+  }
 
-  window.chargerPhotos = async function () {
-    const zone = document.getElementById("photos");
-    zone.innerHTML = "<p>Chargement des photos...</p>";
+ }catch(erreur){
+  afficherMessage("Vérification impossible : "+erreur.message,true);
+ }
+}
 
-    try {
-      const resultat = await delai(
-        window.serviceKinClient
-          .from("realisations")
-          .select("id, professionnel_id, photo_path, description, statut, created_at")
-          .order("created_at", { ascending: false }),
-        15000,
-        "chargement des photos"
-      );
+verifierSession();
 
-      if (resultat.error) throw resultat.error;
-
-      zone.innerHTML = "";
-
-      if (!resultat.data || resultat.data.length === 0) {
-        zone.innerHTML = "<p>Aucune photo pour le moment.</p>";
-        return;
-      }
-
-      for (const photo of resultat.data) {
-        const carte = document.createElement("div");
-        carte.className = "photo box";
-
-        const titre = document.createElement("h3");
-        titre.textContent = "Professionnel n° " + photo.professionnel_id;
-
-        const statut = document.createElement("p");
-        statut.textContent = "Statut : " + photo.statut;
-
-        const description = document.createElement("p");
-        description.textContent = photo.description || "Sans description";
-
-        carte.append(titre, statut, description);
-
-        const urlResult = await window.serviceKinClient.storage
-          .from("realisations")
-          .createSignedUrl(photo.photo_path, 3600);
-
-        if (urlResult.data && urlResult.data.signedUrl) {
-          const img = document.createElement("img");
-          img.src = urlResult.data.signedUrl;
-          img.alt = "Réalisation professionnelle";
-          carte.appendChild(img);
-        } else {
-          const erreurPhoto = document.createElement("p");
-          erreurPhoto.textContent = "Image inaccessible : " +
-            (urlResult.error?.message || "URL indisponible");
-          carte.appendChild(erreurPhoto);
-        }
-
-        const approuver = document.createElement("button");
-        approuver.textContent = "Approuver";
-        approuver.onclick = () => window.changerStatut(photo.id, "approuvee");
-
-        const refuser = document.createElement("button");
-        refuser.textContent = "Refuser";
-        refuser.className = "refuse";
-        refuser.onclick = () => window.changerStatut(photo.id, "refusee");
-
-        const supprimer = document.createElement("button");
-        supprimer.textContent = "Supprimer";
-        supprimer.className = "delete";
-        supprimer.onclick = () => window.supprimerPhoto(photo.id, photo.photo_path);
-
-        carte.append(approuver, refuser, supprimer);
-        zone.appendChild(carte);
-      }
-
-    } catch (erreur) {
-      zone.textContent = "ERREUR DE CHARGEMENT : " + erreur.message;
-    }
-  };
-
-  window.changerStatut = async function (id, statut) {
-    try {
-      const resultat = await window.serviceKinClient
-        .from("realisations")
-        .update({ statut: statut })
-        .eq("id", id);
-
-      if (resultat.error) throw resultat.error;
-
-      alert("Statut mis à jour.");
-      window.chargerPhotos();
-    } catch (erreur) {
-      alert("Erreur : " + erreur.message);
-    }
-  };
-
-  window.supprimerPhoto = async function (id, chemin) {
-    if (!confirm("Veux-tu vraiment supprimer cette photo ?")) return;
-
-    try {
-      const stockage = await window.serviceKinClient.storage
-        .from("realisations")
-        .remove([chemin]);
-
-      if (stockage.error) throw stockage.error;
-
-      const resultat = await window.serviceKinClient
-        .from("realisations")
-        .delete()
-        .eq("id", id);
-
-      if (resultat.error) throw resultat.error;
-
-      alert("Photo supprimée.");
-      window.chargerPhotos();
-    } catch (erreur) {
-      alert("Erreur : " + erreur.message);
-    }
-  };
-
-  message("Prêt. Tu peux te connecter.");
 })();
 </script>
+
 </body>
 </html>
