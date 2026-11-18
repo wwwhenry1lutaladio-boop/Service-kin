@@ -4,40 +4,181 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#087b55">
   <title>Espace professionnel - SERVICE KIN</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    body { font-family: Arial, sans-serif; background:#f3f5f7; margin:0; padding:20px; color:#222; }
-    main { max-width:520px; margin:25px auto; background:white; padding:22px; border-radius:12px; }
-    h1 { color:#087b55; }
-    input, button, textarea { width:100%; box-sizing:border-box; padding:13px; margin:9px 0; font-size:16px; }
-    button { background:#087b55; color:white; border:0; border-radius:7px; }
-    .hidden { display:none; }
-    .photo { padding:10px; background:#f3f5f7; margin:8px 0; border-radius:7px; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f5f7;
+      margin: 0;
+      padding: 18px;
+      color: #222;
+    }
+    main { max-width: 760px; margin: 20px auto; }
+    header {
+      background: #087b55;
+      color: white;
+      padding: 22px;
+      border-radius: 13px;
+      margin-bottom: 18px;
+    }
+    header h1 { margin: 0 0 8px; }
+    header p { margin: 0; }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      box-shadow: 0 2px 9px #0000000b;
+    }
+    h2, h3 { color: #087b55; }
+    input, textarea, button, select {
+      width: 100%;
+      padding: 13px;
+      margin: 7px 0;
+      font-size: 15px;
+      border-radius: 7px;
+      border: 1px solid #ccd3d8;
+    }
+    textarea { min-height: 90px; resize: vertical; }
+    button {
+      background: #087b55;
+      color: white;
+      border: 0;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .secondary { background: #263746; }
+    .danger { background: #b83232; }
+    .hidden { display: none !important; }
+    .message { padding: 10px; border-radius: 7px; margin: 10px 0; }
+    .info { background: #e7f1ff; color: #174a82; }
+    .success { background: #e5f7ec; color: #176536; }
+    .error { background: #ffebeb; color: #9c2020; }
+    .photo, .request {
+      padding: 13px;
+      background: #f5f7f8;
+      border-radius: 9px;
+      margin: 10px 0;
+    }
+    .photo img {
+      width: 100%;
+      max-height: 240px;
+      object-fit: cover;
+      border-radius: 7px;
+      margin-top: 8px;
+    }
+    .status {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      background: #e9edf0;
+      margin: 5px 0;
+    }
+    .status.approuve, .status.approuvee, .status.autorisee {
+      background: #d9f5e3;
+      color: #176536;
+    }
+    .status.en_attente { background: #fff1ce; color: #805900; }
+    .status.refuse, .status.refusee { background: #ffe0e0; color: #9c2020; }
+    .muted { color: #65717b; font-size: 13px; }
+    .tabs { display: flex; gap: 8px; }
+    .tabs button { flex: 1; }
+    @media(max-width:520px) {
+      body { padding: 10px; }
+      .card { padding: 15px; }
+      .tabs { flex-direction: column; }
+    }
   </style>
 </head>
+
 <body>
 <main>
-  <h1>SERVICE KIN</h1>
-  <h2>Espace professionnel</h2>
-  <p>Connecte-toi pour envoyer tes réalisations.</p>
+  <header>
+    <h1>SERVICE KIN</h1>
+    <p>Espace professionnel – Gérez votre activité et vos réalisations.</p>
+  </header>
 
-  <section id="connexion">
-    <input id="email" type="email" placeholder="Ton adresse e-mail">
-    <input id="password" type="password" placeholder="Ton mot de passe">
-    <button onclick="connecter()">Se connecter</button>
-    <p id="message"></p>
+  <section id="authSection" class="card">
+    <div class="tabs">
+      <button type="button" id="tabConnexion" onclick="afficherFormulaire('connexion')">
+        Connexion
+      </button>
+      <button type="button" id="tabInscription" class="secondary" onclick="afficherFormulaire('inscription')">
+        Créer un compte
+      </button>
+    </div>
+
+    <div id="formConnexion">
+      <h2>Connexion professionnelle</h2>
+      <input id="emailConnexion" type="email" autocomplete="email" placeholder="Adresse e-mail">
+      <input id="passwordConnexion" type="password" autocomplete="current-password" placeholder="Mot de passe">
+      <button id="btnConnexion" type="button" onclick="connecter()">Se connecter</button>
+    </div>
+
+    <div id="formInscription" class="hidden">
+      <h2>Inscription professionnelle</h2>
+      <p class="muted">Votre profil sera vérifié par l’administrateur avant sa publication.</p>
+      <input id="insNom" type="text" maxlength="100" placeholder="Nom complet">
+      <input id="insMetier" type="text" maxlength="100" placeholder="Votre métier ou spécialité">
+      <input id="insQuartier" type="text" maxlength="100" placeholder="Votre quartier">
+      <input id="insTelephone" type="tel" maxlength="30" placeholder="Votre numéro de téléphone">
+      <textarea id="insServices" maxlength="1000" placeholder="Décrivez vos services"></textarea>
+      <input id="insEmail" type="email" autocomplete="email" placeholder="Adresse e-mail">
+      <input id="insPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Mot de passe (8 caractères minimum)">
+      <button id="btnInscription" type="button" onclick="inscrire()">Créer mon compte</button>
+    </div>
+
+    <div id="authMessage" aria-live="polite"></div>
   </section>
 
   <section id="espace" class="hidden">
-    <h3>Mes réalisations</h3>
-    <p id="compteur"></p>
-    <input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
-    <textarea id="description" placeholder="Décris tes réalisations"></textarea>
-    <button onclick="envoyer()">Envoyer mes photos</button>
-    <p id="resultat"></p>
-    <div id="liste"></div>
-    <button onclick="deconnecter()">Se déconnecter</button>
+    <div class="card">
+      <h2>Mon profil professionnel</h2>
+      <p id="nomProfessionnel"></p>
+      <p>Statut du compte : <span id="statutProfessionnel" class="status"></span></p>
+      <div id="messageStatut" class="message info"></div>
+
+      <div id="editionProfil" class="hidden">
+        <h3>Modifier mes informations</h3>
+        <input id="profilNom" maxlength="100" placeholder="Nom complet">
+        <input id="profilMetier" maxlength="100" placeholder="Métier">
+        <input id="profilQuartier" maxlength="100" placeholder="Quartier">
+        <input id="profilTelephone" maxlength="30" placeholder="Téléphone">
+        <textarea id="profilServices" maxlength="1000" placeholder="Services proposés"></textarea>
+        <button type="button" onclick="modifierProfil()">Enregistrer mon profil</button>
+        <p id="profilMessage" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <div id="zonePhotos" class="card hidden">
+      <h2>Mes réalisations</h2>
+      <p id="compteur"></p>
+      <p class="muted">Formats acceptés : JPG, PNG et WEBP. Maximum 5 Mo par photo et 4 photos au total.</p>
+      <input id="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple>
+      <textarea id="description" maxlength="500" placeholder="Décrivez vos réalisations"></textarea>
+      <button id="btnEnvoi" type="button" onclick="envoyerPhotos()">Envoyer mes photos</button>
+      <p id="photoMessage" aria-live="polite"></p>
+      <div id="listePhotos"></div>
+    </div>
+
+    <div class="card">
+      <h2>Demandes de clients</h2>
+      <p class="muted">
+        Seules les demandes dont la mise en relation a été autorisée par l’administrateur apparaissent ici.
+      </p>
+      <button type="button" class="secondary" onclick="chargerDemandes()">Actualiser mes demandes</button>
+      <div id="listeDemandes"></div>
+    </div>
+
+    <div class="card">
+      <button type="button" class="danger" onclick="deconnecter()">Se déconnecter</button>
+    </div>
   </section>
 </main>
 
@@ -46,151 +187,406 @@ const SUPABASE_URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-let professionnelId = null;
 
-async function connecter() {
-  const message = document.getElementById("message");
-  message.textContent = "Connexion en cours...";
+let utilisateur = null;
+let professionnel = null;
+let photosEnCours = false;
 
-  const { error } = await db.auth.signInWithPassword({
-    email: document.getElementById("email").value.trim(),
-    password: document.getElementById("password").value
-  });
+const $ = id => document.getElementById(id);
 
-  if (error) {
-    message.textContent = "Erreur : " + error.message;
+function afficherMessage(id, texte, type = "info") {
+  const element = $(id);
+  element.className = "message " + type;
+  element.textContent = texte;
+}
+
+function afficherFormulaire(type) {
+  $("formConnexion").classList.toggle("hidden", type !== "connexion");
+  $("formInscription").classList.toggle("hidden", type !== "inscription");
+  $("authMessage").textContent = "";
+}
+
+function statutTexte(statut) {
+  const valeurs = {
+    en_attente: "En attente de validation",
+    approuve: "Compte approuvé",
+    refuse: "Compte refusé"
+  };
+  return valeurs[statut] || statut || "Non défini";
+}
+
+async function inscrire() {
+  const nom = $("insNom").value.trim();
+  const metier = $("insMetier").value.trim();
+  const quartier = $("insQuartier").value.trim();
+  const telephone = $("insTelephone").value.trim();
+  const services = $("insServices").value.trim();
+  const email = $("insEmail").value.trim();
+  const password = $("insPassword").value;
+
+  if (!nom || !metier || !quartier || !telephone || !email || !password) {
+    afficherMessage("authMessage", "Remplis tous les champs obligatoires.", "error");
     return;
   }
 
-  await chargerEspace();
+  if (password.length < 8) {
+    afficherMessage("authMessage", "Le mot de passe doit contenir au moins 8 caractères.", "error");
+    return;
+  }
+
+  $("btnInscription").disabled = true;
+  afficherMessage("authMessage", "Création du compte en cours...");
+
+  try {
+    const { data, error } = await db.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { nom, metier, quartier, telephone, services }
+      }
+    });
+
+    if (error) throw error;
+
+    if (data.session) {
+      await chargerEspace();
+    } else {
+      afficherMessage(
+        "authMessage",
+        "Inscription enregistrée. Consulte ton e-mail pour confirmer ton adresse. Ton profil sera soumis à validation.",
+        "success"
+      );
+    }
+  } catch (error) {
+    afficherMessage("authMessage", "Erreur : " + error.message, "error");
+  } finally {
+    $("btnInscription").disabled = false;
+  }
+}
+
+async function connecter() {
+  const email = $("emailConnexion").value.trim();
+  const password = $("passwordConnexion").value;
+
+  if (!email || !password) {
+    afficherMessage("authMessage", "Saisis ton e-mail et ton mot de passe.", "error");
+    return;
+  }
+
+  $("btnConnexion").disabled = true;
+  afficherMessage("authMessage", "Connexion en cours...");
+
+  try {
+    const { error } = await db.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    await chargerEspace();
+  } catch (error) {
+    afficherMessage("authMessage", "Connexion impossible : " + error.message, "error");
+  } finally {
+    $("btnConnexion").disabled = false;
+  }
 }
 
 async function chargerEspace() {
-  const { data: { user } } = await db.auth.getUser();
+  const { data: { user }, error: erreurAuth } = await db.auth.getUser();
 
-  if (!user) return;
+  if (erreurAuth || !user) {
+    afficherMessage("authMessage", "Connecte-toi pour accéder à ton espace.", "error");
+    return;
+  }
+
+  utilisateur = user;
 
   const { data, error } = await db
     .from("professionnels")
-    .select("id, nom")
+    .select("id, nom, metier, quartier, telephone, services, statut")
     .eq("user_id", user.id)
     .maybeSingle();
 
   if (error || !data) {
-    document.getElementById("message").textContent =
-      "Ton compte doit d'abord être associé à ton profil par l'administrateur.";
+    afficherMessage(
+      "authMessage",
+      "Profil professionnel introuvable. Contacte l’administrateur pour vérifier l’association de ton compte.",
+      "error"
+    );
     await db.auth.signOut();
+    utilisateur = null;
     return;
   }
 
-  professionnelId = data.id;
-  document.getElementById("connexion").classList.add("hidden");
-  document.getElementById("espace").classList.remove("hidden");
-  document.getElementById("message").textContent = "";
-  await chargerPhotos();
+  professionnel = data;
+
+  $("authSection").classList.add("hidden");
+  $("espace").classList.remove("hidden");
+
+  $("nomProfessionnel").textContent =
+    (data.nom || "Professionnel") + (data.metier ? " – " + data.metier : "");
+
+  $("statutProfessionnel").textContent = statutTexte(data.statut);
+  $("statutProfessionnel").className = "status " + data.statut;
+
+  $("profilNom").value = data.nom || "";
+  $("profilMetier").value = data.metier || "";
+  $("profilQuartier").value = data.quartier || "";
+  $("profilTelephone").value = data.telephone || "";
+  $("profilServices").value = data.services || "";
+
+  const approuve = data.statut === "approuve";
+
+  $("editionProfil").classList.toggle("hidden", !approuve);
+  $("zonePhotos").classList.toggle("hidden", !approuve);
+
+  if (approuve) {
+    afficherMessage("messageStatut", "Ton compte est approuvé. Tu peux gérer ton profil et tes réalisations.", "success");
+    await chargerPhotos();
+    await chargerDemandes();
+  } else if (data.statut === "en_attente") {
+    afficherMessage("messageStatut", "Ton inscription est en attente de validation. Les fonctions professionnelles seront accessibles après approbation.", "info");
+    $("listeDemandes").textContent = "Les demandes seront accessibles après approbation du compte.";
+  } else {
+    afficherMessage("messageStatut", "Ton compte n’est pas approuvé. Contacte l’administrateur de SERVICE KIN.", "error");
+    $("listeDemandes").textContent = "Accès aux demandes indisponible.";
+  }
+}
+
+async function modifierProfil() {
+  if (!professionnel || professionnel.statut !== "approuve") return;
+
+  afficherMessage("profilMessage", "Enregistrement en cours...");
+
+  try {
+    const { error } = await db.rpc("service_kin_modifier_profil", {
+      p_nom: $("profilNom").value.trim(),
+      p_metier: $("profilMetier").value.trim(),
+      p_quartier: $("profilQuartier").value.trim(),
+      p_telephone: $("profilTelephone").value.trim(),
+      p_services: $("profilServices").value.trim()
+    });
+
+    if (error) throw error;
+
+    professionnel.nom = $("profilNom").value.trim();
+    professionnel.metier = $("profilMetier").value.trim();
+    professionnel.quartier = $("profilQuartier").value.trim();
+    professionnel.telephone = $("profilTelephone").value.trim();
+    professionnel.services = $("profilServices").value.trim();
+
+    $("nomProfessionnel").textContent =
+      professionnel.nom + " – " + professionnel.metier;
+
+    afficherMessage("profilMessage", "Profil mis à jour avec succès.", "success");
+  } catch (error) {
+    afficherMessage("profilMessage", "Erreur : " + error.message, "error");
+  }
 }
 
 async function chargerPhotos() {
+  if (!professionnel) return;
+
+  const liste = $("listePhotos");
+  liste.textContent = "Chargement des photos...";
+
   const { data, error } = await db
     .from("realisations")
-    .select("id, description, statut, created_at")
-    .eq("professionnel_id", professionnelId)
+    .select("id, photo_path, description, statut, created_at")
+    .eq("professionnel_id", professionnel.id)
     .order("created_at", { ascending: false });
 
   if (error) {
-    document.getElementById("liste").textContent = error.message;
+    liste.textContent = "Impossible de charger les photos : " + error.message;
     return;
   }
 
-  document.getElementById("compteur").textContent =
-    "Photos enregistrées : " + data.length + " / 4";
+  const photos = data || [];
+  const actives = photos.filter(p => p.statut !== "refusee").length;
 
-  document.getElementById("liste").innerHTML = data.map(photo =>
-    `<div class="photo">${photo.description || "Ma réalisation"} — ${photo.statut}</div>`
-  ).join("");
+  $("compteur").textContent = "Photos enregistrées : " + actives + " / 4";
+
+  liste.replaceChildren();
+
+  if (!photos.length) {
+    liste.textContent = "Tu n’as pas encore envoyé de réalisation.";
+    return;
+  }
+
+  for (const photo of photos) {
+    const bloc = document.createElement("div");
+    bloc.className = "photo";
+
+    const titre = document.createElement("strong");
+    titre.textContent = photo.description || "Ma réalisation";
+
+    const statut = document.createElement("span");
+    statut.className = "status " + photo.statut;
+    statut.textContent = photo.statut || "Non défini";
+
+    bloc.append(titre, document.createElement("br"), statut);
+
+    if (photo.photo_path) {
+      const { data: urlData } = await db.storage
+        .from("realisations")
+        .createSignedUrl(photo.photo_path, 3600);
+
+      if (urlData && urlData.signedUrl) {
+        const image = document.createElement("img");
+        image.src = urlData.signedUrl;
+        image.alt = "Réalisation professionnelle";
+        image.loading = "lazy";
+        bloc.append(image);
+      }
+    }
+
+    liste.append(bloc);
+  }
 }
 
-async function envoyer() {
-  const resultat = document.getElementById("resultat");
-  const fichiers = Array.from(document.getElementById("photos").files);
-  const description = document.getElementById("description").value.trim();
+async function envoyerPhotos() {
+  if (photosEnCours || !professionnel || professionnel.statut !== "approuve") return;
+
+  const fichiers = Array.from($("photos").files || []);
+  const description = $("description").value.trim();
 
   if (!fichiers.length) {
-    resultat.textContent = "Choisis au moins une photo.";
-    return;
-  }
-
-  const { data: existantes, error: erreurLecture } = await db
-    .from("realisations")
-    .select("id")
-    .eq("professionnel_id", professionnelId)
-    .neq("statut", "refusee");
-
-  if (erreurLecture) {
-    resultat.textContent = erreurLecture.message;
-    return;
-  }
-
-  if (existantes.length + fichiers.length > 4) {
-    resultat.textContent = "Maximum 4 photos. Il te reste " +
-      (4 - existantes.length) + " place(s).";
+    afficherMessage("photoMessage", "Choisis au moins une photo.", "error");
     return;
   }
 
   for (const fichier of fichiers) {
     if (!["image/jpeg", "image/png", "image/webp"].includes(fichier.type) ||
         fichier.size > 5 * 1024 * 1024) {
-      resultat.textContent = "Chaque photo doit être JPG, PNG ou WEBP et faire 5 Mo maximum.";
+      afficherMessage("photoMessage", "Chaque photo doit être JPG, PNG ou WEBP et faire 5 Mo maximum.", "error");
       return;
     }
   }
 
-  resultat.textContent = "Envoi en cours...";
+  photosEnCours = true;
+  $("btnEnvoi").disabled = true;
+  afficherMessage("photoMessage", "Vérification du nombre de photos...");
 
-  for (const fichier of fichiers) {
-    const extension = fichier.name.split(".").pop().toLowerCase();
-    const chemin = professionnelId + "/" + crypto.randomUUID() + "." + extension;
-
-    const { error: erreurUpload } = await db.storage
+  try {
+    const { data: existantes, error: erreurLecture } = await db
       .from("realisations")
-      .upload(chemin, fichier);
+      .select("id")
+      .eq("professionnel_id", professionnel.id)
+      .neq("statut", "refusee");
 
-    if (erreurUpload) {
-      resultat.textContent = "Erreur d'envoi : " + erreurUpload.message;
-      return;
+    if (erreurLecture) throw erreurLecture;
+
+    if (existantes.length + fichiers.length > 4) {
+      throw new Error("Maximum 4 photos. Il te reste " +
+        Math.max(0, 4 - existantes.length) + " place(s).");
     }
 
-    const { error: erreurInsertion } = await db
-      .from("realisations")
-      .insert({
-        professionnel_id: professionnelId,
-        photo_path: chemin,
-        description: description || "Réalisation",
-        statut: "en_attente"
-      });
+    for (const fichier of fichiers) {
+      const extension = fichier.name.split(".").pop().toLowerCase();
+      const chemin = utilisateur.id + "/" + professionnel.id + "/" +
+        crypto.randomUUID() + "." + extension;
 
-    if (erreurInsertion) {
-      await db.storage.from("realisations").remove([chemin]);
-      resultat.textContent = "Erreur d'enregistrement : " + erreurInsertion.message;
-      return;
+      const { error: erreurUpload } = await db.storage
+        .from("realisations")
+        .upload(chemin, fichier, {
+          contentType: fichier.type,
+          upsert: false
+        });
+
+      if (erreurUpload) throw erreurUpload;
+
+      const { error: erreurInsertion } = await db
+        .from("realisations")
+        .insert({
+          professionnel_id: professionnel.id,
+          photo_path: chemin,
+          description: description || "Réalisation",
+          statut: "en_attente"
+        });
+
+      if (erreurInsertion) {
+        await db.storage.from("realisations").remove([chemin]);
+        throw erreurInsertion;
+      }
     }
+
+    $("photos").value = "";
+    $("description").value = "";
+    afficherMessage("photoMessage", "Photos envoyées. Elles attendent la validation de l’administrateur.", "success");
+    await chargerPhotos();
+
+  } catch (error) {
+    afficherMessage("photoMessage", "Erreur : " + error.message, "error");
+  } finally {
+    photosEnCours = false;
+    $("btnEnvoi").disabled = false;
+  }
+}
+
+async function chargerDemandes() {
+  if (!professionnel || professionnel.statut !== "approuve") return;
+
+  const liste = $("listeDemandes");
+  liste.textContent = "Chargement des demandes...";
+
+  const { data, error } = await db
+    .from("demandes")
+    .select("id, description, quartier, statut, created_at")
+    .eq("professionnel_id", professionnel.id)
+    .eq("statut_mise_en_relation", "autorisee")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    liste.textContent = "Impossible de charger les demandes : " + error.message;
+    return;
   }
 
-  resultat.textContent = "Photos envoyées ! Elles attendent la validation de l'administrateur.";
-  document.getElementById("photos").value = "";
-  await chargerPhotos();
+  liste.replaceChildren();
+
+  if (!data || !data.length) {
+    liste.textContent = "Aucune demande autorisée pour le moment.";
+    return;
+  }
+
+  for (const demande of data) {
+    const bloc = document.createElement("div");
+    bloc.className = "request";
+
+    const description = document.createElement("p");
+    description.textContent = demande.description || "Demande sans description";
+
+    const quartier = document.createElement("p");
+    quartier.textContent = "Quartier : " + (demande.quartier || "Non précisé");
+
+    const statut = document.createElement("span");
+    statut.className = "status";
+    statut.textContent = "État du travail : " + (demande.statut || "Non défini");
+
+    bloc.append(description, quartier, statut);
+    liste.append(bloc);
+  }
 }
 
 async function deconnecter() {
   await db.auth.signOut();
-  professionnelId = null;
-  document.getElementById("espace").classList.add("hidden");
-  document.getElementById("connexion").classList.remove("hidden");
+  utilisateur = null;
+  professionnel = null;
+
+  $("espace").classList.add("hidden");
+  $("authSection").classList.remove("hidden");
+  afficherFormulaire("connexion");
+  afficherMessage("authMessage", "Tu es déconnecté.", "success");
 }
 
-db.auth.getSession().then(async ({ data }) => {
-  if (data.session) await chargerEspace();
+db.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_OUT") {
+    utilisateur = null;
+    professionnel = null;
+    $("espace").classList.add("hidden");
+    $("authSection").classList.remove("hidden");
+  }
 });
+
+(async function initialiser() {
+  const { data } = await db.auth.getSession();
+  if (data.session) await chargerEspace();
+})();
 </script>
 </body>
 </html>
