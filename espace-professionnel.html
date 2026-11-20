@@ -191,6 +191,8 @@ const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let utilisateur = null;
 let professionnel = null;
 let photosEnCours = false;
+let inscriptionEnCours = false;
+let chargementEspace = false;
 
 const $ = id => document.getElementById(id);
 
@@ -215,13 +217,16 @@ function statutTexte(statut) {
   return valeurs[statut] || statut || "Non défini";
 }
 
+/* INSCRIPTION PROFESSIONNELLE */
 async function inscrire() {
+  if (inscriptionEnCours) return;
+
   const nom = $("insNom").value.trim();
   const metier = $("insMetier").value.trim();
   const quartier = $("insQuartier").value.trim();
   const telephone = $("insTelephone").value.trim();
   const services = $("insServices").value.trim();
-  const email = $("insEmail").value.trim();
+  const email = $("insEmail").value.trim().toLowerCase();
   const password = $("insPassword").value;
 
   if (!nom || !metier || !quartier || !telephone || !email || !password) {
@@ -234,8 +239,10 @@ async function inscrire() {
     return;
   }
 
+  inscriptionEnCours = true;
   $("btnInscription").disabled = true;
-  afficherMessage("authMessage", "Création du compte en cours...");
+  $("btnInscription").textContent = "Création du compte...";
+  afficherMessage("authMessage", "Création de ton compte professionnel en cours...");
 
   try {
     const { data, error } = await db.auth.signUp({
@@ -243,30 +250,53 @@ async function inscrire() {
       password,
       options: {
         emailRedirectTo: "https://wwwhenry1lutaladio-boop.github.io/Service-kin/espace-professionnel.html",
-        data: { nom, metier, quartier, telephone, services }
+        data: {
+          nom,
+          metier,
+          quartier,
+          telephone,
+          services
+        }
       }
     });
 
     if (error) throw error;
 
     if (data.session) {
+      afficherMessage(
+        "authMessage",
+        "Compte créé avec succès. Chargement de ton espace professionnel...",
+        "success"
+      );
+
       await chargerEspace();
+
+      if (professionnel) {
+        $("formInscription").classList.add("hidden");
+        $("formConnexion").classList.add("hidden");
+        $("authMessage").textContent = "";
+      }
+
     } else {
       afficherMessage(
         "authMessage",
-        "Inscription enregistrée. Consulte ton e-mail pour confirmer ton adresse. Ton profil sera soumis à validation.",
-        "success"
+        "Ton compte a été créé, mais Supabase demande encore une confirmation par e-mail. La confirmation e-mail n'est pas encore désactivée dans les réglages. Ne recrée pas un deuxième compte. Nous allons terminer ce réglage.",
+        "info"
       );
     }
+
   } catch (error) {
-    afficherMessage("authMessage", "Erreur : " + error.message, "error");
+    afficherMessage("authMessage", "Erreur : " + (error.message || "Inscription impossible."), "error");
   } finally {
+    inscriptionEnCours = false;
     $("btnInscription").disabled = false;
+    $("btnInscription").textContent = "Créer mon compte";
   }
 }
 
+/* CONNEXION */
 async function connecter() {
-  const email = $("emailConnexion").value.trim();
+  const email = $("emailConnexion").value.trim().toLowerCase();
   const password = $("passwordConnexion").value;
 
   if (!email || !password) {
@@ -288,68 +318,95 @@ async function connecter() {
   }
 }
 
+/* CHARGEMENT DU PROFIL */
 async function chargerEspace() {
-  const { data: { user }, error: erreurAuth } = await db.auth.getUser();
+  if (chargementEspace) return;
+  chargementEspace = true;
 
-  if (erreurAuth || !user) {
-    afficherMessage("authMessage", "Connecte-toi pour accéder à ton espace.", "error");
-    return;
-  }
+  try {
+    const { data: { user }, error: erreurAuth } = await db.auth.getUser();
 
-  utilisateur = user;
+    if (erreurAuth || !user) {
+      afficherMessage("authMessage", "Connecte-toi pour accéder à ton espace.", "error");
+      return;
+    }
 
-  const { data, error } = await db
-    .from("professionnels")
-    .select("id, nom, metier, quartier, telephone, services, statut")
-    .eq("user_id", user.id)
-    .maybeSingle();
+    utilisateur = user;
 
-  if (error || !data) {
-    afficherMessage(
-      "authMessage",
-      "Profil professionnel introuvable. Contacte l’administrateur pour vérifier l’association de ton compte.",
-      "error"
-    );
-    await db.auth.signOut();
-    utilisateur = null;
-    return;
-  }
+    const { data, error } = await db
+      .from("professionnels")
+      .select("id, nom, metier, quartier, telephone, services, statut")
+      .eq("user_id", user.id)
+      .maybeSingle();
 
-  professionnel = data;
+    if (error) throw error;
 
-  $("authSection").classList.add("hidden");
-  $("espace").classList.remove("hidden");
+    if (!data) {
+      afficherMessage(
+        "authMessage",
+        "Ton compte existe, mais ton profil professionnel n'a pas été trouvé. Ne crée pas un autre compte. Vérifie le déclencheur automatique dans Supabase.",
+        "error"
+      );
+      return;
+    }
 
-  $("nomProfessionnel").textContent =
-    (data.nom || "Professionnel") + (data.metier ? " – " + data.metier : "");
+    professionnel = data;
 
-  $("statutProfessionnel").textContent = statutTexte(data.statut);
-  $("statutProfessionnel").className = "status " + data.statut;
+    $("authSection").classList.add("hidden");
+    $("espace").classList.remove("hidden");
 
-  $("profilNom").value = data.nom || "";
-  $("profilMetier").value = data.metier || "";
-  $("profilQuartier").value = data.quartier || "";
-  $("profilTelephone").value = data.telephone || "";
-  $("profilServices").value = data.services || "";
+    $("nomProfessionnel").textContent =
+      (data.nom || "Professionnel") + (data.metier ? " – " + data.metier : "");
 
-  const approuve = data.statut === "approuve";
+    $("statutProfessionnel").textContent = statutTexte(data.statut);
+    $("statutProfessionnel").className = "status " + data.statut;
 
-  $("editionProfil").classList.toggle("hidden", !approuve);
-  $("zonePhotos").classList.toggle("hidden", !approuve);
+    $("profilNom").value = data.nom || "";
+    $("profilMetier").value = data.metier || "";
+    $("profilQuartier").value = data.quartier || "";
+    $("profilTelephone").value = data.telephone || "";
+    $("profilServices").value = data.services || "";
 
-  if (approuve) {
-    afficherMessage("messageStatut", "Ton compte est approuvé. Tu peux gérer ton profil et tes réalisations.", "success");
-    await chargerPhotos();
-    await chargerDemandes();
-  } else if (data.statut === "en_attente") {
-    afficherMessage("messageStatut", "Ton inscription est en attente de validation. Les fonctions professionnelles seront accessibles après approbation.", "info");
-    $("listeDemandes").textContent = "Les demandes seront accessibles après approbation du compte.";
-  } else {
-    afficherMessage("messageStatut", "Ton compte n’est pas approuvé. Contacte l’administrateur de SERVICE KIN.", "error");
-    $("listeDemandes").textContent = "Accès aux demandes indisponible.";
+    const approuve = data.statut === "approuve";
+
+    $("editionProfil").classList.toggle("hidden", !approuve);
+    $("zonePhotos").classList.toggle("hidden", !approuve);
+
+    if (approuve) {
+      afficherMessage(
+        "messageStatut",
+        "Ton compte est approuvé. Tu peux gérer ton profil et tes réalisations.",
+        "success"
+      );
+      await chargerPhotos();
+      await chargerDemandes();
+
+    } else if (data.statut === "en_attente") {
+      afficherMessage(
+        "messageStatut",
+        "Ton inscription est bien enregistrée. Ton dossier est en attente de validation par l'administrateur. Tu pourras modifier ton profil et envoyer tes photos après approbation.",
+        "info"
+      );
+      $("listeDemandes").textContent =
+        "Les demandes seront accessibles après approbation du compte.";
+
+    } else {
+      afficherMessage(
+        "messageStatut",
+        "Ton compte n'est pas approuvé. Contacte l'administrateur de SERVICE KIN.",
+        "error"
+      );
+      $("listeDemandes").textContent = "Accès aux demandes indisponible.";
+    }
+
+  } catch (error) {
+    afficherMessage("authMessage", "Erreur lors du chargement du profil : " + error.message, "error");
+  } finally {
+    chargementEspace = false;
   }
 }
 
+/* MODIFICATION DU PROFIL */
 async function modifierProfil() {
   if (!professionnel || professionnel.statut !== "approuve") return;
 
@@ -376,13 +433,15 @@ async function modifierProfil() {
       professionnel.nom + " – " + professionnel.metier;
 
     afficherMessage("profilMessage", "Profil mis à jour avec succès.", "success");
+
   } catch (error) {
     afficherMessage("profilMessage", "Erreur : " + error.message, "error");
   }
 }
 
+/* CHARGEMENT DES PHOTOS */
 async function chargerPhotos() {
-  if (!professionnel) return;
+  if (!professionnel || professionnel.statut !== "approuve") return;
 
   const liste = $("listePhotos");
   liste.textContent = "Chargement des photos...";
@@ -424,11 +483,11 @@ async function chargerPhotos() {
     bloc.append(titre, document.createElement("br"), statut);
 
     if (photo.photo_path) {
-      const { data: urlData } = await db.storage
+      const { data: urlData, error: urlError } = await db.storage
         .from("realisations")
         .createSignedUrl(photo.photo_path, 3600);
 
-      if (urlData && urlData.signedUrl) {
+      if (!urlError && urlData && urlData.signedUrl) {
         const image = document.createElement("img");
         image.src = urlData.signedUrl;
         image.alt = "Réalisation professionnelle";
@@ -441,6 +500,7 @@ async function chargerPhotos() {
   }
 }
 
+/* ENVOI DES PHOTOS : PROFESSIONNELS APPROUVÉS UNIQUEMENT */
 async function envoyerPhotos() {
   if (photosEnCours || !professionnel || professionnel.statut !== "approuve") return;
 
@@ -453,9 +513,15 @@ async function envoyerPhotos() {
   }
 
   for (const fichier of fichiers) {
-    if (!["image/jpeg", "image/png", "image/webp"].includes(fichier.type) ||
-        fichier.size > 5 * 1024 * 1024) {
-      afficherMessage("photoMessage", "Chaque photo doit être JPG, PNG ou WEBP et faire 5 Mo maximum.", "error");
+    if (
+      !["image/jpeg", "image/png", "image/webp"].includes(fichier.type) ||
+      fichier.size > 5 * 1024 * 1024
+    ) {
+      afficherMessage(
+        "photoMessage",
+        "Chaque photo doit être JPG, PNG ou WEBP et faire 5 Mo maximum.",
+        "error"
+      );
       return;
     }
   }
@@ -474,8 +540,10 @@ async function envoyerPhotos() {
     if (erreurLecture) throw erreurLecture;
 
     if (existantes.length + fichiers.length > 4) {
-      throw new Error("Maximum 4 photos. Il te reste " +
-        Math.max(0, 4 - existantes.length) + " place(s).");
+      throw new Error(
+        "Maximum 4 photos. Il te reste " +
+        Math.max(0, 4 - existantes.length) + " place(s)."
+      );
     }
 
     for (const fichier of fichiers) {
@@ -509,7 +577,13 @@ async function envoyerPhotos() {
 
     $("photos").value = "";
     $("description").value = "";
-    afficherMessage("photoMessage", "Photos envoyées. Elles attendent la validation de l’administrateur.", "success");
+
+    afficherMessage(
+      "photoMessage",
+      "Photos envoyées. Elles attendent la validation de l’administrateur.",
+      "success"
+    );
+
     await chargerPhotos();
 
   } catch (error) {
@@ -520,6 +594,7 @@ async function envoyerPhotos() {
   }
 }
 
+/* DEMANDES CLIENTS */
 async function chargerDemandes() {
   if (!professionnel || professionnel.statut !== "approuve") return;
 
@@ -564,17 +639,21 @@ async function chargerDemandes() {
   }
 }
 
+/* DÉCONNEXION */
 async function deconnecter() {
   await db.auth.signOut();
+
   utilisateur = null;
   professionnel = null;
 
   $("espace").classList.add("hidden");
   $("authSection").classList.remove("hidden");
+
   afficherFormulaire("connexion");
   afficherMessage("authMessage", "Tu es déconnecté.", "success");
 }
 
+/* ÉVÉNEMENTS AUTHENTIFICATION */
 db.auth.onAuthStateChange((event, session) => {
   if (event === "SIGNED_OUT") {
     utilisateur = null;
@@ -584,9 +663,18 @@ db.auth.onAuthStateChange((event, session) => {
   }
 });
 
+/* SESSION EXISTANTE */
 (async function initialiser() {
-  const { data } = await db.auth.getSession();
-  if (data.session) await chargerEspace();
+  const { data, error } = await db.auth.getSession();
+
+  if (error) {
+    afficherMessage("authMessage", "Impossible de vérifier la session : " + error.message, "error");
+    return;
+  }
+
+  if (data.session) {
+    await chargerEspace();
+  }
 })();
 </script>
 </body>
