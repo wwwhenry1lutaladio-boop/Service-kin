@@ -664,6 +664,8 @@ async function envoyerPhotos() {
   $("btnEnvoi").disabled = true;
   afficherMessage("photoMessage", "Vérification du nombre de photos...");
 
+  let cheminEnCours = null;
+
   try {
     const { data: existantes, error: erreurLecture } = await db
       .from("realisations")
@@ -671,20 +673,41 @@ async function envoyerPhotos() {
       .eq("professionnel_id", professionnel.id)
       .neq("statut", "refusee");
 
-    if (erreurLecture) throw erreurLecture;
+    if (erreurLecture) {
+      throw new Error("Lecture des réalisations impossible : " + erreurLecture.message);
+    }
 
-    if (existantes.length + fichiers.length > 4) {
+    if ((existantes || []).length + fichiers.length > 4) {
       throw new Error(
         "Maximum 4 photos. Il te reste " +
-        Math.max(0, 4 - existantes.length) + " place(s)."
+        Math.max(0, 4 - (existantes || []).length) + " place(s)."
       );
     }
 
     for (const fichier of fichiers) {
       const extension = fichier.name.split(".").pop().toLowerCase();
-      const chemin = utilisateur.id + "/" + professionnel.id + "/" +
-        crypto.randomUUID() + "." + extension;
 
+      // IMPORTANT : le premier dossier doit être l'ID du professionnel.
+      // Le deuxième dossier correspond à l'ID de son compte utilisateur.
+      const identifiantFichier = (
+        window.crypto && typeof window.crypto.randomUUID === "function"
+      )
+        ? window.crypto.randomUUID()
+        : Date.now() + "-" + Math.random().toString(36).slice(2);
+
+      const chemin =
+        professionnel.id + "/" +
+        utilisateur.id + "/" +
+        identifiantFichier + "." + extension;
+
+      cheminEnCours = chemin;
+
+      afficherMessage(
+        "photoMessage",
+        "Envoi de la photo dans le stockage sécurisé..."
+      );
+
+      // ÉTAPE 1 : téléverser le fichier dans Storage.
       const { error: erreurUpload } = await db.storage
         .from("realisations")
         .upload(chemin, fichier, {
@@ -692,8 +715,18 @@ async function envoyerPhotos() {
           upsert: false
         });
 
-      if (erreurUpload) throw erreurUpload;
+      if (erreurUpload) {
+        throw new Error(
+          "BLOCAGE DU STOCKAGE DES PHOTOS : " + erreurUpload.message
+        );
+      }
 
+      afficherMessage(
+        "photoMessage",
+        "Photo téléversée. Enregistrement de la réalisation..."
+      );
+
+      // ÉTAPE 2 : enregistrer la photo dans la table realisations.
       const { error: erreurInsertion } = await db
         .from("realisations")
         .insert({
@@ -704,9 +737,14 @@ async function envoyerPhotos() {
         });
 
       if (erreurInsertion) {
-        await db.storage.from("realisations").remove([chemin]);
-        throw erreurInsertion;
+        throw new Error(
+          "BLOCAGE DE LA TABLE REALISATIONS : " +
+          erreurInsertion.message +
+          ". Le fichier a été téléversé, mais sa fiche n'a pas été enregistrée."
+        );
       }
+
+      cheminEnCours = null;
     }
 
     $("photos").value = "";
@@ -714,14 +752,24 @@ async function envoyerPhotos() {
 
     afficherMessage(
       "photoMessage",
-      "Photos envoyées. Elles attendent la validation de l’administrateur.",
+      "Photos envoyées avec succès. Elles attendent la validation de l’administrateur.",
       "success"
     );
 
     await chargerPhotos();
 
   } catch (error) {
-    afficherMessage("photoMessage", "Erreur : " + error.message, "error");
+    afficherMessage(
+      "photoMessage",
+      "Erreur : " + error.message,
+      "error"
+    );
+
+    console.error("Erreur détaillée pendant l'envoi des photos :", error);
+    if (cheminEnCours) {
+      console.error("Chemin du fichier concerné :", cheminEnCours);
+    }
+
   } finally {
     photosEnCours = false;
     $("btnEnvoi").disabled = false;
