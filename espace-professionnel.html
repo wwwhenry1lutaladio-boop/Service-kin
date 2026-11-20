@@ -89,6 +89,12 @@
     .muted { color: #65717b; font-size: 13px; }
     .tabs { display: flex; gap: 8px; }
     .tabs button { flex: 1; }
+    .text-button {
+      background: transparent;
+      color: #087b55;
+      text-decoration: underline;
+      padding: 8px;
+    }
     @media(max-width:520px) {
       body { padding: 10px; }
       .card { padding: 15px; }
@@ -105,7 +111,7 @@
   </header>
 
   <section id="authSection" class="card">
-    <div class="tabs">
+    <div class="tabs" id="authTabs">
       <button type="button" id="tabConnexion" onclick="afficherFormulaire('connexion')">
         Connexion
       </button>
@@ -119,6 +125,9 @@
       <input id="emailConnexion" type="email" autocomplete="email" placeholder="Adresse e-mail">
       <input id="passwordConnexion" type="password" autocomplete="current-password" placeholder="Mot de passe">
       <button id="btnConnexion" type="button" onclick="connecter()">Se connecter</button>
+      <button type="button" class="text-button" onclick="demanderReinitialisation()">
+        Mot de passe oublié ?
+      </button>
     </div>
 
     <div id="formInscription" class="hidden">
@@ -132,6 +141,16 @@
       <input id="insEmail" type="email" autocomplete="email" placeholder="Adresse e-mail">
       <input id="insPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Mot de passe (8 caractères minimum)">
       <button id="btnInscription" type="button" onclick="inscrire()">Créer mon compte</button>
+    </div>
+
+    <div id="formReinitialisation" class="hidden">
+      <h2>Nouveau mot de passe</h2>
+      <p class="muted">Choisis un nouveau mot de passe pour ton compte SERVICE KIN.</p>
+      <input id="nouveauPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Nouveau mot de passe">
+      <input id="confirmationPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Confirmer le nouveau mot de passe">
+      <button id="btnNouveauPassword" type="button" onclick="enregistrerNouveauMotDePasse()">
+        Enregistrer le nouveau mot de passe
+      </button>
     </div>
 
     <div id="authMessage" aria-live="polite"></div>
@@ -186,6 +205,8 @@
 const SUPABASE_URL = "https://ikhjunfdqjnhonxisjeh.supabase.co";
 const SUPABASE_KEY = "sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE";
 
+const URL_ESPACE = "https://wwwhenry1lutaladio-boop.github.io/Service-kin/espace-professionnel.html";
+
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let utilisateur = null;
@@ -193,6 +214,7 @@ let professionnel = null;
 let photosEnCours = false;
 let inscriptionEnCours = false;
 let chargementEspace = false;
+let reinitialisationEnCours = false;
 
 const $ = id => document.getElementById(id);
 
@@ -205,7 +227,24 @@ function afficherMessage(id, texte, type = "info") {
 function afficherFormulaire(type) {
   $("formConnexion").classList.toggle("hidden", type !== "connexion");
   $("formInscription").classList.toggle("hidden", type !== "inscription");
+  $("formReinitialisation").classList.add("hidden");
+  $("authTabs").classList.remove("hidden");
   $("authMessage").textContent = "";
+}
+
+function afficherFormulaireReinitialisation() {
+  $("formConnexion").classList.add("hidden");
+  $("formInscription").classList.add("hidden");
+  $("formReinitialisation").classList.remove("hidden");
+  $("authTabs").classList.add("hidden");
+  $("authSection").classList.remove("hidden");
+  $("espace").classList.add("hidden");
+
+  afficherMessage(
+    "authMessage",
+    "Lien de récupération reconnu. Saisis maintenant ton nouveau mot de passe.",
+    "info"
+  );
 }
 
 function statutTexte(statut) {
@@ -249,14 +288,8 @@ async function inscrire() {
       email,
       password,
       options: {
-        emailRedirectTo: "https://wwwhenry1lutaladio-boop.github.io/Service-kin/espace-professionnel.html",
-        data: {
-          nom,
-          metier,
-          quartier,
-          telephone,
-          services
-        }
+        emailRedirectTo: URL_ESPACE,
+        data: { nom, metier, quartier, telephone, services }
       }
     });
 
@@ -276,21 +309,122 @@ async function inscrire() {
         $("formConnexion").classList.add("hidden");
         $("authMessage").textContent = "";
       }
-
     } else {
       afficherMessage(
         "authMessage",
-        "Ton compte a été créé, mais Supabase demande encore une confirmation par e-mail. La confirmation e-mail n'est pas encore désactivée dans les réglages. Ne recrée pas un deuxième compte. Nous allons terminer ce réglage.",
+        "Ton compte a été créé, mais aucune session n'a été ouverte. Vérifie les réglages de confirmation e-mail dans Supabase.",
         "info"
       );
     }
-
   } catch (error) {
     afficherMessage("authMessage", "Erreur : " + (error.message || "Inscription impossible."), "error");
   } finally {
     inscriptionEnCours = false;
     $("btnInscription").disabled = false;
     $("btnInscription").textContent = "Créer mon compte";
+  }
+}
+
+/* DEMANDER UN LIEN DE RÉINITIALISATION */
+async function demanderReinitialisation() {
+  const email = $("emailConnexion").value.trim().toLowerCase();
+
+  if (!email) {
+    afficherMessage(
+      "authMessage",
+      "Saisis d'abord ton adresse e-mail dans le champ de connexion.",
+      "error"
+    );
+    return;
+  }
+
+  afficherMessage("authMessage", "Envoi du lien de récupération en cours...");
+
+  try {
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: URL_ESPACE + "?mode=reinitialisation"
+    });
+
+    if (error) throw error;
+
+    afficherMessage(
+      "authMessage",
+      "Un lien de récupération vient d'être envoyé. Ouvre le nouvel e-mail et clique sur le lien pour choisir ton nouveau mot de passe.",
+      "success"
+    );
+  } catch (error) {
+    afficherMessage(
+      "authMessage",
+      "Impossible d'envoyer le lien : " + error.message,
+      "error"
+    );
+  }
+}
+
+/* ENREGISTRER LE NOUVEAU MOT DE PASSE */
+async function enregistrerNouveauMotDePasse() {
+  if (reinitialisationEnCours) return;
+
+  const password = $("nouveauPassword").value;
+  const confirmation = $("confirmationPassword").value;
+
+  if (!password || !confirmation) {
+    afficherMessage("authMessage", "Remplis les deux champs du mot de passe.", "error");
+    return;
+  }
+
+  if (password.length < 8) {
+    afficherMessage("authMessage", "Le mot de passe doit contenir au moins 8 caractères.", "error");
+    return;
+  }
+
+  if (password !== confirmation) {
+    afficherMessage("authMessage", "Les deux mots de passe ne correspondent pas.", "error");
+    return;
+  }
+
+  reinitialisationEnCours = true;
+  $("btnNouveauPassword").disabled = true;
+  $("btnNouveauPassword").textContent = "Enregistrement...";
+
+  try {
+    const { data: sessionData, error: sessionError } = await db.auth.getSession();
+
+    if (sessionError) throw sessionError;
+
+    if (!sessionData.session) {
+      throw new Error(
+        "Le lien de récupération n'est pas valide ou a expiré. Demande un nouveau lien depuis la page de connexion."
+      );
+    }
+
+    const { error } = await db.auth.updateUser({ password });
+
+    if (error) throw error;
+
+    afficherMessage(
+      "authMessage",
+      "Ton nouveau mot de passe a été enregistré. Chargement de ton espace professionnel...",
+      "success"
+    );
+
+    $("nouveauPassword").value = "";
+    $("confirmationPassword").value = "";
+
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.pathname
+    );
+
+    await chargerEspace();
+
+  } catch (error) {
+    afficherMessage("authMessage", "Erreur : " + error.message, "error");
+  } finally {
+    reinitialisationEnCours = false;
+    $("btnNouveauPassword").disabled = false;
+    $("btnNouveauPassword").textContent = "Enregistrer le nouveau mot de passe";
   }
 }
 
@@ -655,6 +789,10 @@ async function deconnecter() {
 
 /* ÉVÉNEMENTS AUTHENTIFICATION */
 db.auth.onAuthStateChange((event, session) => {
+  if (event === "PASSWORD_RECOVERY") {
+    afficherFormulaireReinitialisation();
+  }
+
   if (event === "SIGNED_OUT") {
     utilisateur = null;
     professionnel = null;
@@ -663,12 +801,33 @@ db.auth.onAuthStateChange((event, session) => {
   }
 });
 
-/* SESSION EXISTANTE */
+/* SESSION EXISTANTE ET LIEN DE RÉCUPÉRATION */
 (async function initialiser() {
+  const hash = window.location.hash;
+  const params = new URLSearchParams(window.location.search);
+
+  const lienRecuperation =
+    hash.includes("type=recovery") ||
+    params.get("mode") === "reinitialisation";
+
   const { data, error } = await db.auth.getSession();
 
   if (error) {
     afficherMessage("authMessage", "Impossible de vérifier la session : " + error.message, "error");
+    return;
+  }
+
+  if (lienRecuperation) {
+    afficherFormulaireReinitialisation();
+
+    if (!data.session) {
+      afficherMessage(
+        "authMessage",
+        "Le lien de récupération n'a pas permis d'ouvrir une session. Demande un nouveau lien depuis « Mot de passe oublié ? ».",
+        "error"
+      );
+    }
+
     return;
   }
 
