@@ -4,76 +4,322 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#082f63">
-<title>Administration - SERVICE KIN</title>
+<meta name="theme-color" content="#071b35">
+<title>Administration | SERVICE KIN</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 :root{
-  --blue:#082f63;--blue2:#104b89;--yellow:#ffc400;
-  --bg:#f2f5fa;--text:#17243a;--muted:#64748b;
-  --green:#078b49;--red:#dc2626;
+ --navy:#071b35;
+ --blue:#0d3565;
+ --blue2:#14569a;
+ --gold:#f5bd35;
+ --gold2:#ffe3a0;
+ --bg:#f3f6fb;
+ --white:#fff;
+ --text:#18283e;
+ --muted:#718096;
+ --line:#e5ebf3;
+ --green:#078b56;
+ --red:#d94343;
+ --shadow:0 12px 35px rgba(12,37,68,.07);
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:var(--bg);color:var(--text)}
-header{background:linear-gradient(120deg,#062957,#104e8c);color:white;padding:22px 5%;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:12px}
-.logo-icon{background:var(--yellow);color:var(--blue);width:49px;height:49px;border-radius:12px;display:grid;place-items:center;font-size:27px;font-weight:bold}
-header h1{margin:0;font-size:27px;letter-spacing:-1px}
-header h1 span{color:var(--yellow)}
-header p{margin:5px 0 0;font-size:13px;color:#dceaff}
-.header-label{background:#ffffff20;border:1px solid #ffffff40;padding:10px 14px;border-radius:25px;font-size:13px}
-main{max-width:1150px;margin:25px auto;padding:0 16px}
+html{scroll-behavior:smooth}
+body{
+ margin:0;
+ font-family:Inter,Arial,sans-serif;
+ background:var(--bg);
+ color:var(--text);
+}
 .hidden{display:none!important}
-.panel{background:white;padding:24px;border-radius:16px;margin-bottom:20px;box-shadow:0 4px 15px #00000009}
-h2{color:var(--blue);margin:0 0 12px;font-size:23px}
-h3{color:var(--blue)}
-input,select{display:block;width:100%;padding:12px;margin:9px 0;border:1px solid #d5dfeb;border-radius:8px;background:white;font-size:15px;color:var(--text)}
-input:focus,select:focus{outline:2px solid #b8d3f5;border-color:var(--blue2)}
-button,.action-link{display:inline-block;padding:12px 17px;border:0;border-radius:8px;background:var(--yellow);color:#17243a;font-weight:bold;margin:5px 4px 5px 0;cursor:pointer;text-decoration:none;font-size:14px}
-button:hover,.action-link:hover{filter:brightness(.96)}
-button:disabled{opacity:.6;cursor:wait}
+button,input,select{font:inherit}
+button,a{ -webkit-tap-highlight-color:transparent }
+button{
+ border:0;
+ border-radius:10px;
+ padding:12px 17px;
+ background:var(--gold);
+ color:var(--navy);
+ font-weight:800;
+ cursor:pointer;
+ transition:.2s;
+}
+button:hover{filter:brightness(.96);transform:translateY(-1px)}
+button:disabled{opacity:.55;cursor:wait;transform:none}
 .primary{background:var(--blue);color:white}
 .green{background:var(--green);color:white}
 .delete{background:var(--red);color:white}
-.logout{background:#ffffff20;color:white;border:1px solid #ffffff60}
-.login-panel{max-width:460px;margin:45px auto}
-.login-icon{font-size:42px;margin-bottom:10px}
-.muted{color:var(--muted);line-height:1.5;font-size:14px}
-#message{color:var(--red);font-size:14px;line-height:1.5;overflow-wrap:anywhere}
-.welcome{display:flex;align-items:center;justify-content:space-between;gap:15px;flex-wrap:wrap}
-.welcome p{color:var(--muted);margin:5px 0}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:20px 0}
-.stat{background:white;padding:20px;border-radius:14px;border-left:5px solid var(--yellow);box-shadow:0 3px 12px #00000008}
-.stat .symbol{font-size:26px}
-.stat strong{display:block;font-size:30px;color:var(--blue);margin-top:8px}
+.logout{
+ background:#ffffff17;
+ color:white;
+ border:1px solid #ffffff35;
+}
+.action-link{
+ display:inline-flex;
+ align-items:center;
+ gap:8px;
+ text-decoration:none;
+ padding:12px 17px;
+ border-radius:10px;
+ font-weight:800;
+}
+header{
+ background:
+ radial-gradient(circle at 85% 0%,#1b4b7e 0,transparent 35%),
+ linear-gradient(120deg,#06172e,#0c3564);
+ color:white;
+ padding:23px 5%;
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:18px;
+ flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:13px}
+.logo-icon{
+ width:49px;height:49px;
+ display:grid;place-items:center;
+ background:var(--gold);
+ color:var(--navy);
+ border-radius:15px;
+ font-size:29px;
+ font-weight:900;
+ box-shadow:0 5px 15px #0003;
+}
+header h1{margin:0;font-size:25px;letter-spacing:-1px}
+header h1 span{color:var(--gold)}
+header p{margin:5px 0 0;color:#c8d9ed;font-size:13px}
+.header-label{
+ padding:10px 15px;
+ border:1px solid #ffffff38;
+ background:#ffffff12;
+ border-radius:30px;
+ font-size:13px;
+}
+main{max-width:1450px;margin:auto;padding:28px 4% 60px}
+.login-panel{
+ max-width:460px;
+ margin:65px auto;
+ background:white;
+ padding:35px;
+ border-radius:22px;
+ box-shadow:var(--shadow);
+}
+.login-icon{
+ width:65px;height:65px;
+ display:grid;place-items:center;
+ border-radius:19px;
+ background:#fff3d2;
+ font-size:30px;
+ margin-bottom:18px;
+}
+h2{font-size:23px;letter-spacing:-.5px;color:var(--navy);margin:0 0 10px}
+h3{color:var(--navy)}
+.muted{color:var(--muted);font-size:14px;line-height:1.65}
+input,select{
+ display:block;
+ width:100%;
+ padding:13px 14px;
+ margin:8px 0;
+ border:1px solid #dce4ef;
+ border-radius:10px;
+ background:#fff;
+ color:var(--text);
+ font-size:14px;
+}
+input:focus,select:focus{
+ outline:2px solid #b9d2f0;
+ border-color:var(--blue2);
+}
+#message{font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+.dashboard-heading{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ gap:20px;
+ flex-wrap:wrap;
+ margin-bottom:24px;
+ padding:27px;
+ border-radius:20px;
+ color:white;
+ background:
+ radial-gradient(circle at 95% 0%,#285d94 0,transparent 35%),
+ linear-gradient(115deg,#08264b,#104b83);
+ box-shadow:var(--shadow);
+}
+.dashboard-heading h2{color:white;font-size:27px;margin-bottom:7px}
+.dashboard-heading p{color:#d2e1f2;margin:0}
+.dashboard-heading .eyebrow{
+ color:var(--gold);
+ font-size:11px;
+ letter-spacing:2px;
+ font-weight:900;
+ text-transform:uppercase;
+ margin-bottom:9px;
+}
+.dashboard-heading .logout{margin:0}
+.quick-nav{
+ display:flex;
+ flex-wrap:wrap;
+ gap:9px;
+ margin-bottom:24px;
+}
+.quick-nav a{
+ display:inline-flex;
+ align-items:center;
+ gap:8px;
+ padding:11px 15px;
+ background:white;
+ border:1px solid var(--line);
+ color:var(--blue);
+ border-radius:11px;
+ font-size:13px;
+ font-weight:800;
+ text-decoration:none;
+ box-shadow:0 3px 12px #00000005;
+}
+.quick-nav a:hover{border-color:var(--gold)}
+.stats{
+ display:grid;
+ grid-template-columns:repeat(3,minmax(0,1fr));
+ gap:16px;
+ margin:0 0 25px;
+}
+.stat{
+ background:white;
+ border:1px solid var(--line);
+ border-radius:17px;
+ padding:21px;
+ box-shadow:var(--shadow);
+ position:relative;
+ overflow:hidden;
+}
+.stat:after{
+ content:"";
+ position:absolute;
+ width:85px;height:85px;
+ right:-24px;bottom:-35px;
+ border-radius:50%;
+ background:#f8e7b6;
+ opacity:.4;
+}
+.stat .symbol{
+ width:43px;height:43px;
+ display:grid;place-items:center;
+ border-radius:13px;
+ background:#fff4d7;
+ font-size:22px;
+}
+.stat strong{
+ display:block;
+ font-size:32px;
+ color:var(--navy);
+ margin:15px 0 4px;
+}
 .stat span{font-size:13px;color:var(--muted)}
-.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:15px}
-.pro{background:#fff;padding:19px;margin:13px 0;border:1px solid #e2eaf3;border-left:5px solid var(--yellow);border-radius:12px}
-.pro h3{margin:0 0 12px}
-.pro label{display:block;font-size:12px;font-weight:bold;color:var(--muted);margin-top:8px}
-.pro input{margin:5px 0}
-.pro p{line-height:1.5;overflow-wrap:anywhere}
-.status-label{display:inline-block;padding:6px 10px;border-radius:20px;background:#e8f1ff;color:var(--blue);font-size:12px;font-weight:bold;margin:4px 3px 8px 0}
-.status-pending{background:#fff3c4;color:#805900}
-.status-approved{background:#d9f7e5;color:#08753c}
+.panel{
+ background:white;
+ border:1px solid var(--line);
+ border-radius:18px;
+ padding:25px;
+ margin-bottom:23px;
+ box-shadow:var(--shadow);
+ scroll-margin-top:20px;
+}
+.section-heading{
+ display:flex;
+ align-items:center;
+ justify-content:space-between;
+ gap:15px;
+ flex-wrap:wrap;
+ margin-bottom:20px;
+}
+.section-heading h2{margin:0 0 6px}
+.section-heading p{margin:0}
+.section-icon{
+ display:inline-grid;
+ place-items:center;
+ width:39px;height:39px;
+ background:#fff3d3;
+ border-radius:12px;
+ margin-right:8px;
+ font-size:20px;
+ vertical-align:middle;
+}
+.pro{
+ background:#fff;
+ padding:21px;
+ margin:15px 0;
+ border:1px solid var(--line);
+ border-left:4px solid var(--gold);
+ border-radius:14px;
+}
+.pro h3{margin:0 0 12px;font-size:18px}
+.pro label{
+ display:block;
+ font-size:12px;
+ font-weight:800;
+ color:#62748b;
+ margin-top:10px;
+}
+.pro input,.pro select{margin:5px 0}
+.pro p{line-height:1.6;overflow-wrap:anywhere;font-size:14px}
+.status-label{
+ display:inline-block;
+ padding:7px 11px;
+ border-radius:30px;
+ background:#e8f1ff;
+ color:var(--blue);
+ font-size:11px;
+ font-weight:900;
+ margin:4px 3px 8px 0;
+}
+.status-pending{background:#fff3cd;color:#856000}
+.status-approved{background:#d9f7e8;color:#08753c}
 .status-refused{background:#fee2e2;color:#b91c1c}
 .status-contact{background:#e0edff;color:#104b89}
-.empty{text-align:center;padding:22px;color:var(--muted);background:#f8fafc;border-radius:10px}
-hr{border:0;border-top:1px solid #e2e8f0;margin:25px 0}
-footer{background:var(--blue);color:white;padding:22px;text-align:center;font-size:13px;margin-top:40px}
-footer strong{color:var(--yellow)}
-@media(max-width:650px){
- header{padding:18px 15px}header h1{font-size:23px}
- main{padding:0 11px;margin:16px auto}
- .panel{padding:17px}
- .stats{grid-template-columns:1fr 1fr;gap:9px}
- .stat{padding:14px}.stat strong{font-size:25px}
- .stat span{font-size:12px}.welcome{align-items:flex-start}
- button,.action-link{font-size:13px;padding:11px 13px}
+.empty{
+ text-align:center;
+ padding:30px 18px;
+ color:var(--muted);
+ background:#f7f9fc;
+ border:1px dashed #d9e2ee;
+ border-radius:13px;
 }
-@media(max-width:380px){.stats{grid-template-columns:1fr}}
+hr{border:0;border-top:1px solid var(--line);margin:24px 0}
+footer{
+ background:var(--navy);
+ color:white;
+ padding:25px;
+ text-align:center;
+ font-size:13px;
+}
+footer strong{color:var(--gold)}
+footer p{color:#b9cbe0}
+@media(max-width:750px){
+ header{padding:17px}
+ header h1{font-size:22px}
+ main{padding:18px 12px 40px}
+ .dashboard-heading{padding:22px}
+ .dashboard-heading h2{font-size:23px}
+ .stats{grid-template-columns:1fr 1fr;gap:10px}
+ .stat{padding:15px}
+ .stat strong{font-size:27px}
+ .stat span{font-size:12px}
+ .panel{padding:17px}
+ .login-panel{margin:30px 12px;padding:23px}
+ .section-heading{align-items:flex-start}
+ .quick-nav{display:grid;grid-template-columns:1fr 1fr}
+ .quick-nav a{justify-content:center;text-align:center;padding:12px 8px}
+}
+@media(max-width:390px){
+ .stats{grid-template-columns:1fr}
+ .quick-nav{grid-template-columns:1fr}
+}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -81,72 +327,105 @@ footer strong{color:var(--yellow)}
   <div class="logo-icon">⌂</div>
   <div>
    <h1>SERVICE <span>KIN</span></h1>
-   <p>Administration de la plateforme</p>
+   <p>Centre de pilotage de la plateforme</p>
   </div>
  </div>
  <div class="header-label">👑 Espace propriétaire</div>
 </header>
 
 <main>
- <section id="login" class="panel login-panel">
+
+ <section id="login" class="login-panel">
   <div class="login-icon">🔐</div>
+  <p class="muted" style="font-weight:900;letter-spacing:1px">ACCÈS SÉCURISÉ</p>
   <h2>Connexion administrateur</h2>
-  <p class="muted">Connectez-vous pour gérer votre plateforme SERVICE KIN.</p>
+  <p class="muted">Connectez-vous pour piloter votre plateforme SERVICE KIN.</p>
   <form id="loginForm">
+   <label for="email">Adresse e-mail</label>
    <input id="email" type="email" placeholder="Adresse e-mail" autocomplete="username" required>
+   <label for="password">Mot de passe</label>
    <input id="password" type="password" placeholder="Mot de passe" autocomplete="current-password" required>
-   <button class="primary" id="loginBtn" type="submit">Se connecter →</button>
+   <button class="primary" id="loginBtn" type="submit" style="width:100%;margin:12px 0 0">Se connecter →</button>
   </form>
   <p id="message"></p>
  </section>
 
  <section id="dashboard" class="hidden">
-  <div class="panel welcome">
+
+  <div class="dashboard-heading">
    <div>
-    <h2>Tableau de bord</h2>
-    <p>Bienvenue dans l'administration de SERVICE KIN.</p>
+    <div class="eyebrow">Administration générale</div>
+    <h2>Votre espace de pilotage</h2>
+    <p>Gérez les professionnels, les demandes et les réalisations de SERVICE KIN.</p>
    </div>
-   <button class="logout" id="logoutBtn">Se déconnecter</button>
+   <button class="logout" id="logoutBtn">↪ Déconnexion</button>
   </div>
 
-  <div class="stats">
-   <div class="stat"><div class="symbol">👷</div><strong id="count">0</strong><span>Professionnels inscrits</span></div>
-   <div class="stat"><div class="symbol">📩</div><strong id="demandesCount">0</strong><span>Demandes reçues</span></div>
-   <div class="stat"><div class="symbol">⏳</div><strong id="pendingCount">0</strong><span>Demandes nouvelles</span></div>
-  </div>
+  <nav class="quick-nav">
+   <a href="#overview">📊 Vue d'ensemble</a>
+   <a href="#professionalsSection">👷 Professionnels</a>
+   <a href="#demandesSection">📩 Demandes clients</a>
+   <a href="#photosSection">📸 Gestion des photos</a>
+  </nav>
 
-  <section class="panel">
+  <section id="overview">
+   <div class="stats">
+    <div class="stat">
+     <div class="symbol">👷</div>
+     <strong id="count">0</strong>
+     <span>Professionnels inscrits</span>
+    </div>
+    <div class="stat">
+     <div class="symbol">📩</div>
+     <strong id="demandesCount">0</strong>
+     <span>Demandes reçues</span>
+    </div>
+    <div class="stat">
+     <div class="symbol">⏳</div>
+     <strong id="pendingCount">0</strong>
+     <span>Demandes nouvelles</span>
+    </div>
+   </div>
+  </section>
+
+  <section class="panel" id="professionalsSection">
    <div class="section-heading">
     <div>
-     <h2>👷 Gestion des professionnels</h2>
-     <p class="muted">Approuver les inscriptions, modifier ou supprimer les profils.</p>
+     <h2><span class="section-icon">👷</span>Gestion des professionnels</h2>
+     <p class="muted">Validez les inscriptions et gérez les profils de vos professionnels.</p>
     </div>
     <button class="primary" id="refreshBtn">↻ Actualiser</button>
    </div>
    <div id="professionals">Chargement...</div>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="demandesSection">
    <div class="section-heading">
     <div>
-     <h2>📩 Demandes des clients</h2>
-     <p class="muted">Gérer les demandes et décider de la mise en relation avec les professionnels.</p>
+     <h2><span class="section-icon">📩</span>Demandes des clients</h2>
+     <p class="muted">Suivez les demandes et contrôlez les mises en relation.</p>
     </div>
     <button class="primary" id="refreshDemandesBtn">↻ Actualiser</button>
    </div>
    <div id="demandes">Chargement...</div>
   </section>
 
-  <section class="panel">
-   <h2>📸 Gestion des photos</h2>
-   <p class="muted">Consulter les réalisations envoyées par les professionnels et valider celles qui peuvent apparaître sur le site.</p>
+  <section class="panel" id="photosSection">
+   <div class="section-heading">
+    <div>
+     <h2><span class="section-icon">📸</span>Gestion des photos</h2>
+     <p class="muted">Examinez les réalisations envoyées et validez celles qui seront visibles sur le site.</p>
+    </div>
+   </div>
    <a class="action-link primary" href="admin-photos.html">Ouvrir la gestion des photos →</a>
   </section>
+
  </section>
 </main>
 
 <footer>
- <strong>SERVICE KIN</strong> - Administration
+ <strong>SERVICE KIN</strong> — Administration
+ <p>Les services à portée de main !</p>
  <p>Kinshasa, République démocratique du Congo</p>
 </footer>
 
@@ -243,15 +522,15 @@ async function loadProfessionals(){
  }
 
  professionnelsEnMemoire=data || [];
- document.getElementById("count").textContent=data.length;
+ document.getElementById("count").textContent=professionnelsEnMemoire.length;
  area.replaceChildren();
 
- if(!data.length){
+ if(!professionnelsEnMemoire.length){
   area.innerHTML='<div class="empty">Aucun professionnel inscrit.</div>';
   return;
  }
 
- data.forEach(p=>{
+ professionnelsEnMemoire.forEach(p=>{
   const card=document.createElement("div");
   card.className="pro";
 
@@ -382,18 +661,19 @@ async function loadDemandes(){
   return;
  }
 
- document.getElementById("demandesCount").textContent=data.length;
- const nouvelles=data.filter(d=>!d.statut || d.statut==="nouvelle").length;
+ const demandes=data || [];
+ document.getElementById("demandesCount").textContent=demandes.length;
+ const nouvelles=demandes.filter(d=>!d.statut || d.statut==="nouvelle").length;
  document.getElementById("pendingCount").textContent=nouvelles;
 
  area.replaceChildren();
 
- if(!data.length){
+ if(!demandes.length){
   area.innerHTML='<div class="empty">Aucune demande reçue pour le moment.</div>';
   return;
  }
 
- data.forEach(d=>{
+ demandes.forEach(d=>{
   const card=document.createElement("div");
   card.className="pro";
 
@@ -596,5 +876,6 @@ db.auth.getSession().then(({data,error})=>{
  if(data.session)openDashboard();
 });
 </script>
+
 </body>
 </html>
