@@ -12,524 +12,177 @@
 
 <style>
 :root{
-  --navy:#071d38;
-  --blue:#103e70;
-  --blue-light:#1c5c98;
-  --gold:#f5bd35;
-  --gold-light:#ffe6a0;
-  --ink:#17263a;
-  --muted:#718096;
-  --paper:#f6f7f9;
-  --white:#fff;
-  --line:#e6eaf0;
-  --green:#16845b;
-  --shadow:0 18px 50px rgba(7,29,56,.09);
-  --radius:22px;
+  --navy:#071d38;--blue:#103e70;--blue-light:#1c5c98;
+  --gold:#f5bd35;--gold-light:#ffe6a0;--ink:#17263a;
+  --muted:#718096;--paper:#f6f7f9;--white:#fff;
+  --line:#e6eaf0;--green:#16845b;
+  --shadow:0 18px 50px rgba(7,29,56,.09);--radius:22px;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:90px}
-body{
-  margin:0;background:var(--paper);color:var(--ink);
-  font-family:Inter,Arial,sans-serif;
-}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,Arial,sans-serif}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 a{color:inherit}
 img{max-width:100%;display:block}
-
-/* NAVIGATION */
-header{
-  position:sticky;top:0;z-index:50;
-  display:flex;align-items:center;justify-content:space-between;
-  gap:25px;padding:13px 6%;
-  background:rgba(255,255,255,.96);
-  backdrop-filter:blur(16px);
-  border-bottom:1px solid rgba(230,234,240,.8);
-}
+header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:25px;padding:13px 6%;background:rgba(255,255,255,.96);backdrop-filter:blur(16px);border-bottom:1px solid rgba(230,234,240,.8)}
 .brand{display:flex;align-items:center;gap:11px;text-decoration:none;flex-shrink:0}
-.logo-icon{
-  width:47px;height:47px;border-radius:15px;
-  background:var(--navy);color:var(--gold);
-  display:grid;place-items:center;font-size:29px;font-weight:900;
-  box-shadow:0 7px 17px #071d3825;
-}
+.logo-icon{width:47px;height:47px;border-radius:15px;background:var(--navy);color:var(--gold);display:grid;place-items:center;font-size:29px;font-weight:900;box-shadow:0 7px 17px #071d3825}
 .logo{font-size:23px;font-weight:950;letter-spacing:-1.2px;color:var(--navy)}
 .logo span{color:#d69b16}
 .brand p{font-size:10px;color:var(--muted);margin:3px 0 0}
 nav{display:flex;align-items:center;gap:23px}
-nav a{
-  font-size:12px;font-weight:800;text-decoration:none;
-  color:#46566b;transition:.2s;
-}
+nav a{font-size:12px;font-weight:800;text-decoration:none;color:#46566b;transition:.2s}
 nav a:hover{color:#c18a13}
 .header-actions{display:flex;align-items:center;gap:8px}
-.header-btn{
-  display:inline-flex;align-items:center;justify-content:center;
-  padding:12px 16px;border-radius:30px;text-decoration:none;
-  font-size:11px;font-weight:900;background:var(--navy);color:white;
-  white-space:nowrap;transition:.2s;
-}
+.header-btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border-radius:30px;text-decoration:none;font-size:11px;font-weight:900;background:var(--navy);color:white;white-space:nowrap;transition:.2s}
 .header-btn.yellow{background:var(--gold);color:var(--navy)}
 .header-btn:hover{transform:translateY(-2px);box-shadow:0 7px 16px #071d3820}
-
-/* HERO */
-.hero{
-  position:relative;isolation:isolate;overflow:hidden;
-  min-height:590px;color:white;
-  background:var(--navy);
-  display:flex;align-items:center;
-}
-.hero:before{
-  content:"";position:absolute;inset:0;z-index:-2;
-  background:
-    linear-gradient(90deg,rgba(4,20,40,.96) 0%,rgba(4,20,40,.86) 42%,rgba(4,20,40,.26) 100%),
-    url("https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=85") center 45%/cover;
-  transform:scale(1.02);
-}
-.hero:after{
-  content:"";position:absolute;inset:0;z-index:-1;
-  background:linear-gradient(0deg,rgba(4,20,40,.42),transparent 40%);
-}
-.hero-inner{
-  width:100%;max-width:1350px;margin:auto;padding:90px 7%;
-  display:grid;grid-template-columns:minmax(0,1.15fr) minmax(260px,.65fr);
-  align-items:center;gap:50px;
-}
+.hero{position:relative;isolation:isolate;overflow:hidden;min-height:590px;color:white;background:var(--navy);display:flex;align-items:center}
+.hero:before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(4,20,40,.96) 0%,rgba(4,20,40,.86) 42%,rgba(4,20,40,.26) 100%),url("https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=2000&q=85") center 45%/cover;transform:scale(1.02)}
+.hero:after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,rgba(4,20,40,.42),transparent 40%)}
+.hero-inner{width:100%;max-width:1350px;margin:auto;padding:90px 7%;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(260px,.65fr);align-items:center;gap:50px}
 .hero-content{max-width:720px}
-.hero-kicker{
-  display:inline-flex;align-items:center;gap:9px;
-  padding:9px 14px;border:1px solid #ffffff55;
-  background:#ffffff13;border-radius:30px;
-  font-size:10px;font-weight:900;letter-spacing:1.5px;
-  margin-bottom:24px;
-}
-.hero-kicker i{
-  width:8px;height:8px;background:var(--gold);
-  border-radius:50%;display:inline-block;
-}
-.hero h1{
-  font-size:clamp(43px,6vw,76px);line-height:1.02;
-  letter-spacing:-3px;margin:0 0 23px;font-weight:950;
-}
+.hero-kicker{display:inline-flex;align-items:center;gap:9px;padding:9px 14px;border:1px solid #ffffff55;background:#ffffff13;border-radius:30px;font-size:10px;font-weight:900;letter-spacing:1.5px;margin-bottom:24px}
+.hero-kicker i{width:8px;height:8px;background:var(--gold);border-radius:50%;display:inline-block}
+.hero h1{font-size:clamp(43px,6vw,76px);line-height:1.02;letter-spacing:-3px;margin:0 0 23px;font-weight:950}
 .hero h1 span{color:var(--gold)}
-.hero-description{
-  max-width:570px;color:#e1eaf5;
-  font-size:16px;line-height:1.85;margin:0;
-}
+.hero-description{max-width:570px;color:#e1eaf5;font-size:16px;line-height:1.85;margin:0}
 .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
-.hero-button{
-  display:inline-flex;align-items:center;justify-content:center;gap:10px;
-  padding:16px 23px;border-radius:9px;text-decoration:none;
-  background:var(--gold);color:var(--navy);font-size:12px;font-weight:950;
-  transition:.2s;
-}
+.hero-button{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:16px 23px;border-radius:9px;text-decoration:none;background:var(--gold);color:var(--navy);font-size:12px;font-weight:950;transition:.2s}
 .hero-button:hover{transform:translateY(-3px);box-shadow:0 10px 25px #0004}
-.hero-button.outline{
-  color:white;background:#ffffff12;border:1px solid #ffffff70;
-}
+.hero-button.outline{color:white;background:#ffffff12;border:1px solid #ffffff70}
 .hero-note{font-size:11px;color:#d5dfeb;margin-top:24px}
 .hero-note strong{color:var(--gold)}
-.hero-panel{
-  align-self:end;justify-self:end;width:100%;max-width:310px;
-  background:rgba(255,255,255,.96);color:var(--navy);
-  padding:25px;border-radius:18px;
-  box-shadow:0 25px 60px #0005;
-}
-.hero-panel .panel-icon{
-  width:47px;height:47px;border-radius:14px;
-  display:grid;place-items:center;background:#fff1cb;font-size:24px;
-  margin-bottom:17px;
-}
-.hero-panel small{
-  color:#b18118;font-size:10px;font-weight:950;
-  text-transform:uppercase;letter-spacing:1.4px;
-}
+.hero-panel{align-self:end;justify-self:end;width:100%;max-width:310px;background:rgba(255,255,255,.96);color:var(--navy);padding:25px;border-radius:18px;box-shadow:0 25px 60px #0005}
+.hero-panel .panel-icon{width:47px;height:47px;border-radius:14px;display:grid;place-items:center;background:#fff1cb;font-size:24px;margin-bottom:17px}
+.hero-panel small{color:#b18118;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:1.4px}
 .hero-panel h2{font-size:21px;line-height:1.3;margin:8px 0}
 .hero-panel p{font-size:12px;line-height:1.7;color:var(--muted);margin:0}
-
-/* BANDE DE CONFIANCE */
-.trust-strip{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  background:white;border-bottom:1px solid var(--line);
-  padding:22px 7%;gap:15px;
-}
+.trust-strip{display:grid;grid-template-columns:repeat(4,1fr);background:white;border-bottom:1px solid var(--line);padding:22px 7%;gap:15px}
 .trust-item{display:flex;align-items:center;justify-content:center;gap:11px}
-.trust-icon{
-  width:39px;height:39px;border-radius:12px;
-  background:#fff4d8;display:grid;place-items:center;font-size:18px;
-}
+.trust-icon{width:39px;height:39px;border-radius:12px;background:#fff4d8;display:grid;place-items:center;font-size:18px}
 .trust-item strong{display:block;font-size:11px;color:var(--navy)}
 .trust-item small{display:block;font-size:10px;color:var(--muted);margin-top:4px}
-
-/* STRUCTURE */
 main{max-width:1350px;margin:auto;padding:0 6%}
 .section{padding:86px 0}
-.section-top{
-  display:flex;justify-content:space-between;align-items:end;
-  gap:25px;margin-bottom:32px;
-}
-.section-label{
-  color:#b3831c;text-transform:uppercase;letter-spacing:2px;
-  font-size:10px;font-weight:950;
-}
-.section-title{
-  color:var(--navy);font-size:clamp(28px,3.5vw,42px);
-  line-height:1.12;letter-spacing:-1.5px;margin:10px 0;
-}
-.section-intro{
-  color:var(--muted);font-size:13px;line-height:1.8;
-  max-width:640px;margin:0;
-}
-.section-link{
-  text-decoration:none;color:var(--blue);font-size:12px;
-  font-weight:900;white-space:nowrap;
-  border-bottom:2px solid var(--gold);padding-bottom:6px;
-}
-
-/* CATEGORIES */
-.categories{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:14px;margin:30px 0 32px;
-}
-.category-btn{
-  min-height:135px;position:relative;overflow:hidden;
-  border:1px solid var(--line);border-radius:16px;
-  background:white;text-align:left;padding:20px;
-  color:var(--navy);transition:.25s;
-  box-shadow:0 5px 18px #071d3806;
-}
-.category-btn:after{
-  content:"";position:absolute;width:75px;height:75px;
-  border-radius:50%;background:#f5bd351a;
-  right:-20px;bottom:-25px;transition:.25s;
-}
-.category-btn .emoji{
-  display:block;font-size:27px;margin-bottom:16px;
-  position:relative;z-index:1;
-}
-.category-btn span:last-child{
-  display:block;font-size:12px;font-weight:900;
-  position:relative;z-index:1;
-}
-.category-btn:hover,.category-btn.active{
-  transform:translateY(-4px);border-color:var(--gold);
-  box-shadow:0 14px 30px #071d3815;
-}
+.section-top{display:flex;justify-content:space-between;align-items:end;gap:25px;margin-bottom:32px}
+.section-label{color:#b3831c;text-transform:uppercase;letter-spacing:2px;font-size:10px;font-weight:950}
+.section-title{color:var(--navy);font-size:clamp(28px,3.5vw,42px);line-height:1.12;letter-spacing:-1.5px;margin:10px 0}
+.section-intro{color:var(--muted);font-size:13px;line-height:1.8;max-width:640px;margin:0}
+.section-link{text-decoration:none;color:var(--blue);font-size:12px;font-weight:900;white-space:nowrap;border-bottom:2px solid var(--gold);padding-bottom:6px}
+.categories{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:30px 0 32px}
+.category-btn{min-height:135px;position:relative;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:white;text-align:left;padding:20px;color:var(--navy);transition:.25s;box-shadow:0 5px 18px #071d3806}
+.category-btn:after{content:"";position:absolute;width:75px;height:75px;border-radius:50%;background:#f5bd351a;right:-20px;bottom:-25px;transition:.25s}
+.category-btn .emoji{display:block;font-size:27px;margin-bottom:16px;position:relative;z-index:1}
+.category-btn span:last-child{display:block;font-size:12px;font-weight:900;position:relative;z-index:1}
+.category-btn:hover,.category-btn.active{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 14px 30px #071d3815}
 .category-btn.active{background:var(--navy);color:white}
 .category-btn.active:after{background:#f5bd3530}
-
-/* SEARCH */
-.search-area{
-  background:white;border:1px solid var(--line);
-  border-radius:17px;padding:9px;box-shadow:var(--shadow);
-  display:flex;align-items:center;gap:10px;max-width:900px;margin:0 auto;
-}
-.search-symbol{
-  width:45px;height:45px;border-radius:12px;
-  display:grid;place-items:center;background:#f2f5f9;
-  font-size:20px;flex-shrink:0;
-}
+.search-area{background:white;border:1px solid var(--line);border-radius:17px;padding:9px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;max-width:900px;margin:0 auto}
+.search-symbol{width:45px;height:45px;border-radius:12px;display:grid;place-items:center;background:#f2f5f9;font-size:20px;flex-shrink:0}
 .search-box{display:flex;flex:1;min-width:0;gap:8px}
-.search-box input{
-  flex:1;min-width:0;border:0;outline:0;
-  padding:13px 8px;font-size:13px;color:var(--ink);
-  background:transparent;
-}
-.search-box button{
-  border:0;border-radius:10px;background:var(--gold);
-  color:var(--navy);font-size:12px;font-weight:950;
-  padding:0 24px;transition:.2s;
-}
+.search-box input{flex:1;min-width:0;border:0;outline:0;padding:13px 8px;font-size:13px;color:var(--ink);background:transparent}
+.search-box button{border:0;border-radius:10px;background:var(--gold);color:var(--navy);font-size:12px;font-weight:950;padding:0 24px;transition:.2s}
 .search-box button:hover{background:#e8ad20}
-
-/* PROFESSIONALS */
 .professionals-section{padding-top:20px}
-.results-heading{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:15px;margin:0 0 20px;
-}
+.results-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:0 0 20px}
 .results-heading h2{font-size:23px;color:var(--navy);margin:0;letter-spacing:-.6px}
 .results-heading span{font-size:11px;color:var(--muted);font-weight:800}
 .results-layout{display:grid;grid-template-columns:minmax(0,1fr) 285px;gap:22px}
-#results{
-  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:17px;align-content:start;
-}
-.card{
-  background:white;border:1px solid var(--line);
-  border-radius:17px;padding:22px;overflow:hidden;
-  box-shadow:0 7px 22px #071d3807;transition:.25s;
-}
+#results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:17px;align-content:start}
+.card{background:white;border:1px solid var(--line);border-radius:17px;padding:22px;overflow:hidden;box-shadow:0 7px 22px #071d3807;transition:.25s}
 .card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
-.card .tag{
-  display:inline-flex;background:#fff3d2;color:#91660d;
-  border-radius:30px;padding:7px 11px;
-  font-size:10px;font-weight:950;
-}
+.card .tag{display:inline-flex;background:#fff3d2;color:#91660d;border-radius:30px;padding:7px 11px;font-size:10px;font-weight:950}
 .card h3{color:var(--navy);font-size:20px;margin:14px 0 7px}
 .card p{color:#617086;font-size:12px;line-height:1.7;margin:8px 0}
 .card h4{color:var(--navy);font-size:12px;margin:19px 0 10px}
 .gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
-.gallery img{
-  width:100%;height:145px;object-fit:cover;
-  border-radius:10px;background:#eef2f7;
-}
+.gallery img{width:100%;height:145px;object-fit:cover;border-radius:10px;background:#eef2f7}
 .photo-caption{font-size:10px!important;color:var(--muted)!important}
-.request-link{
-  display:block;text-align:center;text-decoration:none;
-  background:var(--navy);color:white;padding:14px;
-  border-radius:9px;font-size:11px;font-weight:950;margin-top:18px;
-  transition:.2s;
-}
+.request-link{display:block;text-align:center;text-decoration:none;background:var(--navy);color:white;padding:14px;border-radius:9px;font-size:11px;font-weight:950;margin-top:18px;transition:.2s}
 .request-link:hover{background:var(--blue-light)}
-.empty-message{
-  grid-column:1/-1;background:white;border:1px dashed #cbd5e1;
-  border-radius:16px;padding:38px 20px;text-align:center;
-  color:var(--muted);font-size:13px;line-height:1.7;
-}
-.side-card{
-  position:sticky;top:100px;align-self:start;overflow:hidden;
-  border-radius:18px;padding:27px 23px;color:white;
-  background:
-    linear-gradient(155deg,rgba(7,29,56,.97),rgba(16,62,112,.94)),
-    url("https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=700&q=80") center/cover;
-  box-shadow:0 17px 35px #071d3825;
-}
+.empty-message{grid-column:1/-1;background:white;border:1px dashed #cbd5e1;border-radius:16px;padding:38px 20px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7}
+.side-card{position:sticky;top:100px;align-self:start;overflow:hidden;border-radius:18px;padding:27px 23px;color:white;background:linear-gradient(155deg,rgba(7,29,56,.97),rgba(16,62,112,.94)),url("https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&w=700&q=80") center/cover;box-shadow:0 17px 35px #071d3825}
 .side-card .symbol{font-size:39px}
-.side-card .side-label{
-  color:var(--gold);font-size:10px;font-weight:950;
-  letter-spacing:1.5px;text-transform:uppercase;margin-top:20px;
-}
+.side-card .side-label{color:var(--gold);font-size:10px;font-weight:950;letter-spacing:1.5px;text-transform:uppercase;margin-top:20px}
 .side-card h3{font-size:24px;line-height:1.2;margin:10px 0}
 .side-card p{font-size:12px;line-height:1.8;color:#dce8f6}
-.side-card a{
-  display:block;background:var(--gold);color:var(--navy);
-  text-decoration:none;text-align:center;padding:14px 10px;
-  border-radius:9px;font-size:11px;font-weight:950;margin-top:20px;
-}
-
-/* HOW IT WORKS */
-.steps-section{
-  background:var(--navy);color:white;
-  margin:0 calc(50% - 50vw);padding:75px max(6%,calc((100vw - 1350px)/2));
-}
+.side-card a{display:block;background:var(--gold);color:var(--navy);text-decoration:none;text-align:center;padding:14px 10px;border-radius:9px;font-size:11px;font-weight:950;margin-top:20px}
+.steps-section{background:var(--navy);color:white;margin:0 calc(50% - 50vw);padding:75px max(6%,calc((100vw - 1350px)/2))}
 .steps-section .section-title{color:white}
 .steps-section .section-intro{color:#c4d2e3}
 .steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px;margin-top:35px}
-.step-card{
-  padding:25px;border:1px solid #ffffff26;
-  border-radius:15px;background:#ffffff0b;
-}
-.step-number{
-  width:42px;height:42px;border-radius:12px;
-  background:var(--gold);color:var(--navy);
-  display:grid;place-items:center;font-weight:950;font-size:15px;
-}
+.step-card{padding:25px;border:1px solid #ffffff26;border-radius:15px;background:#ffffff0b}
+.step-number{width:42px;height:42px;border-radius:12px;background:var(--gold);color:var(--navy);display:grid;place-items:center;font-weight:950;font-size:15px}
 .step-card h3{font-size:17px;margin:19px 0 9px}
 .step-card p{color:#c5d4e5;font-size:12px;line-height:1.8;margin:0}
-
-/* REQUEST FORM */
-.form-section{
-  margin-top:70px;background:white;border:1px solid var(--line);
-  border-radius:22px;padding:38px;box-shadow:var(--shadow);
-}
-.form-heading{
-  display:flex;align-items:flex-start;gap:17px;margin-bottom:24px;
-}
-.form-heading-icon{
-  width:53px;height:53px;border-radius:15px;
-  display:grid;place-items:center;background:#fff2cd;font-size:25px;flex-shrink:0;
-}
+.form-section{margin-top:70px;background:white;border:1px solid var(--line);border-radius:22px;padding:38px;box-shadow:var(--shadow)}
+.form-heading{display:flex;align-items:flex-start;gap:17px;margin-bottom:24px}
+.form-heading-icon{width:53px;height:53px;border-radius:15px;display:grid;place-items:center;background:#fff2cd;font-size:25px;flex-shrink:0}
 .form-section h2{color:var(--navy);font-size:26px;letter-spacing:-.8px;margin:0 0 9px}
 .form-section form{margin-top:20px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-input,select,textarea{
-  width:100%;padding:15px;border:1px solid #dce3eb;
-  border-radius:9px;font-size:13px;background:#fbfcfe;
-  color:var(--ink);margin:6px 0;
-}
-input:focus,select:focus,textarea:focus{
-  outline:2px solid #f5bd3555;border-color:#d8a62c;background:white;
-}
+input,select,textarea{width:100%;padding:15px;border:1px solid #dce3eb;border-radius:9px;font-size:13px;background:#fbfcfe;color:var(--ink);margin:6px 0}
+input:focus,select:focus,textarea:focus{outline:2px solid #f5bd3555;border-color:#d8a62c;background:white}
 textarea{resize:vertical}
-.submit{
-  background:var(--gold);color:var(--navy);border:0;
-  padding:15px 23px;border-radius:9px;font-size:12px;
-  font-weight:950;cursor:pointer;margin-top:10px;
-}
+.submit{background:var(--gold);color:var(--navy);border:0;padding:15px 23px;border-radius:9px;font-size:12px;font-weight:950;cursor:pointer;margin-top:10px}
 .submit:hover{background:#e9ad24}
 .submit:disabled{opacity:.6;cursor:not-allowed}
 .note{font-size:11px;color:var(--muted);line-height:1.7}
 #demandeMessage{font-weight:800}
-
-/* PROFESSIONAL CTA */
-.pro-section{
-  display:grid;grid-template-columns:1fr .8fr;
-  align-items:center;gap:35px;margin-top:35px;
-  background:#fff1cf;border-radius:20px;padding:35px;
-  overflow:hidden;position:relative;
-}
+.pro-section{display:grid;grid-template-columns:1fr .8fr;align-items:center;gap:35px;margin-top:35px;background:#fff1cf;border-radius:20px;padding:35px;overflow:hidden;position:relative}
 .pro-section h2{font-size:29px;line-height:1.15;color:var(--navy);margin:10px 0}
 .pro-section p{font-size:12px;color:#6b5b3d;line-height:1.8}
-.pro-cta a{
-  display:inline-flex;align-items:center;justify-content:center;
-  background:var(--navy);color:white;text-decoration:none;
-  padding:14px 19px;border-radius:9px;font-weight:950;
-  margin:8px 8px 0 0;font-size:11px;
-}
+.pro-cta a{display:inline-flex;align-items:center;justify-content:center;background:var(--navy);color:white;text-decoration:none;padding:14px 19px;border-radius:9px;font-weight:950;margin:8px 8px 0 0;font-size:11px}
 .pro-cta a.secondary{background:white;color:var(--navy);border:1px solid #e6d7b2}
-.pro-visual{
-  min-height:190px;border-radius:15px;
-  background:
-    linear-gradient(90deg,#071d3833,#071d3844),
-    url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=85") center/cover;
-}
-
-/* ABOUT */
-.about-section{
-  display:grid;grid-template-columns:.8fr 1fr;gap:45px;
-  align-items:center;padding:85px 0;
-}
-.about-visual{
-  min-height:300px;border-radius:20px;
-  background:
-    linear-gradient(0deg,#071d3830,#071d3808),
-    url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=85") center/cover;
-}
+.pro-visual{min-height:190px;border-radius:15px;background:linear-gradient(90deg,#071d3833,#071d3844),url("https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=85") center/cover}
+.about-section{display:grid;grid-template-columns:.8fr 1fr;gap:45px;align-items:center;padding:85px 0}
+.about-visual{min-height:300px;border-radius:20px;background:linear-gradient(0deg,#071d3830,#071d3808),url("https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=900&q=85") center/cover}
 .about-copy h2{font-size:34px;line-height:1.12;letter-spacing:-1px;color:var(--navy);margin:10px 0 16px}
 .about-copy p{font-size:13px;color:var(--muted);line-height:1.9}
-.about-highlight{
-  margin-top:22px;padding:16px 18px;border-left:3px solid var(--gold);
-  background:white;color:var(--navy);font-size:12px;font-weight:850;
-}
-
-/* BENEFITS AND FOOTER */
-.benefits{
-  background:#edf1f6;padding:25px 6%;
-  display:flex;justify-content:center;flex-wrap:wrap;gap:27px;
-}
+.about-highlight{margin-top:22px;padding:16px 18px;border-left:3px solid var(--gold);background:white;color:var(--navy);font-size:12px;font-weight:850}
+.benefits{background:#edf1f6;padding:25px 6%;display:flex;justify-content:center;flex-wrap:wrap;gap:27px}
 .benefits span{font-size:11px;color:var(--navy);font-weight:900}
-footer{
-  background:#04162c;color:white;padding:48px 6% 25px;
-}
-.footer-inner{
-  max-width:1250px;margin:auto;display:flex;
-  justify-content:space-between;gap:30px;align-items:flex-start;
-}
+footer{background:#04162c;color:white;padding:48px 6% 25px}
+.footer-inner{max-width:1250px;margin:auto;display:flex;justify-content:space-between;gap:30px;align-items:flex-start}
 .footer-brand{font-size:24px;font-weight:950;letter-spacing:-1px}
 .footer-brand span{color:var(--gold)}
 .footer-description{font-size:11px;color:#bdcbdc;line-height:1.8;max-width:350px}
 .footer-links{display:flex;flex-wrap:wrap;gap:18px}
 .footer-links a{font-size:11px;color:#e0e9f4;text-decoration:none}
-.footer-bottom{
-  max-width:1250px;margin:30px auto 0;padding-top:20px;
-  border-top:1px solid #ffffff20;color:#9aadc3;font-size:10px;
-}
+.footer-bottom{max-width:1250px;margin:30px auto 0;padding-top:20px;border-top:1px solid #ffffff20;color:#9aadc3;font-size:10px}
 footer strong{color:var(--gold)}
-
-/* RESPONSIVE */
-@media(max-width:1050px){
-  nav{display:none}
-  .hero-inner{grid-template-columns:1fr .65fr}
-  .categories{grid-template-columns:repeat(3,minmax(0,1fr))}
-}
-@media(max-width:850px){
-  .hero-inner{grid-template-columns:1fr}
-  .hero-panel{justify-self:start;max-width:370px}
-  .results-layout{grid-template-columns:1fr}
-  .side-card{position:static}
-  .trust-strip{grid-template-columns:repeat(2,1fr)}
-  .about-section{grid-template-columns:1fr}
-  .about-visual{min-height:240px}
-}
+@media(max-width:1050px){nav{display:none}.hero-inner{grid-template-columns:1fr .65fr}.categories{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:850px){.hero-inner{grid-template-columns:1fr}.hero-panel{justify-self:start;max-width:370px}.results-layout{grid-template-columns:1fr}.side-card{position:static}.trust-strip{grid-template-columns:repeat(2,1fr)}.about-section{grid-template-columns:1fr}.about-visual{min-height:240px}}
 @media(max-width:600px){
-  header{padding:9px 12px;gap:8px}
-  .logo{font-size:20px}
-  .logo-icon{width:39px;height:39px;font-size:23px;border-radius:12px}
-  .brand{gap:8px}
-  .brand p{font-size:8px}
-  .header-actions{gap:5px}
-  .header-btn{font-size:9px;padding:10px 9px}
-  .hero{min-height:0}
-  .hero:before{
-    background:
-      linear-gradient(90deg,rgba(4,20,40,.93),rgba(4,20,40,.65)),
-      url("https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1000&q=80") center/cover;
-  }
-  .hero-inner{padding:65px 20px 45px;gap:30px}
-  .hero h1{font-size:43px;letter-spacing:-1.8px}
-  .hero-description{font-size:13px}
-  .hero-kicker{font-size:8px;letter-spacing:1px}
-  .hero-button{padding:14px 16px;font-size:10px}
-  .hero-panel{padding:20px}
-  .trust-strip{padding:18px 13px;gap:15px 8px}
-  .trust-item{justify-content:flex-start;gap:8px}
-  .trust-icon{width:33px;height:33px;font-size:15px}
-  .trust-item strong{font-size:9px}
-  .trust-item small{font-size:8px}
-  main{padding:0 14px}
-  .section{padding:60px 0}
-  .section-top{display:block;margin-bottom:25px}
-  .section-title{font-size:29px}
-  .section-intro{font-size:12px}
-  .section-link{display:inline-block;margin-top:15px}
-  .categories{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:23px 0}
-  .category-btn{min-height:110px;padding:14px}
-  .category-btn .emoji{font-size:24px;margin-bottom:11px}
-  .category-btn span:last-child{font-size:10px}
-  .search-area{padding:7px;gap:5px}
-  .search-symbol{width:34px;height:38px;font-size:16px}
-  .search-box{gap:5px}
-  .search-box input{padding:10px 4px;font-size:10px}
-  .search-box button{padding:0 11px;font-size:10px}
-  .professionals-section{padding-top:10px}
-  .results-heading{align-items:flex-start;flex-direction:column;gap:7px}
-  .results-heading h2{font-size:20px}
-  #results{grid-template-columns:1fr}
-  .card{padding:18px}
-  .gallery img{height:130px}
-  .steps-section{padding:55px 18px}
-  .steps-grid{grid-template-columns:1fr;gap:10px;margin-top:25px}
-  .step-card{padding:20px}
-  .form-section{padding:23px 15px;margin-top:40px}
-  .form-heading{gap:12px}
-  .form-section h2{font-size:21px}
-  .form-grid{grid-template-columns:1fr;gap:0}
-  input,select,textarea{font-size:12px;padding:13px}
-  .pro-section{grid-template-columns:1fr;padding:24px 17px;gap:20px}
-  .pro-section h2{font-size:25px}
-  .pro-visual{min-height:155px}
-  .about-section{padding:60px 0;gap:22px}
-  .about-visual{min-height:190px}
-  .about-copy h2{font-size:29px}
-  .benefits{justify-content:flex-start;gap:13px;padding:22px 17px}
-  .benefits span{font-size:10px}
-  .footer-inner{flex-direction:column}
-  .footer-links{gap:14px}
-  footer{padding:38px 20px 22px}
+header{padding:9px 12px;gap:8px}.logo{font-size:20px}.logo-icon{width:39px;height:39px;font-size:23px;border-radius:12px}.brand{gap:8px}.brand p{font-size:8px}.header-actions{gap:5px}.header-btn{font-size:9px;padding:10px 9px}
+.hero{min-height:0}.hero:before{background:linear-gradient(90deg,rgba(4,20,40,.93),rgba(4,20,40,.65)),url("https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1000&q=80") center/cover}
+.hero-inner{padding:65px 20px 45px;gap:30px}.hero h1{font-size:43px;letter-spacing:-1.8px}.hero-description{font-size:13px}.hero-kicker{font-size:8px;letter-spacing:1px}.hero-button{padding:14px 16px;font-size:10px}.hero-panel{padding:20px}
+.trust-strip{padding:18px 13px;gap:15px 8px}.trust-item{justify-content:flex-start;gap:8px}.trust-icon{width:33px;height:33px;font-size:15px}.trust-item strong{font-size:9px}.trust-item small{font-size:8px}
+main{padding:0 14px}.section{padding:60px 0}.section-top{display:block;margin-bottom:25px}.section-title{font-size:29px}.section-intro{font-size:12px}.section-link{display:inline-block;margin-top:15px}
+.categories{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:23px 0}.category-btn{min-height:110px;padding:14px}.category-btn .emoji{font-size:24px;margin-bottom:11px}.category-btn span:last-child{font-size:10px}
+.search-area{padding:7px;gap:5px}.search-symbol{width:34px;height:38px;font-size:16px}.search-box{gap:5px}.search-box input{padding:10px 4px;font-size:10px}.search-box button{padding:0 11px;font-size:10px}
+.professionals-section{padding-top:10px}.results-heading{align-items:flex-start;flex-direction:column;gap:7px}.results-heading h2{font-size:20px}#results{grid-template-columns:1fr}.card{padding:18px}.gallery img{height:130px}
+.steps-section{padding:55px 18px}.steps-grid{grid-template-columns:1fr;gap:10px;margin-top:25px}.step-card{padding:20px}
+.form-section{padding:23px 15px;margin-top:40px}.form-heading{gap:12px}.form-section h2{font-size:21px}.form-grid{grid-template-columns:1fr;gap:0}input,select,textarea{font-size:12px;padding:13px}
+.pro-section{grid-template-columns:1fr;padding:24px 17px;gap:20px}.pro-section h2{font-size:25px}.pro-visual{min-height:155px}
+.about-section{padding:60px 0;gap:22px}.about-visual{min-height:190px}.about-copy h2{font-size:29px}
+.benefits{justify-content:flex-start;gap:13px;padding:22px 17px}.benefits span{font-size:10px}.footer-inner{flex-direction:column}.footer-links{gap:14px}footer{padding:38px 20px 22px}
 }
 </style>
 </head>
 
 <body>
-
 <header>
   <a class="brand" href="#accueil" aria-label="SERVICE KIN, accueil">
     <div class="logo-icon">⌂</div>
-    <div>
-      <div class="logo">SERVICE <span>KIN</span></div>
-      <p>Les services à portée de main !</p>
-    </div>
+    <div><div class="logo">SERVICE <span>KIN</span></div><p>Les services à portée de main !</p></div>
   </a>
-
   <nav>
-    <a href="#accueil">Accueil</a>
-    <a href="#professionnels">Nos services</a>
-    <a href="#demande">Faire une demande</a>
-    <a href="#apropos">À propos</a>
-    <a href="#contact">Contact</a>
+    <a href="#accueil">Accueil</a><a href="#professionnels">Nos services</a>
+    <a href="#demande">Faire une demande</a><a href="#apropos">À propos</a><a href="#contact">Contact</a>
   </nav>
-
   <div class="header-actions">
     <a class="header-btn" href="./espace-professionnel.html#inscription">Espace Pro</a>
     <a class="header-btn yellow" href="./espace-professionnel.html#connexion">Connexion</a>
@@ -541,20 +194,15 @@ footer strong{color:var(--gold)}
     <div class="hero-content">
       <div class="hero-kicker"><i></i> KINSHASA · RÉPUBLIQUE DÉMOCRATIQUE DU CONGO</div>
       <h1>Les bons talents.<br>Les bons services.<br><span>Près de vous.</span></h1>
-      <p class="hero-description">
-        Un projet de construction ? Une réparation ? Un besoin particulier ?
-        Trouvez les professionnels et les prestataires qui peuvent vous accompagner à Kinshasa.
-      </p>
+      <p class="hero-description">Un projet de construction ? Une réparation ? Un besoin particulier ? Trouvez les professionnels et les prestataires qui peuvent vous accompagner à Kinshasa.</p>
       <div class="hero-actions">
         <a class="hero-button" href="#professionnels">Découvrir les professionnels <span>→</span></a>
         <a class="hero-button outline" href="#demande">Faire une demande</a>
       </div>
       <div class="hero-note"><strong>SERVICE KIN</strong> — Les services à portée de main !</div>
     </div>
-
     <div class="hero-panel">
-      <div class="panel-icon">🤝</div>
-      <small>Une plateforme locale</small>
+      <div class="panel-icon">🤝</div><small>Une plateforme locale</small>
       <h2>Le savoir-faire de Kinshasa, à votre portée.</h2>
       <p>Découvrez des professionnels, consultez leurs réalisations approuvées et transmettez vos demandes en quelques instants.</p>
     </div>
@@ -562,181 +210,108 @@ footer strong{color:var(--gold)}
 </section>
 
 <div class="trust-strip">
-  <div class="trust-item">
-    <div class="trust-icon">🛡️</div>
-    <div><strong>Profils validés</strong><small>Examinés avant publication</small></div>
-  </div>
-  <div class="trust-item">
-    <div class="trust-icon">📍</div>
-    <div><strong>Talents locaux</strong><small>Au cœur de Kinshasa</small></div>
-  </div>
-  <div class="trust-item">
-    <div class="trust-icon">📸</div>
-    <div><strong>Réalisations visibles</strong><small>Photos approuvées</small></div>
-  </div>
-  <div class="trust-item">
-    <div class="trust-icon">⚡</div>
-    <div><strong>Demande simplifiée</strong><small>Un formulaire pratique</small></div>
-  </div>
+  <div class="trust-item"><div class="trust-icon">🛡️</div><div><strong>Profils validés</strong><small>Examinés avant publication</small></div></div>
+  <div class="trust-item"><div class="trust-icon">📍</div><div><strong>Talents locaux</strong><small>Au cœur de Kinshasa</small></div></div>
+  <div class="trust-item"><div class="trust-icon">📸</div><div><strong>Réalisations visibles</strong><small>Photos approuvées</small></div></div>
+  <div class="trust-item"><div class="trust-icon">⚡</div><div><strong>Demande simplifiée</strong><small>Un formulaire pratique</small></div></div>
 </div>
 
 <main>
-
-  <section class="section" id="professionnels">
-    <div class="section-top">
-      <div>
-        <div class="section-label">Explorez nos métiers</div>
-        <h2 class="section-title">Quel service recherchez-vous ?</h2>
-        <p class="section-intro">
-          Du bâtiment aux services du quotidien, découvrez les compétences disponibles
-          et trouvez un professionnel selon son métier, ses services ou son quartier.
-        </p>
-      </div>
-      <a class="section-link" href="#demande">Besoin d'aide ? Faire une demande →</a>
+<section class="section" id="professionnels">
+  <div class="section-top">
+    <div>
+      <div class="section-label">Explorez nos métiers</div>
+      <h2 class="section-title">Quel service recherchez-vous ?</h2>
+      <p class="section-intro">Du bâtiment aux services du quotidien, découvrez les compétences disponibles et trouvez un professionnel selon son métier, ses services ou son quartier.</p>
     </div>
-
-    <div class="categories" id="categories"></div>
-
-    <div class="search-area">
-      <div class="search-symbol">⌕</div>
-      <div class="search-box">
-        <input id="search" type="search" placeholder="Un métier, un nom, un quartier..." aria-label="Rechercher un professionnel">
-        <button type="button" id="searchButton">Rechercher →</button>
-      </div>
+    <a class="section-link" href="#demande">Besoin d'aide ? Faire une demande →</a>
+  </div>
+  <div class="categories" id="categories"></div>
+  <div class="search-area">
+    <div class="search-symbol">⌕</div>
+    <div class="search-box">
+      <input id="search" type="search" placeholder="Un métier, un nom, un quartier..." aria-label="Rechercher un professionnel">
+      <button type="button" id="searchButton">Rechercher →</button>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="professionals-section">
-    <div class="results-heading">
-      <h2>Les professionnels à découvrir</h2>
-      <span>📍 Kinshasa, RDC</span>
+<section class="professionals-section">
+  <div class="results-heading"><h2>Les professionnels à découvrir</h2><span>📍 Kinshasa, RDC</span></div>
+  <div class="results-layout">
+    <div id="results" aria-live="polite">Chargement des professionnels...</div>
+    <aside class="side-card">
+      <div class="symbol">🧰</div><div class="side-label">Vous avez un savoir-faire ?</div>
+      <h3>Faites découvrir votre talent à Kinshasa.</h3>
+      <p>Créez votre espace professionnel, présentez votre activité et partagez vos réalisations avec de nouveaux clients.</p>
+      <a href="./espace-professionnel.html#inscription">Rejoindre SERVICE KIN →</a>
+    </aside>
+  </div>
+</section>
+
+<section class="steps-section">
+  <div class="section-label">Simple et pratique</div>
+  <h2 class="section-title">Votre besoin, en trois étapes.</h2>
+  <p class="section-intro">SERVICE KIN vous accompagne pour trouver un prestataire et transmettre votre demande.</p>
+  <div class="steps-grid">
+    <article class="step-card"><div class="step-number">01</div><h3>Explorez les services</h3><p>Parcourez les catégories ou utilisez la recherche pour découvrir les professionnels disponibles.</p></article>
+    <article class="step-card"><div class="step-number">02</div><h3>Choisissez un professionnel</h3><p>Consultez son activité, son quartier et les réalisations qu'il a présentées sur la plateforme.</p></article>
+    <article class="step-card"><div class="step-number">03</div><h3>Envoyez votre demande</h3><p>Décrivez votre besoin et transmettez vos coordonnées afin que votre demande soit examinée.</p></article>
+  </div>
+</section>
+
+<section class="form-section" id="demande">
+  <div class="form-heading">
+    <div class="form-heading-icon">✉️</div>
+    <div><div class="section-label">Parlons de votre projet</div><h2>Faites-nous part de votre besoin.</h2><p class="section-intro">Remplissez les informations ci-dessous. Notre équipe recevra votre demande et organisera la mise en relation.</p></div>
+  </div>
+  <form id="demandeForm">
+    <div class="form-grid">
+      <input name="client_nom" placeholder="Votre nom complet" maxlength="120" required>
+      <input name="telephone" type="tel" placeholder="Votre numéro de téléphone ou WhatsApp" maxlength="30" required>
+      <input name="quartier" placeholder="Votre commune ou quartier" maxlength="120" required>
+      <select name="professionnel_id" id="choixProfessionnel"><option value="">Choisir un professionnel (facultatif)</option></select>
     </div>
+    <textarea name="description" placeholder="Décrivez le travail dont vous avez besoin..." rows="4" maxlength="3000" required></textarea>
+    <button class="submit" type="submit">Envoyer ma demande →</button>
+    <p id="demandeMessage" class="note" aria-live="polite"></p>
+  </form>
+</section>
 
-    <div class="results-layout">
-      <div id="results" aria-live="polite">Chargement des professionnels...</div>
+<section class="pro-section" id="inscription">
+  <div class="pro-cta">
+    <div class="section-label">Espace professionnel</div><h2>Votre travail mérite d'être vu.</h2>
+    <p>Rejoignez SERVICE KIN pour présenter votre activité, gérer votre profil et mettre en valeur vos réalisations auprès des habitants de Kinshasa. Les nouvelles inscriptions sont examinées par notre administration avant publication.</p>
+    <a href="./espace-professionnel.html#inscription">Créer mon compte →</a>
+    <a class="secondary" href="./espace-professionnel.html#connexion">J'ai déjà un compte</a>
+  </div>
+  <div class="pro-visual" role="img" aria-label="Projet de construction et bâtiment"></div>
+</section>
 
-      <aside class="side-card">
-        <div class="symbol">🧰</div>
-        <div class="side-label">Vous avez un savoir-faire ?</div>
-        <h3>Faites découvrir votre talent à Kinshasa.</h3>
-        <p>Créez votre espace professionnel, présentez votre activité et partagez vos réalisations avec de nouveaux clients.</p>
-        <a href="./espace-professionnel.html#inscription">Rejoindre SERVICE KIN →</a>
-      </aside>
-    </div>
-  </section>
-
-  <section class="steps-section">
-    <div class="section-label">Simple et pratique</div>
-    <h2 class="section-title">Votre besoin, en trois étapes.</h2>
-    <p class="section-intro">SERVICE KIN vous accompagne pour trouver un prestataire et transmettre votre demande.</p>
-
-    <div class="steps-grid">
-      <article class="step-card">
-        <div class="step-number">01</div>
-        <h3>Explorez les services</h3>
-        <p>Parcourez les catégories ou utilisez la recherche pour découvrir les professionnels disponibles.</p>
-      </article>
-      <article class="step-card">
-        <div class="step-number">02</div>
-        <h3>Choisissez un professionnel</h3>
-        <p>Consultez son activité, son quartier et les réalisations qu'il a présentées sur la plateforme.</p>
-      </article>
-      <article class="step-card">
-        <div class="step-number">03</div>
-        <h3>Envoyez votre demande</h3>
-        <p>Décrivez votre besoin et transmettez vos coordonnées afin que votre demande soit examinée.</p>
-      </article>
-    </div>
-  </section>
-
-  <section class="form-section" id="demande">
-    <div class="form-heading">
-      <div class="form-heading-icon">✉️</div>
-      <div>
-        <div class="section-label">Parlons de votre projet</div>
-        <h2>Faites-nous part de votre besoin.</h2>
-        <p class="section-intro">Remplissez les informations ci-dessous. Notre équipe recevra votre demande et organisera la mise en relation.</p>
-      </div>
-    </div>
-
-    <form id="demandeForm">
-      <div class="form-grid">
-        <input name="client_nom" placeholder="Votre nom complet" maxlength="120" required>
-        <input name="telephone" type="tel" placeholder="Votre numéro de téléphone ou WhatsApp" maxlength="30" required>
-        <input name="quartier" placeholder="Votre commune ou quartier" maxlength="120" required>
-        <select name="professionnel_id" id="choixProfessionnel">
-          <option value="">Choisir un professionnel (facultatif)</option>
-        </select>
-      </div>
-      <textarea name="description" placeholder="Décrivez le travail dont vous avez besoin..." rows="4" maxlength="3000" required></textarea>
-      <button class="submit" type="submit">Envoyer ma demande →</button>
-      <p id="demandeMessage" class="note" aria-live="polite"></p>
-    </form>
-  </section>
-
-  <section class="pro-section" id="inscription">
-    <div class="pro-cta">
-      <div class="section-label">Espace professionnel</div>
-      <h2>Votre travail mérite d'être vu.</h2>
-      <p>
-        Rejoignez SERVICE KIN pour présenter votre activité, gérer votre profil
-        et mettre en valeur vos réalisations auprès des habitants de Kinshasa.
-        Les nouvelles inscriptions sont examinées par notre administration avant publication.
-      </p>
-      <a href="./espace-professionnel.html#inscription">Créer mon compte →</a>
-      <a class="secondary" href="./espace-professionnel.html#connexion">J'ai déjà un compte</a>
-    </div>
-    <div class="pro-visual" role="img" aria-label="Projet de construction et bâtiment"></div>
-  </section>
-
-  <section class="about-section" id="apropos">
-    <div class="about-visual" role="img" aria-label="Architecture et bâtiments"></div>
-    <div class="about-copy">
-      <div class="section-label">Notre vision</div>
-      <h2>Valoriser les talents. Faciliter les services.</h2>
-      <p>
-        SERVICE KIN est une plateforme conçue pour faciliter la mise en relation
-        entre les habitants de Kinshasa et les professionnels, commerçants et
-        prestataires de services.
-      </p>
-      <p>
-        Notre ambition est de rendre les services plus accessibles, de donner
-        de la visibilité aux compétences locales et de contribuer au développement
-        de l'économie de notre ville.
-      </p>
-      <div class="about-highlight">SERVICE KIN — Les services à portée de main !</div>
-    </div>
-  </section>
-
+<section class="about-section" id="apropos">
+  <div class="about-visual" role="img" aria-label="Architecture et bâtiments"></div>
+  <div class="about-copy">
+    <div class="section-label">Notre vision</div><h2>Valoriser les talents. Faciliter les services.</h2>
+    <p>SERVICE KIN est une plateforme conçue pour faciliter la mise en relation entre les habitants de Kinshasa et les professionnels, commerçants et prestataires de services.</p>
+    <p>Notre ambition est de rendre les services plus accessibles, de donner de la visibilité aux compétences locales et de contribuer au développement de l'économie de notre ville.</p>
+    <div class="about-highlight">SERVICE KIN — Les services à portée de main !</div>
+  </div>
+</section>
 </main>
 
 <div class="benefits">
-  <span>🛡️ Profils validés</span>
-  <span>👥 Des professionnels locaux</span>
-  <span>📸 Des réalisations approuvées</span>
-  <span>📍 À Kinshasa, pour Kinshasa</span>
+  <span>🛡️ Profils validés</span><span>👥 Des professionnels locaux</span>
+  <span>📸 Des réalisations approuvées</span><span>📍 À Kinshasa, pour Kinshasa</span>
 </div>
 
 <footer id="contact">
   <div class="footer-inner">
-    <div>
-      <div class="footer-brand">SERVICE <span>KIN</span></div>
-      <p class="footer-description">
-        La plateforme qui rapproche les clients et les professionnels de Kinshasa.
-        Ensemble, valorisons les talents locaux.
-      </p>
-    </div>
+    <div><div class="footer-brand">SERVICE <span>KIN</span></div><p class="footer-description">La plateforme qui rapproche les clients et les professionnels de Kinshasa. Ensemble, valorisons les talents locaux.</p></div>
     <div class="footer-links">
-      <a href="#accueil">Accueil</a>
-      <a href="#professionnels">Nos services</a>
-      <a href="#demande">Faire une demande</a>
-      <a href="#apropos">À propos</a>
-      <a href="./espace-professionnel.html#connexion">Espace professionnel</a>
+      <a href="#accueil">Accueil</a><a href="#professionnels">Nos services</a><a href="#demande">Faire une demande</a><a href="#apropos">À propos</a><a href="./espace-professionnel.html#connexion">Espace professionnel</a>
     </div>
   </div>
-  <div class="footer-bottom">
-    <strong>SERVICE KIN</strong> · Kinshasa, RDC · © SERVICE KIN - Tous droits réservés
-  </div>
+  <div class="footer-bottom"><strong>SERVICE KIN</strong> · Kinshasa, RDC · © SERVICE KIN - Tous droits réservés</div>
 </footer>
 
 <script>
@@ -750,6 +325,11 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_KEY
 );
 
+/*
+ * Catalogue élargi des métiers.
+ * Les libellés restent indépendants des intitulés enregistrés
+ * dans la base de données.
+ */
 const categories = [
   "Tous",
   "Électricité",
@@ -758,12 +338,44 @@ const categories = [
   "Forage",
   "Géologie",
   "Ingénierie bâtiment",
-  "Fournitures",
+  "Ingénieur civil",
+  "Ingénieur géologue",
+  "Ingénieur électricien",
+  "Architecture",
+  "Géométrie et topographie",
+  "Technicien en bâtiment",
+  "Fournitures et matériaux",
   "Staffeur en bâtiment",
+  "Menuiserie",
+  "Soudure et métallurgie",
+  "Peinture en bâtiment",
+  "Carrelage et revêtement",
   "Commerce en ligne",
-  "Mode et accessoires féminins",
-  "Photographie et production vidéo",
-  "Marketing et communication"
+  "Mode et couture",
+  "Coiffure",
+  "Barbier",
+  "Maquillage et esthétique",
+  "Manucure et pédicure",
+  "Photographie et vidéo",
+  "Marketing et communication",
+  "Graphisme et design",
+  "Décoration événementielle",
+  "Traiteur et restauration",
+  "DJ et animation",
+  "Organisation événementielle",
+  "Sonorisation et éclairage",
+  "Fleuriste",
+  "Pâtisserie et gâteaux",
+  "Location événementielle",
+  "Nettoyage et entretien",
+  "Jardinage et espaces verts",
+  "Climatisation et réfrigération",
+  "Réparation électroménager",
+  "Réparation de téléphones",
+  "Informatique et dépannage",
+  "Transport et livraison",
+  "Déménagement",
+  "Sécurité et gardiennage"
 ];
 
 const categoryIcons = {
@@ -774,12 +386,225 @@ const categoryIcons = {
   "Forage":"🔩",
   "Géologie":"⛰️",
   "Ingénierie bâtiment":"🏢",
-  "Fournitures":"📦",
-  "Staffeur en bâtiment":"🦺",
+  "Ingénieur civil":"👷",
+  "Ingénieur géologue":"🌍",
+  "Ingénieur électricien":"🔌",
+  "Architecture":"📐",
+  "Géométrie et topographie":"🗺️",
+  "Technicien en bâtiment":"🦺",
+  "Fournitures et matériaux":"📦",
+  "Staffeur en bâtiment":"🧰",
+  "Menuiserie":"🪚",
+  "Soudure et métallurgie":"⚒️",
+  "Peinture en bâtiment":"🖌️",
+  "Carrelage et revêtement":"🧱",
   "Commerce en ligne":"🛒",
-  "Mode et accessoires féminins":"👗",
-  "Photographie et production vidéo":"📷",
-  "Marketing et communication":"📢"
+  "Mode et couture":"👗",
+  "Coiffure":"💇",
+  "Barbier":"💈",
+  "Maquillage et esthétique":"💄",
+  "Manucure et pédicure":"💅",
+  "Photographie et vidéo":"📷",
+  "Marketing et communication":"📢",
+  "Graphisme et design":"🎨",
+  "Décoration événementielle":"🎉",
+  "Traiteur et restauration":"🍽️",
+  "DJ et animation":"🎧",
+  "Organisation événementielle":"🎊",
+  "Sonorisation et éclairage":"🔊",
+  "Fleuriste":"💐",
+  "Pâtisserie et gâteaux":"🎂",
+  "Location événementielle":"🏕️",
+  "Nettoyage et entretien":"🧹",
+  "Jardinage et espaces verts":"🌳",
+  "Climatisation et réfrigération":"❄️",
+  "Réparation électroménager":"🔧",
+  "Réparation de téléphones":"📱",
+  "Informatique et dépannage":"💻",
+  "Transport et livraison":"🚚",
+  "Déménagement":"📦",
+  "Sécurité et gardiennage":"🛡️"
+};
+
+/*
+ * Synonymes et variantes d'intitulés.
+ * Ils servent uniquement au filtrage dans le navigateur.
+ * Aucune modification de la base Supabase n'est nécessaire.
+ */
+const categoryAliases = {
+  "Électricité": [
+    "electricien","electricite","installation electrique",
+    "electricien batiment","electricien industriel"
+  ],
+  "Plomberie": [
+    "plombier","plomberie","installateur sanitaire",
+    "sanitaire","canalisation"
+  ],
+  "Maçonnerie": [
+    "macon","maconnerie","macon batiment",
+    "construction","constructeur"
+  ],
+  "Forage": [
+    "foreur","forage","foreuse","forage eau","puits"
+  ],
+  "Géologie": [
+    "geologue","geologie","geoscience","geoscientifique"
+  ],
+  "Ingénierie bâtiment": [
+    "ingenieur batiment","ingenieur en batiment",
+    "ingenierie batiment","genie du batiment",
+    "construction batiment"
+  ],
+  "Ingénieur civil": [
+    "ingenieur civil","genie civil","ingenieur en genie civil"
+  ],
+  "Ingénieur géologue": [
+    "ingenieur geologue","ingenieur en geologie",
+    "geologue ingenieur"
+  ],
+  "Ingénieur électricien": [
+    "ingenieur electricien","ingenieur en electricite",
+    "genie electrique"
+  ],
+  "Architecture": [
+    "architecte","architecture","dessinateur batiment",
+    "concepteur architectural"
+  ],
+  "Géométrie et topographie": [
+    "geometre","topographe","topographie",
+    "geometre topographe","arpenteur","leve topographique"
+  ],
+  "Technicien en bâtiment": [
+    "technicien batiment","technicien en batiment",
+    "conducteur travaux","chef chantier","metreur"
+  ],
+  "Fournitures et matériaux": [
+    "fournisseur","fourniture","materiaux construction",
+    "vente materiaux","quincaillerie","vendeur materiaux"
+  ],
+  "Staffeur en bâtiment": [
+    "staffeur","staff","staffage","plafond staff"
+  ],
+  "Menuiserie": [
+    "menuisier","menuiserie","ebeniste","bois","menuiserie aluminium"
+  ],
+  "Soudure et métallurgie": [
+    "soudeur","soudure","metallier","metallurgie",
+    "ferronnier","chaudronnier"
+  ],
+  "Peinture en bâtiment": [
+    "peintre","peinture","peintre batiment","peinture murale"
+  ],
+  "Carrelage et revêtement": [
+    "carreleur","carrelage","revetement sol","revetement mural",
+    "pose carrelage"
+  ],
+  "Commerce en ligne": [
+    "e-commerce","commerce en ligne","vente en ligne",
+    "vendeur en ligne","boutique en ligne"
+  ],
+  "Mode et couture": [
+    "couturier","couturiere","couture","styliste",
+    "mode","confection","tailleur","accessoires mode"
+  ],
+  "Coiffure": [
+    "coiffeur","coiffeuse","coiffure","salon coiffure",
+    "tresseuse","tresses"
+  ],
+  "Barbier": [
+    "barbier","barber","barbershop","coupe homme"
+  ],
+  "Maquillage et esthétique": [
+    "maquilleur","maquilleuse","maquillage","estheticienne",
+    "esthetique","soins beaute","beaute"
+  ],
+  "Manucure et pédicure": [
+    "manucure","pedicure","onglerie","prothesiste ongulaire",
+    "pose ongles"
+  ],
+  "Photographie et vidéo": [
+    "photographe","photographie","videaste","video",
+    "cameraman","monteur video","production video",
+    "photographe evenementiel"
+  ],
+  "Marketing et communication": [
+    "marketing","communication","community manager",
+    "publicite","marketing digital","relations publiques"
+  ],
+  "Graphisme et design": [
+    "graphiste","infographiste","graphisme","designer",
+    "design graphique","illustrateur"
+  ],
+  "Décoration événementielle": [
+    "decorateur","decoratrice","decoration","decoration evenementielle",
+    "decorateur evenementiel","decoration mariage"
+  ],
+  "Traiteur et restauration": [
+    "traiteur","cuisinier","cuisiniere","restauration",
+    "restaurant","cuisine","chef cuisinier"
+  ],
+  "DJ et animation": [
+    "dj","disc jockey","animateur","animatrice",
+    "maitre ceremonie","mc","animation"
+  ],
+  "Organisation événementielle": [
+    "organisateur evenement","organisation evenementielle",
+    "event planner","organisateur mariage","evenementiel"
+  ],
+  "Sonorisation et éclairage": [
+    "sonorisateur","sonorisation","technicien son",
+    "eclairage","technicien lumiere","location son"
+  ],
+  "Fleuriste": [
+    "fleuriste","fleurs","composition florale","decoration florale"
+  ],
+  "Pâtisserie et gâteaux": [
+    "patissier","patissiere","patisserie","gateau",
+    "cake designer","boulanger","boulangerie"
+  ],
+  "Location événementielle": [
+    "location chaise","location tente","location materiel",
+    "location evenement","location salle","location decoration"
+  ],
+  "Nettoyage et entretien": [
+    "nettoyage","nettoyeur","nettoyeuse","menage",
+    "agent entretien","entretien maison","femme menage"
+  ],
+  "Jardinage et espaces verts": [
+    "jardinier","jardinage","paysagiste","espaces verts",
+    "entretien jardin"
+  ],
+  "Climatisation et réfrigération": [
+    "climatisation","climaticien","frigoriste","refrigeration",
+    "froid","technicien froid","installation climatiseur"
+  ],
+  "Réparation électroménager": [
+    "reparateur electromenager","reparation electromenager",
+    "reparateur frigo","reparateur machine laver",
+    "electromenager"
+  ],
+  "Réparation de téléphones": [
+    "reparateur telephone","reparation telephone",
+    "reparation smartphone","technicien telephone",
+    "reparateur iphone"
+  ],
+  "Informatique et dépannage": [
+    "informaticien","informatique","depannage informatique",
+    "technicien informatique","maintenance informatique",
+    "developpeur","reparateur ordinateur"
+  ],
+  "Transport et livraison": [
+    "transporteur","transport","livreur","livraison",
+    "chauffeur","moto livraison","coursier"
+  ],
+  "Déménagement": [
+    "demenageur","demenagement","transport meuble",
+    "service demenagement"
+  ],
+  "Sécurité et gardiennage": [
+    "agent securite","gardien","gardiennage","securite",
+    "vigile","surveillance"
+  ]
 };
 
 let active = "Tous";
@@ -791,7 +616,35 @@ function normaliser(texte) {
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
+    .replace(/[’']/g, " ")
+    .replace(/[-_/]/g, " ")
+    .replace(/[^\w\s]/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
+}
+
+/*
+ * Vérifie si un texte correspond à une catégorie.
+ * Les recherches sont faites dans le métier et les services
+ * renseignés par le professionnel.
+ */
+function correspondCategorieProfessionnel(pro, categorie) {
+  if (categorie === "Tous") return true;
+
+  const metier = normaliser(pro.metier);
+  const services = normaliser(pro.services);
+  const texte = `${metier} ${services}`.trim();
+
+  const termes = [
+    normaliser(categorie),
+    ...(categoryAliases[categorie] || []).map(normaliser)
+  ].filter(Boolean);
+
+  return termes.some(terme => {
+    return texte === terme ||
+      texte.includes(terme) ||
+      terme.includes(metier) && metier.length >= 5;
+  });
 }
 
 function afficherCategories() {
@@ -803,6 +656,7 @@ function afficherCategories() {
     bouton.type = "button";
     bouton.className =
       "category-btn" + (active === categorie ? " active" : "");
+    bouton.setAttribute("aria-pressed", String(active === categorie));
 
     const emoji = document.createElement("span");
     emoji.className = "emoji";
@@ -851,7 +705,7 @@ function afficherProfessionnels() {
 
   const liste = professionnels.filter(pro => {
     const correspondCategorie =
-      active === "Tous" || normaliser(pro.metier) === normaliser(active);
+      correspondCategorieProfessionnel(pro, active);
 
     const texte = normaliser([
       pro.nom, pro.metier, pro.quartier, pro.services
@@ -867,7 +721,7 @@ function afficherProfessionnels() {
     const vide = document.createElement("div");
     vide.className = "empty-message";
     vide.textContent = professionnels.length
-      ? "Aucun professionnel trouvé pour cette recherche."
+      ? "Aucun professionnel trouvé dans cette catégorie. Essayez un autre mot ou choisissez une autre catégorie."
       : "Aucun professionnel approuvé n'est disponible pour le moment.";
     results.appendChild(vide);
     return;
@@ -1052,7 +906,6 @@ document.getElementById("demandeForm").addEventListener("submit", async event =>
 });
 
 document.getElementById("search").addEventListener("input", afficherProfessionnels);
-
 document.getElementById("searchButton").addEventListener("click", afficherProfessionnels);
 
 afficherCategories();
