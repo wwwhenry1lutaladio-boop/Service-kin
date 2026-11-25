@@ -6,6 +6,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#071d38">
 <meta name="description" content="SERVICE KIN : trouvez des professionnels, artisans et prestataires de confiance à Kinshasa.">
+
+<!-- Aperçu lors du partage sur WhatsApp, Facebook, LinkedIn et autres plateformes -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SERVICE KIN">
+<meta property="og:title" content="SERVICE KIN | Les services à portée de main !">
+<meta property="og:description" content="Trouvez des professionnels, artisans et prestataires de confiance à Kinshasa. Découvrez leurs services et leurs réalisations approuvées.">
+<meta property="og:url" content="https://wwwhenry1lutaladio-boop.github.io/Service-kin/">
+<meta property="og:image" content="https://wwwhenry1lutaladio-boop.github.io/Service-kin/service-kin-apercu-whatsapp.jpg">
+<meta property="og:image:alt" content="SERVICE KIN - Les services à portée de main !">
+<meta property="og:locale" content="fr_FR">
+
+<!-- Aperçu pour les plateformes utilisant Twitter Cards -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SERVICE KIN | Les services à portée de main !">
+<meta name="twitter:description" content="Trouvez des professionnels, artisans et prestataires de confiance à Kinshasa.">
+<meta name="twitter:image" content="https://wwwhenry1lutaladio-boop.github.io/Service-kin/service-kin-apercu-whatsapp.jpg">
+<meta name="twitter:image:alt" content="SERVICE KIN - Les services à portée de main !">
+
 <link rel="manifest" href="./manifest.json">
 <title>SERVICE KIN | Les services à portée de main</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -643,7 +661,7 @@ function correspondCategorieProfessionnel(pro, categorie) {
   return termes.some(terme => {
     return texte === terme ||
       texte.includes(terme) ||
-      terme.includes(metier) && metier.length >= 5;
+      (metier.length >= 5 && terme.includes(metier));
   });
 }
 
@@ -794,6 +812,11 @@ function afficherProfessionnels() {
   });
 }
 
+/*
+ * Charge uniquement les photos approuvées.
+ * Les URL signées sont générées en parallèle afin de ne pas
+ * bloquer inutilement le chargement de la liste des professionnels.
+ */
 async function chargerPhotosApprouvees() {
   photosApprouvees = {};
 
@@ -808,27 +831,49 @@ async function chargerPhotosApprouvees() {
     return;
   }
 
-  for (const photo of (photos || [])) {
-    const { data, error: photoError } = await supabaseClient.storage
-      .from("realisations")
-      .createSignedUrl(photo.photo_path, 3600);
+  const photosAvecUrl = await Promise.all(
+    (photos || []).map(async photo => {
+      try {
+        const { data, error: photoError } = await supabaseClient.storage
+          .from("realisations")
+          .createSignedUrl(photo.photo_path, 3600);
 
-    if (photoError || !data?.signedUrl) {
-      console.error("Photo inaccessible :", photoError);
-      continue;
-    }
+        if (photoError || !data?.signedUrl) {
+          console.error("Photo inaccessible :", photoError);
+          return null;
+        }
+
+        return {
+          professionnel_id: photo.professionnel_id,
+          url: data.signedUrl,
+          description: photo.description || ""
+        };
+      } catch (photoError) {
+        console.error("Erreur pendant le chargement d'une photo :", photoError);
+        return null;
+      }
+    })
+  );
+
+  photosAvecUrl.forEach(photo => {
+    if (!photo) return;
 
     if (!photosApprouvees[photo.professionnel_id]) {
       photosApprouvees[photo.professionnel_id] = [];
     }
 
     photosApprouvees[photo.professionnel_id].push({
-      url: data.signedUrl,
-      description: photo.description || ""
+      url: photo.url,
+      description: photo.description
     });
-  }
+  });
 }
 
+/*
+ * Les professionnels approuvés sont affichés dès réception
+ * de leurs données. Le chargement des photos se fait ensuite.
+ * Les photos ne peuvent pas retarder l'affichage des profils.
+ */
 async function chargerProfessionnels() {
   const results = document.getElementById("results");
   results.textContent = "Chargement des professionnels...";
@@ -842,8 +887,15 @@ async function chargerProfessionnels() {
     if (error) throw error;
 
     professionnels = data || [];
-    await chargerPhotosApprouvees();
+
+    // Afficher immédiatement les professionnels récupérés.
     remplirChoixProfessionnels();
+    afficherProfessionnels();
+
+    // Charger les photos approuvées sans bloquer les profils.
+    await chargerPhotosApprouvees();
+
+    // Actualiser les cartes pour ajouter les photos disponibles.
     afficherProfessionnels();
 
   } catch (error) {
