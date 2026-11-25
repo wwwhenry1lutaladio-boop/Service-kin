@@ -6,192 +6,27 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#101d35">
 <title>SERVICE KIN CONFIANCE — Gestion de chantier</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--navy:#101d35;--navy2:#172945;--gold:#d6ad58;--ink:#1d2939;--muted:#667085;--line:#e6e9ef;--bg:#f4f6f9;--white:#fff;--green:#16845b;--red:#b54747;--shadow:0 12px 34px rgba(16,29,53,.08);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink)}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.topbar{background:linear-gradient(115deg,var(--navy),#213a5d);color:#fff;padding:20px max(20px,calc((100% - 1220px)/2));display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:13px}
-.mark{width:44px;height:44px;border:1px solid #d6ad58bf;border-radius:12px;display:grid;place-items:center;color:var(--gold);font-weight:900;font-size:19px}
-.brand strong{display:block;letter-spacing:.09em;font-size:15px}
-.brand small{display:block;color:#d5dbea;margin-top:3px;font-size:11px;letter-spacing:.14em}
-.top-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
-.top-link{color:#fff;text-decoration:none;font-size:13px;padding:9px 12px;border:1px solid #ffffff35;border-radius:9px}
-.hero{max-width:1220px;margin:26px auto 20px;padding:0 20px;display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap}
-.eyebrow{color:#9a742d;text-transform:uppercase;font-size:11px;font-weight:800;letter-spacing:.16em}
-h1{font-size:clamp(25px,4vw,36px);margin:7px 0 8px;color:var(--navy);letter-spacing:-.035em}
-.hero p{margin:0;color:var(--muted);max-width:650px;line-height:1.55;font-size:14px}
-.demo-tag{background:#fff5dd;color:#875e14;border:1px solid #f0dfb8;padding:8px 12px;border-radius:999px;font-size:11px;font-weight:800}
-.layout{max-width:1220px;margin:0 auto;padding:0 20px 50px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:20px}
-.sidebar,.panel,.stat{background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
-.sidebar{padding:14px;height:max-content;position:sticky;top:15px}
-.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:#98a2b3;font-weight:800;padding:10px 10px 7px}
-.nav-btn{width:100%;border:0;background:transparent;text-align:left;padding:11px 12px;border-radius:10px;color:#475467;font-weight:650;font-size:13px;display:flex;gap:10px;align-items:center;margin:2px 0}
-.nav-btn:hover,.nav-btn.active{background:#f5f0e5;color:var(--navy)}
-.nav-btn.active{box-shadow:inset 3px 0 var(--gold)}
-.nav-icon{width:20px;text-align:center;font-size:16px}
-.side-note{margin:16px 5px 3px;padding:12px;background:#f7f8fa;border-radius:10px;color:#667085;font-size:11px;line-height:1.5}
-.main{min-width:0}
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:17px}
-.stat{padding:16px}
-.stat-label{font-size:11px;color:var(--muted);font-weight:650}
-.stat-value{font-size:26px;font-weight:800;color:var(--navy);margin:8px 0 2px}
-.stat-sub{font-size:10px;color:#98a2b3}
-.panel{padding:20px;margin-bottom:17px}
-.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.panel h2{font-size:17px;color:var(--navy);margin:0}
-.panel-desc{font-size:12px;color:var(--muted);margin:5px 0 0}
-.btn{border:0;border-radius:9px;padding:10px 14px;font-size:12px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:7px}
-.btn-primary{background:var(--navy);color:#fff}
-.btn-gold{background:var(--gold);color:#241b0c}
-.btn-light{background:#f1f3f6;color:#344054}
-.btn-danger{background:#fff0f0;color:var(--red)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
-.project-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.project-card{border:1px solid var(--line);border-radius:13px;padding:15px;background:#fff;cursor:pointer}
-.project-card.selected{border-color:var(--gold);box-shadow:0 0 0 2px #d6ad5828}
-.project-top{display:flex;justify-content:space-between;gap:8px;align-items:start}
-.project-card h3{font-size:14px;margin:0 0 5px;color:var(--navy)}
-.project-card p{font-size:11px;color:var(--muted);margin:0;line-height:1.45}
-.status{font-size:10px;font-weight:800;border-radius:999px;padding:5px 8px;background:#edf7f2;color:#16734e;white-space:nowrap}
-.status.pause{background:#fff5df;color:#8a641e}
-.progress-line{height:6px;background:#edf0f4;border-radius:20px;margin:14px 0 7px;overflow:hidden}
-.progress-line span{display:block;height:100%;background:var(--gold)}
-.project-foot{display:flex;justify-content:space-between;color:#8993a3;font-size:10px}
-.empty{padding:28px 15px;text-align:center;border:1px dashed #d7dce5;border-radius:12px;color:#7b8492;font-size:13px;line-height:1.6}
-.hidden{display:none!important}
-.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.field{display:flex;flex-direction:column;gap:6px}
-.field.full{grid-column:1/-1}
-label{font-size:11px;font-weight:750;color:#475467}
-input,select,textarea{width:100%;border:1px solid #d9dee7;border-radius:9px;padding:10px 11px;background:#fff;color:var(--ink);font-size:13px;outline:none}
-input:focus,select:focus,textarea:focus{border-color:#c49a45;box-shadow:0 0 0 3px #d6ad5820}
-textarea{min-height:92px;resize:vertical}
-.form-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
-.list{display:flex;flex-direction:column;gap:9px}
-.entry{border:1px solid var(--line);border-radius:11px;padding:13px;display:flex;justify-content:space-between;gap:12px;align-items:start}
-.entry h3{font-size:13px;margin:0 0 5px;color:var(--navy)}
-.entry p{font-size:11px;color:#667085;line-height:1.5;margin:0;white-space:pre-wrap}
-.entry small{font-size:10px;color:#98a2b3;display:block;margin-top:7px}
-.amount{font-weight:800;color:var(--navy);font-size:13px;white-space:nowrap}
-.photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.photo-card{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}
-.photo-image-button{display:block;width:100%;padding:0;border:0;background:#f2f4f7;position:relative;overflow:hidden}
-.photo-card img{width:100%;height:170px;object-fit:cover;display:block;background:#f2f4f7;transition:transform .2s}
-.photo-image-button:hover img{transform:scale(1.035)}
-.photo-image-button:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
-.photo-image-hint{position:absolute;right:8px;bottom:8px;background:#101d35e8;color:white;padding:6px 9px;border-radius:7px;font-size:10px;font-weight:750}
-.photo-meta{padding:11px;font-size:11px;color:#667085;line-height:1.5}
-.photo-meta strong{display:block;color:var(--navy);font-size:12px;margin-bottom:5px;overflow-wrap:anywhere}
-.photo-date{margin-bottom:9px}
-.photo-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
-.photo-actions .btn{padding:9px 10px;font-size:10px;flex:1 1 auto}
-.photo-editor{border:1px solid #e8d8b5;background:#fffcf5;border-radius:12px;padding:15px;margin:0 0 15px}
-.photo-editor h3{margin:0 0 7px;color:var(--navy);font-size:14px}
-.photo-editor p{margin:0 0 12px;color:#667085;font-size:11px;line-height:1.5}
-.photo-preview{position:fixed;inset:0;z-index:1000;background:rgba(8,15,28,.92);display:flex;align-items:center;justify-content:center;padding:18px}
-.photo-preview.hidden{display:none!important}
-.photo-preview-box{width:min(100%,1000px);max-height:100%;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative}
-.photo-preview-image{display:block;max-width:100%;max-height:75vh;width:auto;height:auto;object-fit:contain;border-radius:8px;box-shadow:0 15px 50px #0008}
-.photo-preview-caption{color:#fff;text-align:center;font-size:13px;line-height:1.5;max-width:850px;overflow-wrap:anywhere}
-.photo-preview-date{color:#d5dbea;font-size:11px}
-.photo-preview-close{position:fixed;top:14px;right:14px;width:44px;height:44px;border:1px solid #ffffff55;border-radius:50%;background:#172945;color:#fff;font-size:25px;line-height:1;display:grid;place-items:center}
-.photo-preview-close:hover{background:#344b6d}
-.photo-preview-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.notice{background:#f8f6f0;border:1px solid #eee3c9;border-radius:10px;padding:11px 13px;color:#745a27;font-size:11px;line-height:1.5;margin-bottom:14px}
-.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.toolbar select{width:auto;min-width:150px}
-.report{line-height:1.65;font-size:13px;color:#475467}
-.report h3{color:var(--navy);font-size:14px;margin:22px 0 8px;padding-bottom:5px;border-bottom:1px solid #e6e9ef}
-.report p{margin:7px 0}
-.report ul{padding-left:19px}
-.report-cover{border-bottom:3px solid var(--gold);padding:0 0 17px;margin-bottom:18px}
-.report-kicker{font-size:10px;letter-spacing:.17em;color:#9a742d;font-weight:850}
-.report-title{font-size:25px;color:var(--navy);font-weight:850;line-height:1.2;margin:9px 0}
-.report-subtitle{font-size:12px;color:#667085}
-.report-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:15px 0}
-.report-meta div{background:#f7f8fa;border:1px solid #e8ebf0;border-radius:8px;padding:9px}
-.report-meta small{display:block;color:#667085;font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:750}
-.report-meta strong{display:block;color:#101d35;font-size:12px;margin-top:3px;overflow-wrap:anywhere}
-.report-summary{background:#f8f6f0;border:1px solid #eee3c9;border-radius:9px;padding:12px;margin:13px 0}
-.report-summary strong{color:#101d35}
-.report-table{width:100%;border-collapse:collapse;margin:10px 0 15px;font-size:11px}
-.report-table th,.report-table td{border:1px solid #e2e6ed;padding:7px 8px;text-align:left;vertical-align:top}
-.report-table th{background:#f3f5f8;color:#344054;font-weight:800}
-.report-table td:last-child,.report-table th:last-child{text-align:right}
-.report-photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 18px}
-.report-photo-card{margin:0;border:1px solid #e2e6ed;border-radius:9px;padding:8px;background:#fff;min-width:0;break-inside:avoid;page-break-inside:avoid}
-.report-photo-card img{display:block;width:100%;height:190px;object-fit:contain;background:#f4f6f9;border-radius:5px}
-.report-photo-card figcaption{padding:8px 2px 2px;font-size:10px;line-height:1.5;color:#475467;overflow-wrap:anywhere}
-.report-photo-card figcaption strong{display:block;color:#101d35;margin-bottom:3px}
-.report-photo-card figcaption span{display:block;color:#667085;font-size:9px}
-.report-signature{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-top:22px;break-inside:avoid;page-break-inside:avoid}
-.signature-box{border:1px solid #dfe3e9;border-radius:8px;padding:11px;min-height:105px}
-.signature-box strong{display:block;color:#101d35;font-size:11px;margin-bottom:8px}
-.signature-line{border-bottom:1px solid #98a2b3;margin-top:45px}
-.report-disclaimer{font-size:10px;color:#667085;background:#f7f8fa;border-radius:8px;padding:10px;margin-top:15px}
-.report-end{font-size:9px;color:#98a2b3;border-top:1px solid #e6e9ef;margin-top:18px;padding-top:8px}
-.footer{text-align:center;color:#98a2b3;font-size:10px;padding:0 20px 25px}
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#172945;color:#fff;padding:11px 16px;border-radius:10px;font-size:12px;box-shadow:var(--shadow);z-index:1100;display:none;max-width:90vw}
-@media(max-width:850px){
-.layout{grid-template-columns:1fr}
-.sidebar{position:static;display:flex;overflow-x:auto;gap:4px;padding:8px}
-.nav-label,.side-note{display:none}
-.nav-btn{width:auto;white-space:nowrap;padding:10px}
-.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media(max-width:560px){
-.hero{margin-top:20px}
-.layout{padding:0 12px 35px}
-.hero{padding:0 14px}
-.panel{padding:15px}
-.project-grid,.form-grid{grid-template-columns:1fr}
-.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-.photo-card img{height:140px}
-.photo-actions{flex-direction:column}
-.photo-actions .btn{width:100%}
-.stat{padding:13px}
-.stat-value{font-size:23px}
-.topbar{padding:15px}
-.top-link{font-size:11px}
-.photo-preview{padding:12px}
-.photo-preview-image{max-height:68vh}
-.report-photo-grid{grid-template-columns:1fr}
-.report-photo-card img{height:230px}
-.report-meta{grid-template-columns:1fr 1fr}
-}
-@page{size:auto;margin:14mm 13mm}
-@media print{
-html,body{background:#fff!important;color:#202b3a!important}
-body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.topbar,.hero,.sidebar,.no-print,.footer,.photo-preview,.toast{display:none!important}
-.layout{display:block;padding:0!important;margin:0!important;max-width:none!important}
-.main{width:100%}
-.stats{display:none!important}
-.panel{box-shadow:none!important;border:0!important;padding:0!important;margin:0!important;border-radius:0!important}
-#view-reports{display:block!important}
-#view-reports>.panel{display:block!important}
-#view-reports .panel-head{display:none!important}
-.report{font-size:10.5pt;line-height:1.5;color:#344054}
-.report h3{font-size:12pt;margin:17px 0 7px;break-after:avoid;page-break-after:avoid}
-.report p{orphans:3;widows:3}
-.report-cover{break-inside:avoid;page-break-inside:avoid}
-.report-title{font-size:22pt}
-.report-meta{grid-template-columns:repeat(2,minmax(0,1fr))}
-.report-summary,.report-table,.report-photo-card,.report-signature,.signature-box{break-inside:avoid;page-break-inside:avoid}
-.report-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.report-photo-card{padding:6px;border:1px solid #d5d9e0}
-.report-photo-card img{height:155px;max-width:100%;object-fit:contain}
-.report-photo-card figcaption{font-size:9pt}
-.report-table{font-size:9pt}
-.report-table th,.report-table td{padding:5px 6px}
-.report-signature{margin-top:18px;gap:15px}
-.signature-box{min-height:95px}
-.signature-line{margin-top:38px}
-.report-end{font-size:8pt}
-}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink)}button,input,select,textarea{font:inherit}button{cursor:pointer}
+.topbar{background:linear-gradient(115deg,var(--navy),#213a5d);color:#fff;padding:18px max(16px,calc((100% - 1220px)/2));display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}.mark{width:44px;height:44px;border:1px solid #d6ad58bf;border-radius:12px;display:grid;place-items:center;color:var(--gold);font-weight:900;font-size:19px}.brand strong{display:block;letter-spacing:.09em;font-size:15px}.brand small{display:block;color:#d5dbea;margin-top:3px;font-size:11px;letter-spacing:.12em}
+.top-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.top-link{color:#fff;text-decoration:none;font-size:12px;padding:9px 11px;border:1px solid #ffffff35;border-radius:9px}
+.hero{max-width:1220px;margin:24px auto 18px;padding:0 20px;display:flex;justify-content:space-between;align-items:end;gap:18px;flex-wrap:wrap}.eyebrow{color:#9a742d;text-transform:uppercase;font-size:11px;font-weight:800;letter-spacing:.16em}h1{font-size:clamp(25px,4vw,36px);margin:7px 0;color:var(--navy);letter-spacing:-.035em}.hero p{margin:0;color:var(--muted);max-width:650px;line-height:1.55;font-size:14px}
+.layout{max-width:1220px;margin:0 auto;padding:0 20px 45px;display:grid;grid-template-columns:235px minmax(0,1fr);gap:18px}.sidebar,.panel,.stat{background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:var(--shadow)}.sidebar{padding:12px;height:max-content;position:sticky;top:12px}.nav-label{font-size:10px;text-transform:uppercase;letter-spacing:.13em;color:#98a2b3;font-weight:800;padding:10px}.nav-btn{width:100%;border:0;background:transparent;text-align:left;padding:10px 11px;border-radius:9px;color:#475467;font-weight:650;font-size:12px;display:flex;gap:9px;align-items:center;margin:2px 0}.nav-btn:hover,.nav-btn.active{background:#f5f0e5;color:var(--navy)}.nav-btn.active{box-shadow:inset 3px 0 var(--gold)}.side-note{margin:14px 4px 3px;padding:11px;background:#f7f8fa;border-radius:9px;color:#667085;font-size:10px;line-height:1.5}
+.main{min-width:0}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:15px}.stat{padding:14px}.stat-label{font-size:10px;color:var(--muted);font-weight:650}.stat-value{font-size:25px;font-weight:800;color:var(--navy);margin:7px 0 2px}.stat-sub{font-size:10px;color:#98a2b3}
+.panel{padding:18px;margin-bottom:15px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}.panel h2{font-size:16px;color:var(--navy);margin:0}.panel-desc{font-size:11px;color:var(--muted);margin:5px 0 0}
+.btn{border:0;border-radius:9px;padding:9px 13px;font-size:11px;font-weight:750;display:inline-flex;align-items:center;justify-content:center;gap:6px}.btn-primary{background:var(--navy);color:#fff}.btn-gold{background:var(--gold);color:#241b0c}.btn-light{background:#f1f3f6;color:#344054}.btn-danger{background:#fff0f0;color:var(--red)}.btn:disabled{opacity:.45;cursor:not-allowed}
+.project-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.project-card{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;cursor:pointer}.project-card.selected{border-color:var(--gold);box-shadow:0 0 0 2px #d6ad5828}.project-top{display:flex;justify-content:space-between;gap:8px;align-items:start}.project-card h3{font-size:13px;margin:0 0 5px;color:var(--navy)}.project-card p{font-size:10px;color:var(--muted);margin:0;line-height:1.45}.status{font-size:9px;font-weight:800;border-radius:999px;padding:5px 8px;background:#edf7f2;color:#16734e;white-space:nowrap}.status.pause{background:#fff5df;color:#8a641e}.progress-line{height:6px;background:#edf0f4;border-radius:20px;margin:12px 0 7px;overflow:hidden}.progress-line span{display:block;height:100%;background:var(--gold)}.project-foot{display:flex;justify-content:space-between;color:#8993a3;font-size:10px}
+.empty{padding:25px 14px;text-align:center;border:1px dashed #d7dce5;border-radius:11px;color:#7b8492;font-size:12px;line-height:1.6}.hidden{display:none!important}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}label{font-size:10px;font-weight:750;color:#475467}input,select,textarea{width:100%;border:1px solid #d9dee7;border-radius:9px;padding:10px;background:#fff;color:var(--ink);font-size:12px;outline:none}input:focus,select:focus,textarea:focus{border-color:#c49a45;box-shadow:0 0 0 3px #d6ad5820}textarea{min-height:85px;resize:vertical}.form-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:13px}
+.list{display:flex;flex-direction:column;gap:8px}.entry{border:1px solid var(--line);border-radius:10px;padding:12px;display:flex;justify-content:space-between;gap:10px;align-items:start}.entry h3{font-size:12px;margin:0 0 5px;color:var(--navy)}.entry p{font-size:10px;color:#667085;line-height:1.5;margin:0;white-space:pre-wrap}.entry small{font-size:9px;color:#98a2b3;display:block;margin-top:6px}.amount{font-weight:800;color:var(--navy);font-size:12px;white-space:nowrap}
+.toolbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.toolbar select{width:auto;min-width:140px}.notice{background:#f8f6f0;border:1px solid #eee3c9;border-radius:9px;padding:10px 12px;color:#745a27;font-size:10px;line-height:1.5;margin-bottom:13px}.authbox{background:#fff;border:1px solid #e7e0d0;border-radius:12px;padding:14px;margin-bottom:15px}.authbox h3{font-size:13px;color:var(--navy);margin:0 0 7px}.authbox p{font-size:11px;color:var(--muted);line-height:1.5}.authrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.authrow input{flex:1 1 180px}.auth-state{font-size:10px;color:#667085;margin-top:8px}.tag{display:inline-block;padding:5px 8px;border-radius:99px;background:#edf7f2;color:#16734e;font-size:10px;font-weight:800}.photo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.photo-card{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff;min-width:0}.photo-card img{width:100%;height:155px;object-fit:cover;display:block;background:#f2f4f7}.photo-meta{padding:9px;font-size:10px;color:#667085;line-height:1.5}.photo-meta strong{display:block;color:var(--navy);font-size:11px;margin-bottom:4px;overflow-wrap:anywhere}.photo-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}.photo-actions .btn{flex:1 1 auto;padding:7px}.photo-editor{border:1px solid #e8d8b5;background:#fffcf5;border-radius:11px;padding:13px;margin:0 0 13px}.photo-editor h3{margin:0 0 7px;color:var(--navy);font-size:13px}.photo-preview{position:fixed;inset:0;z-index:1000;background:rgba(8,15,28,.93);display:flex;align-items:center;justify-content:center;padding:15px}.photo-preview-box{max-width:950px;max-height:100%;display:flex;flex-direction:column;align-items:center;gap:10px}.photo-preview-image{max-width:100%;max-height:72vh;object-fit:contain;border-radius:7px}.photo-preview-close{position:fixed;top:12px;right:12px;width:42px;height:42px;border:1px solid #ffffff55;border-radius:50%;background:#172945;color:#fff;font-size:24px}.photo-preview-caption{color:#fff;text-align:center;font-size:12px}.photo-preview-date{color:#d5dbea;font-size:10px}
+.report{line-height:1.6;font-size:12px;color:#475467}.report h3{color:var(--navy);font-size:13px;margin:20px 0 7px;padding-bottom:5px;border-bottom:1px solid #e6e9ef}.report p{margin:7px 0}.report-cover{border-bottom:3px solid var(--gold);padding-bottom:15px;margin-bottom:17px}.report-kicker{font-size:9px;letter-spacing:.16em;color:#9a742d;font-weight:850}.report-title{font-size:24px;color:var(--navy);font-weight:850;margin:8px 0}.report-meta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:14px 0}.report-meta div{background:#f7f8fa;border:1px solid #e8ebf0;border-radius:8px;padding:8px}.report-meta small{display:block;color:#667085;font-size:8px;text-transform:uppercase;font-weight:750}.report-meta strong{display:block;color:#101d35;font-size:11px;margin-top:3px;overflow-wrap:anywhere}.report-summary{background:#f8f6f0;border:1px solid #eee3c9;border-radius:8px;padding:11px;margin:12px 0}.report-table{width:100%;border-collapse:collapse;margin:9px 0 14px;font-size:10px}.report-table th,.report-table td{border:1px solid #e2e6ed;padding:6px;text-align:left;vertical-align:top}.report-table th{background:#f3f5f8}.report-photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.report-photo-card{border:1px solid #e2e6ed;border-radius:8px;padding:7px;break-inside:avoid}.report-photo-card img{width:100%;height:170px;object-fit:contain;background:#f4f6f9}.report-photo-card figcaption{font-size:9px;padding-top:6px}.report-signature{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px}.signature-box{border:1px solid #dfe3e9;border-radius:8px;padding:10px;min-height:95px}.signature-line{border-bottom:1px solid #98a2b3;margin-top:38px}.report-disclaimer{font-size:9px;color:#667085;background:#f7f8fa;border-radius:7px;padding:9px;margin-top:13px}.footer{text-align:center;color:#98a2b3;font-size:9px;padding:0 15px 22px}.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#172945;color:#fff;padding:10px 15px;border-radius:9px;font-size:11px;box-shadow:var(--shadow);z-index:1100;display:none;max-width:90vw}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{position:static;display:flex;overflow-x:auto;gap:3px;padding:7px}.nav-label,.side-note{display:none}.nav-btn{width:auto;white-space:nowrap;padding:9px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.hero{margin-top:18px;padding:0 14px}.layout{padding:0 11px 30px}.panel{padding:14px}.project-grid,.form-grid{grid-template-columns:1fr}.photo-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.photo-card img{height:130px}.photo-actions{flex-direction:column}.stat{padding:12px}.stat-value{font-size:22px}.topbar{padding:13px}.report-photo-grid{grid-template-columns:1fr}}
+@page{size:auto;margin:13mm}
+@media print{body{background:#fff!important}.topbar,.hero,.sidebar,.no-print,.footer,.toast,.authbox{display:none!important}.layout{display:block;padding:0;margin:0}.stats{display:none!important}.panel{box-shadow:none;border:0;padding:0;margin:0}#view-reports{display:block!important}#view-reports>.panel{display:block!important}#view-reports .panel-head{display:none!important}.report{font-size:10pt}.report-photo-card,.report-table,.report-summary,.report-signature{break-inside:avoid}.report-photo-card img{height:145px}}
 </style>
 </head>
 <body>
@@ -201,34 +36,67 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 </header>
 
 <section class="hero">
-<div><div class="eyebrow">Votre espace de suivi</div><h1>Le chantier maîtrisé.</h1><p>Centralisez les activités, les dépenses et les photos de vos projets dans un seul espace simple à utiliser, même sur téléphone.</p></div>
-<div class="demo-tag">VERSION 1 · DONNÉES LOCALES</div>
+<div><div class="eyebrow">Votre espace de suivi</div><h1>Le chantier maîtrisé.</h1><p>Centralisez les activités, les dépenses, les recettes, le planning et les documents de vos projets dans un seul espace.</p></div>
+<div id="connectionTag" class="tag">Mode local</div>
 </section>
 
 <div class="layout">
 <aside class="sidebar no-print">
 <div class="nav-label">Espace de travail</div>
-<button class="nav-btn active" data-view="dashboard"><span class="nav-icon">▦</span>Vue générale</button>
-<button class="nav-btn" data-view="projects"><span class="nav-icon">▣</span>Mes chantiers</button>
-<button class="nav-btn" data-view="journal"><span class="nav-icon">▤</span>Journal de chantier</button>
-<button class="nav-btn" data-view="expenses"><span class="nav-icon">＄</span>Dépenses & matériaux</button>
-<button class="nav-btn" data-view="photos"><span class="nav-icon">▧</span>Photos & évolution</button>
-<button class="nav-btn" data-view="reports"><span class="nav-icon">▤</span>Rapports</button>
-<div class="side-note"><strong>Conseil :</strong> les données sont conservées dans le navigateur de cet appareil.</div>
+<button class="nav-btn active" data-view="dashboard">▦ Vue générale</button>
+<button class="nav-btn" data-view="projects">▣ Mes chantiers</button>
+<button class="nav-btn" data-view="journal">▤ Journal de chantier</button>
+<button class="nav-btn" data-view="expenses">＄ Finances</button>
+<button class="nav-btn" data-view="milestones">◷ Planning & étapes</button>
+<button class="nav-btn" data-view="photos">▧ Photos & documents</button>
+<button class="nav-btn" data-view="reports">▤ Rapports</button>
+<div class="side-note"><strong>Protection :</strong> les données locales restent conservées sur cet appareil. La connexion permet de retrouver les dossiers depuis les appareils autorisés.</div>
 </aside>
 
 <main class="main">
+<section class="authbox no-print" id="authBox">
+<h3 id="authTitle">Connexion à SERVICE KIN CONFIANCE</h3>
+<p id="authDescription">Connectez-vous pour synchroniser vos chantiers avec votre espace sécurisé. Vous pouvez aussi continuer en mode local.</p>
+<div id="authForm">
+<div class="authrow">
+<input id="authEmail" type="email" autocomplete="email" placeholder="Adresse e-mail">
+<input id="authPassword" type="password" autocomplete="current-password" placeholder="Mot de passe">
+<button class="btn btn-primary" id="loginBtn">Se connecter</button>
+<button class="btn btn-light" id="signupBtn">Créer un compte</button>
+</div>
+<button class="btn btn-light" id="resetPasswordBtn" style="margin-top:8px">Mot de passe oublié ?</button>
+</div>
+<div id="signedInBox" class="hidden">
+<div class="authrow"><span id="signedInEmail" class="tag"></span><button class="btn btn-light" id="logoutBtn">Se déconnecter</button></div>
+<p id="orgStatus" class="auth-state"></p>
+</div>
+<div id="orgCreateBox" class="hidden">
+<p>Votre compte n'est associé à aucune organisation CONFIANCE. Créez votre espace de travail pour commencer.</p>
+<div class="form-grid">
+<div class="field"><label for="orgName">Nom de l'organisation *</label><input id="orgName" placeholder="Ex. Bureau d'études Henry"></div>
+<div class="field"><label for="orgDescription">Description (facultatif)</label><input id="orgDescription" placeholder="Activité ou présentation"></div>
+</div>
+<div class="form-actions"><button class="btn btn-primary" id="createOrgBtn">Créer mon organisation</button></div>
+</div>
+<div id="migrationBox" class="notice hidden" style="margin-top:12px;margin-bottom:0">
+<strong>Anciennes données détectées sur cet appareil.</strong>
+<p id="migrationMessage" style="margin:5px 0 8px">Vous pouvez les importer dans votre nouvel espace si celui-ci est vide.</p>
+<button class="btn btn-gold" id="importLocalBtn">Importer mes anciennes données</button>
+</div>
+<div id="cloudMessage" class="auth-state"></div>
+</section>
+
 <section class="stats">
-<div class="stat"><div class="stat-label">Chantiers enregistrés</div><div class="stat-value" id="statProjects">0</div><div class="stat-sub">Tous vos dossiers</div></div>
-<div class="stat"><div class="stat-label">Chantiers en cours</div><div class="stat-value" id="statActive">0</div><div class="stat-sub">Statut « En cours »</div></div>
+<div class="stat"><div class="stat-label">Chantiers enregistrés</div><div class="stat-value" id="statProjects">0</div><div class="stat-sub">Dossiers de l'organisation</div></div>
+<div class="stat"><div class="stat-label">Chantiers en cours</div><div class="stat-value" id="statActive">0</div><div class="stat-sub">Statut actif</div></div>
 <div class="stat"><div class="stat-label">Notes de chantier</div><div class="stat-value" id="statEntries">0</div><div class="stat-sub">Activités consignées</div></div>
-<div class="stat"><div class="stat-label">Dépenses saisies</div><div class="stat-value" id="statExpenses">0</div><div class="stat-sub">Lignes enregistrées</div></div>
+<div class="stat"><div class="stat-label">Mouvements financiers</div><div class="stat-value" id="statExpenses">0</div><div class="stat-sub">Dépenses et recettes</div></div>
 </section>
 
 <section class="view" id="view-dashboard">
 <div class="panel">
 <div class="panel-head"><div><h2>Bienvenue dans votre espace</h2><p class="panel-desc">Un aperçu rapide de vos projets et de leur avancement.</p></div><button class="btn btn-primary no-print" id="dashboardAdd">＋ Créer un chantier</button></div>
-<div class="notice">Cette première version fonctionne sans compte et enregistre les informations dans le navigateur de cet appareil. N’utilisez pas encore cette démonstration comme unique archive de chantier.</div>
+<div class="notice" id="modeNotice">Mode local : les données sont conservées dans le navigateur de cet appareil. Connectez-vous pour activer la sauvegarde dans votre espace Supabase.</div>
 <div class="panel-head"><div><h2>Chantiers récents</h2><p class="panel-desc">Sélectionnez un dossier pour consulter ses informations.</p></div><button class="btn btn-light no-print" data-goto="projects">Voir tous les chantiers →</button></div>
 <div class="project-grid" id="dashboardProjects"></div>
 </div>
@@ -236,22 +104,26 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
 <section class="view hidden" id="view-projects">
 <div class="panel">
-<div class="panel-head"><div><h2>Mes chantiers</h2><p class="panel-desc">Chaque projet possède son propre journal, ses dépenses et ses photos.</p></div><button class="btn btn-primary no-print" id="addProject">＋ Nouveau chantier</button></div>
+<div class="panel-head"><div><h2>Mes chantiers</h2><p class="panel-desc">Chaque chantier possède son journal, ses finances, ses étapes et ses documents.</p></div><button class="btn btn-primary no-print" id="addProject">＋ Nouveau chantier</button></div>
 <div id="projectList" class="project-grid"></div>
 </div>
 <div class="panel hidden" id="projectFormPanel">
-<div class="panel-head"><div><h2 id="projectFormTitle">Créer un chantier</h2><p class="panel-desc">Les champs marqués d’un astérisque sont nécessaires.</p></div></div>
+<div class="panel-head"><div><h2 id="projectFormTitle">Créer un chantier</h2><p class="panel-desc">Renseignez les informations principales du dossier.</p></div></div>
 <form id="projectForm">
 <input type="hidden" id="projectId">
 <div class="form-grid">
 <div class="field"><label for="pName">Nom du chantier *</label><input id="pName" required></div>
+<div class="field"><label for="pReference">Référence du dossier</label><input id="pReference"></div>
 <div class="field"><label for="pType">Type de projet</label><select id="pType"><option>Construction</option><option>Rénovation</option><option>Route / voirie</option><option>Génie civil</option><option>Étude / expertise</option><option>Autre</option></select></div>
 <div class="field"><label for="pLocation">Lieu du chantier</label><input id="pLocation"></div>
 <div class="field"><label for="pClient">Client / maître d’ouvrage</label><input id="pClient"></div>
+<div class="field"><label for="pPhone">Téléphone du client</label><input id="pPhone" type="tel"></div>
 <div class="field"><label for="pStart">Date de début</label><input id="pStart" type="date"></div>
-<div class="field"><label for="pStatus">État du chantier</label><select id="pStatus"><option>En cours</option><option>En pause</option><option>Terminé</option></select></div>
+<div class="field"><label for="pEnd">Fin prévue</label><input id="pEnd" type="date"></div>
+<div class="field"><label for="pStatus">État du chantier</label><select id="pStatus"><option value="En cours">En cours</option><option value="Planifié">Planifié</option><option value="En pause">En pause</option><option value="Terminé">Terminé</option></select></div>
 <div class="field"><label for="pProgress">Avancement estimé (%)</label><input id="pProgress" type="number" min="0" max="100" value="0"></div>
-<div class="field"><label for="pCurrency">Devise principale</label><select id="pCurrency"><option>USD</option><option>CDF</option></select></div>
+<div class="field"><label for="pBudget">Budget prévisionnel</label><input id="pBudget" type="number" min="0" step="0.01"></div>
+<div class="field"><label for="pCurrency">Devise du budget</label><select id="pCurrency"><option>USD</option><option>CDF</option></select></div>
 <div class="field full"><label for="pDescription">Description / objectifs</label><textarea id="pDescription"></textarea></div>
 </div>
 <div class="form-actions"><button type="button" class="btn btn-light" id="cancelProject">Annuler</button><button class="btn btn-primary">Enregistrer le chantier</button></div>
@@ -261,10 +133,9 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
 <section class="view hidden" id="view-journal">
 <div class="panel">
-<div class="panel-head"><div><h2>Journal de chantier</h2><p class="panel-desc">Consignez les travaux, équipes, observations et difficultés rencontrées.</p></div><div class="toolbar"><select id="journalProject"></select><button class="btn btn-primary no-print" id="addJournal">＋ Ajouter une note</button></div></div>
+<div class="panel-head"><div><h2>Journal de chantier</h2><p class="panel-desc">Consignez les travaux, équipes, observations et difficultés.</p></div><div class="toolbar"><select id="journalProject"></select><button class="btn btn-primary no-print" id="addJournal">＋ Ajouter une note</button></div></div>
 <div id="journalFormPanel" class="hidden">
-<form id="journalForm">
-<div class="form-grid">
+<form id="journalForm"><div class="form-grid">
 <div class="field"><label for="jDate">Date *</label><input type="date" id="jDate" required></div>
 <div class="field"><label for="jWeather">Météo / conditions</label><input id="jWeather"></div>
 <div class="field full"><label for="jActivities">Activités réalisées *</label><textarea id="jActivities" required></textarea></div>
@@ -272,9 +143,7 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 <div class="field"><label for="jMaterials">Matériaux utilisés</label><input id="jMaterials"></div>
 <div class="field full"><label for="jIssues">Difficultés / incidents</label><textarea id="jIssues"></textarea></div>
 <div class="field full"><label for="jObservations">Observations et actions à suivre</label><textarea id="jObservations"></textarea></div>
-</div>
-<div class="form-actions"><button type="button" class="btn btn-light" id="cancelJournal">Annuler</button><button class="btn btn-primary">Enregistrer la note</button></div>
-</form>
+</div><div class="form-actions"><button type="button" class="btn btn-light" id="cancelJournal">Annuler</button><button class="btn btn-primary">Enregistrer la note</button></div></form>
 </div>
 <div id="journalList" class="list"></div>
 </div>
@@ -282,45 +151,49 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 
 <section class="view hidden" id="view-expenses">
 <div class="panel">
-<div class="panel-head"><div><h2>Dépenses & matériaux</h2><p class="panel-desc">Enregistrez les achats, transports, paiements et autres coûts.</p></div><div class="toolbar"><select id="expenseProject"></select><button class="btn btn-primary no-print" id="addExpense">＋ Ajouter une dépense</button></div></div>
+<div class="panel-head"><div><h2>Finances du chantier</h2><p class="panel-desc">Suivez les dépenses et les recettes, sans mélanger les devises.</p></div><div class="toolbar"><select id="expenseProject"></select><button class="btn btn-primary no-print" id="addExpense">＋ Nouveau mouvement</button></div></div>
 <div id="expenseFormPanel" class="hidden">
-<form id="expenseForm">
-<div class="form-grid">
+<form id="expenseForm"><div class="form-grid">
+<div class="field"><label for="eType">Type de mouvement</label><select id="eType"><option value="depense">Dépense</option><option value="recette">Recette / encaissement</option></select></div>
 <div class="field"><label for="eDate">Date *</label><input id="eDate" type="date" required></div>
-<div class="field"><label for="eCategory">Catégorie</label><select id="eCategory"><option>Matériaux</option><option>Main-d’œuvre</option><option>Transport</option><option>Location matériel</option><option>Équipement</option><option>Autre</option></select></div>
-<div class="field full"><label for="eLabel">Désignation *</label><input id="eLabel" required></div>
+<div class="field"><label for="eCategory">Catégorie</label><select id="eCategory"><option>Matériaux</option><option>Main-d’œuvre</option><option>Transport</option><option>Location matériel</option><option>Équipement</option><option>Avance client</option><option>Décompte</option><option>Autre</option></select></div>
+<div class="field"><label for="eLabel">Désignation *</label><input id="eLabel" required></div>
 <div class="field"><label for="eAmount">Montant *</label><input id="eAmount" type="number" min="0" step="0.01" required></div>
 <div class="field"><label for="eCurrency">Devise *</label><select id="eCurrency"><option>USD</option><option>CDF</option></select></div>
-<div class="field full"><label for="eNote">Note / référence</label><input id="eNote"></div>
+<div class="field"><label for="ePayment">Mode de paiement</label><input id="ePayment" placeholder="Espèces, banque, mobile money…"></div>
+<div class="field"><label for="eReference">Référence de pièce</label><input id="eReference" placeholder="Facture, reçu…"></div>
+<div class="field full"><label for="eNote">Note complémentaire</label><input id="eNote"></div>
+</div><div class="form-actions"><button type="button" class="btn btn-light" id="cancelExpense">Annuler</button><button class="btn btn-primary">Enregistrer le mouvement</button></div></form>
 </div>
-<div class="form-actions"><button type="button" class="btn btn-light" id="cancelExpense">Annuler</button><button class="btn btn-primary">Enregistrer la dépense</button></div>
-</form>
+<div id="expenseTotals" class="notice"></div><div id="expenseList" class="list"></div>
 </div>
-<div id="expenseTotals" class="notice"></div>
-<div id="expenseList" class="list"></div>
+</section>
+
+<section class="view hidden" id="view-milestones">
+<div class="panel">
+<div class="panel-head"><div><h2>Planning et étapes</h2><p class="panel-desc">Définissez les étapes importantes et suivez leur progression.</p></div><div class="toolbar"><select id="milestoneProject"></select><button class="btn btn-primary no-print" id="addMilestone">＋ Ajouter une étape</button></div></div>
+<div id="milestoneFormPanel" class="hidden">
+<form id="milestoneForm"><div class="form-grid">
+<div class="field full"><label for="mTitle">Nom de l'étape *</label><input id="mTitle" required></div>
+<div class="field"><label for="mStart">Début prévu</label><input id="mStart" type="date"></div>
+<div class="field"><label for="mEnd">Fin prévue</label><input id="mEnd" type="date"></div>
+<div class="field"><label for="mStatus">État</label><select id="mStatus"><option value="a_faire">À faire</option><option value="en_cours">En cours</option><option value="terminee">Terminée</option><option value="bloquee">Bloquée</option></select></div>
+<div class="field"><label for="mProgress">Avancement (%)</label><input id="mProgress" type="number" min="0" max="100" value="0"></div>
+<div class="field full"><label for="mDescription">Description</label><textarea id="mDescription"></textarea></div>
+</div><div class="form-actions"><button type="button" class="btn btn-light" id="cancelMilestone">Annuler</button><button class="btn btn-primary">Enregistrer l'étape</button></div></form>
+</div>
+<div id="milestoneList" class="list"></div>
 </div>
 </section>
 
 <section class="view hidden" id="view-photos">
 <div class="panel">
-<div class="panel-head">
-<div><h2>Photos & évolution</h2><p class="panel-desc">Ouvrez chaque photo en grand ou modifiez sa description et sa date.</p></div>
-<div class="toolbar"><select id="photoProject"></select><button class="btn btn-primary no-print" id="addPhoto">＋ Ajouter des photos</button><input id="photoInput" type="file" accept="image/*" multiple class="hidden"></div>
-</div>
-<div class="notice">Les photos sont réduites avant enregistrement. Elles restent stockées dans ce navigateur uniquement. Sauvegardez vos fichiers ailleurs et évitez d’effacer les données de Safari.</div>
-<div id="photoEditor" class="photo-editor hidden">
-<h3 id="photoEditorTitle">Modifier les informations de la photo</h3>
-<p>Modifiez les informations ci-dessous, puis appuyez sur « Enregistrer les modifications ».</p>
-<form id="photoEditForm">
-<input type="hidden" id="editPhotoId">
-<div class="form-grid">
-<div class="field full"><label for="editPhotoCaption">Description de la photo</label><textarea id="editPhotoCaption" required placeholder="Ex. Ferraillage de la semelle — côté nord"></textarea></div>
-<div class="field"><label for="editPhotoDate">Date de prise de vue</label><input id="editPhotoDate" type="date" required></div>
-</div>
-<div class="form-actions"><button type="button" class="btn btn-light" id="cancelPhotoEdit">Annuler</button><button class="btn btn-primary">Enregistrer les modifications</button></div>
-</form>
-</div>
+<div class="panel-head"><div><h2>Photos & documents</h2><p class="panel-desc">Archivez les photos, plans, factures et pièces du chantier.</p></div><div class="toolbar"><select id="photoProject"></select><button class="btn btn-primary no-print" id="addPhoto">＋ Ajouter des fichiers</button><input id="fileInput" type="file" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" multiple class="hidden"></div></div>
+<div class="notice">En mode connecté, les fichiers sont envoyés dans le stockage privé de votre organisation. En mode local, seules les photos sont conservées dans ce navigateur.</div>
+<div id="photoEditor" class="photo-editor hidden"><h3>Modifier la photo</h3><form id="photoEditForm"><input type="hidden" id="editPhotoId"><div class="form-grid"><div class="field full"><label for="editPhotoCaption">Description</label><textarea id="editPhotoCaption" required></textarea></div><div class="field"><label for="editPhotoDate">Date du document / photo</label><input id="editPhotoDate" type="date" required></div></div><div class="form-actions"><button type="button" class="btn btn-light" id="cancelPhotoEdit">Annuler</button><button class="btn btn-primary">Enregistrer</button></div></form></div>
 <div id="photoGrid" class="photo-grid"></div>
+<div class="panel-head" style="margin-top:22px"><div><h2>Documents non photographiques</h2><p class="panel-desc">PDF et autres pièces attachées à ce chantier.</p></div></div>
+<div id="documentList" class="list"></div>
 </div>
 </section>
 
@@ -333,704 +206,444 @@ body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 </main>
 </div>
 
-<div class="footer">SERVICE KIN CONFIANCE · Version de démonstration locale · Synchronisation en ligne à venir.</div>
+<div class="footer">SERVICE KIN CONFIANCE · Gestion de chantier · Données privées de votre organisation</div>
 <div class="toast" id="toast" role="status"></div>
-
-<div id="photoPreview" class="photo-preview hidden" role="dialog" aria-modal="true" aria-label="Aperçu de la photo" aria-hidden="true">
-<button type="button" class="photo-preview-close" id="closePhotoPreview" aria-label="Fermer l'aperçu">×</button>
-<div class="photo-preview-box">
-<img id="photoPreviewImage" class="photo-preview-image" src="" alt="Aperçu de la photo de chantier">
-<div id="photoPreviewCaption" class="photo-preview-caption"></div>
-<div id="photoPreviewDate" class="photo-preview-date"></div>
-<div class="photo-preview-actions">
-<button type="button" class="btn btn-gold" id="previewEditPhoto">Modifier la description et la date</button>
-<button type="button" class="btn btn-light" id="previewCloseButton">Fermer</button>
-</div>
-</div>
-</div>
+<div id="photoPreview" class="photo-preview hidden" role="dialog" aria-modal="true" aria-label="Aperçu de la photo"><button class="photo-preview-close" id="closePhotoPreview">×</button><div class="photo-preview-box"><img id="photoPreviewImage" class="photo-preview-image" src="" alt="Photo de chantier"><div id="photoPreviewCaption" class="photo-preview-caption"></div><div id="photoPreviewDate" class="photo-preview-date"></div><button class="btn btn-gold" id="previewEditPhoto">Modifier</button></div></div>
 
 <script>
 (()=>{
 'use strict';
-
+const SUPABASE_URL='https://ikhjunfdqjnhonxisjeh.supabase.co';
+const SUPABASE_KEY='sb_publishable_afY2FCUMd8FevvoqJv9Jrg_AvGeY0hE';
 const STORE_KEY='serviceKinConfiance_v1';
+const MAP_KEY='serviceKinConfiance_cloud_map_v1';
+const BUCKET='confiance-documents';
 const $=id=>document.getElementById(id);
-const today=()=>{
-const d=new Date();
-const local=new Date(d.getTime()-d.getTimezoneOffset()*60000);
-return local.toISOString().slice(0,10);
-};
-
-let state=loadState();
-let selectedProject=state.projects[0]?.id||null;
-let currentView='dashboard';
-let previewPhotoId=null;
+const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*60000).toISOString().slice(0,10)};
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const id=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+const money=(v,c)=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2}).format(Number(v)||0)+' '+c;
+const formatDate=v=>{if(!v)return'Non précisée';const a=String(v).slice(0,10).split('-');return a.length===3?a[2]+'/'+a[1]+'/'+a[0]:v};
+const clamp=v=>Math.max(0,Math.min(100,Number(v)||0));
+let db=null,user=null,organisation=null,cloudReady=false,cloudBusy=false;
+let state=loadState(),selectedProject=state.projects[0]?.id||null,currentView='dashboard',previewPhotoId=null;
+let cloudMap=loadMap();
 
 function loadState(){
-try{
-const raw=localStorage.getItem(STORE_KEY);
-if(raw){
-const p=JSON.parse(raw);
-return{
-projects:Array.isArray(p.projects)?p.projects:[],
-journal:Array.isArray(p.journal)?p.journal:[],
-expenses:Array.isArray(p.expenses)?p.expenses:[],
-photos:Array.isArray(p.photos)?p.photos:[]
-};
+ try{const p=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return{projects:Array.isArray(p.projects)?p.projects:[],journal:Array.isArray(p.journal)?p.journal:[],expenses:Array.isArray(p.expenses)?p.expenses:[],photos:Array.isArray(p.photos)?p.photos:[],milestones:Array.isArray(p.milestones)?p.milestones:[],documents:Array.isArray(p.documents)?p.documents:[]}}
+ catch(e){console.error('Données locales illisibles',e);return{projects:[],journal:[],expenses:[],photos:[],milestones:[],documents:[]}}
 }
-}catch(e){console.warn('Lecture du stockage impossible',e)}
-return{projects:[],journal:[],expenses:[],photos:[]};
+function loadMap(){try{return JSON.parse(localStorage.getItem(MAP_KEY)||'{}')}catch(e){return{}}}
+function saveMap(){localStorage.setItem(MAP_KEY,JSON.stringify(cloudMap))}
+function saveLocal(){try{localStorage.setItem(STORE_KEY,JSON.stringify(state));return true}catch(e){toast('Stockage local plein. Les fichiers sont conservés dans le cloud si vous êtes connecté.');return false}}
+function toast(m){const e=$('toast');e.textContent=m;e.style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>e.style.display='none',3500)}
+function setBusy(v){cloudBusy=v;document.querySelectorAll('button').forEach(b=>{if(b.dataset.busyLock==='1')b.disabled=v})}
+function project(pid){return state.projects.find(p=>p.id===pid)}
+function projectName(pid){return project(pid)?.name||'Chantier'}
+function activeProjectId(s){return $(s).value||selectedProject}
+function cloudError(e){console.error(e);return e?.message||e?.error_description||'Une erreur est survenue. Vérifiez votre connexion et les autorisations.'}
+function requireProject(){if(!state.projects.length){toast('Créez d’abord un chantier.');return false}return true}
+function statusDb(s){return({'En cours':'en_cours','En pause':'en_pause','Terminé':'termine','Planifié':'planifie'})[s]||'planifie'}
+function statusUi(s){return({'en_cours':'En cours','en_pause':'En pause','termine':'Terminé','planifie':'Planifié'})[s]||s||'Planifié'}
+function milestoneUi(s){return({'a_faire':'À faire','en_cours':'En cours','terminee':'Terminée','bloquee':'Bloquée'})[s]||s}
+function projectPayload(p){return{id:p.id,organisation_id:organisation.id,nom:p.name,reference:p.reference||null,type_chantier:p.type||null,client_nom:p.client||null,client_telephone:p.phone||null,localisation:p.location||null,description:p.description||null,date_debut:p.start||null,date_fin_prevue:p.end||null,statut:statusDb(p.status),avancement:clamp(p.progress),budget_previsionnel:p.budget===''||p.budget==null?null:Number(p.budget),devise_budget:p.currency||'USD'}}
+async function cloudWrite(table,method,payload,idValue){
+ if(!cloudReady)throw new Error('Connectez-vous et sélectionnez une organisation pour enregistrer dans le cloud.');
+ let q=db.from(table)[method](payload);
+ if(method==='update')q=q.eq('id',idValue);
+ const {error}=await q;if(error)throw error;
+}
+async function refreshCloud(){
+ if(!user)return;
+ const {data:members,error:me}=await db.from('confiance_membres').select('organisation_id,role,statut').eq('utilisateur_id',user.id).eq('statut','actif').limit(1);
+ if(me)throw me;
+ if(!members?.length){organisation=null;cloudReady=false;showAccount();return}
+ const {data:org,error:oe}=await db.from('confiance_organisations').select('*').eq('id',members[0].organisation_id).maybeSingle();
+ if(oe)throw oe;
+ if(!org)throw new Error('Organisation introuvable ou accès non autorisé.');
+ organisation=org;cloudReady=true;
+ const tables=await Promise.all([
+ db.from('confiance_chantiers').select('*').eq('organisation_id',org.id).order('created_at',{ascending:false}),
+ db.from('confiance_journal').select('*').eq('organisation_id',org.id).order('date_journal',{ascending:false}),
+ db.from('confiance_mouvements_financiers').select('*').eq('organisation_id',org.id).order('date_operation',{ascending:false}),
+ db.from('confiance_etapes').select('*').eq('organisation_id',org.id).order('date_debut_prevue',{ascending:true}),
+ db.from('confiance_documents').select('*').eq('organisation_id',org.id).order('date_document',{ascending:false})
+ ]);
+ for(const r of tables)if(r.error)throw r.error;
+ const [ps,js,fs,ms,ds]=tables.map(r=>r.data||[]);
+ const cloudProjects=ps.map(x=>({id:x.id,name:x.nom,reference:x.reference||'',type:x.type_chantier||'Construction',client:x.client_nom||'',phone:x.client_telephone||'',location:x.localisation||'',description:x.description||'',start:x.date_debut||'',end:x.date_fin_prevue||'',status:statusUi(x.statut),progress:Number(x.avancement)||0,budget:x.budget_previsionnel??'',currency:x.devise_budget||'USD'}));
+ const cloudJournal=js.map(x=>({id:x.id,projectId:x.chantier_id,date:x.date_journal,weather:x.meteo||'',activities:x.activites,workers:x.ouvriers||'',materials:x.materiaux||'',issues:x.problemes||'',observations:x.observations||''}));
+ const cloudFinance=fs.map(x=>({id:x.id,projectId:x.chantier_id,type:x.type_mouvement==='recette'?'recette':'depense',date:x.date_operation,category:x.categorie||'Autre',label:x.designation,amount:Number(x.montant),currency:x.devise,note:x.note||'',payment:x.mode_paiement||'',reference:x.reference_piece||''}));
+ const cloudMilestones=ms.map(x=>({id:x.id,projectId:x.chantier_id,title:x.titre,description:x.description||'',start:x.date_debut_prevue||'',end:x.date_fin_prevue||'',status:x.statut,progress:Number(x.avancement)||0}));
+ const cloudPhotos=[],cloudDocs=[];
+ for(const d of ds){
+  const {data:signed}=await db.storage.from(BUCKET).createSignedUrl(d.chemin_fichier,3600);
+  const item={id:d.id,projectId:d.chantier_id,date:d.date_document,caption:d.legende||d.nom_fichier,name:d.nom_fichier,path:d.chemin_fichier,mime:d.type_mime||'',size:d.taille_octets||0,url:signed?.signedUrl||''};
+  if((d.type_mime||'').startsWith('image/'))cloudPhotos.push({...item,data:item.url});
+  else cloudDocs.push(item);
+ }
+ state={projects:cloudProjects,journal:cloudJournal,expenses:cloudFinance,photos:cloudPhotos,milestones:cloudMilestones,documents:cloudDocs};
+ if(!project(selectedProject))selectedProject=state.projects[0]?.id||null;
+ saveLocal();showAccount();refresh();
+ if(!localStorage.getItem('serviceKinConfiance_imported_'+org.id)&&loadState().projects.length===0&&localBackupHasData())showMigration(true);
+}
+function localBackupHasData(){try{const p=JSON.parse(localStorage.getItem(STORE_KEY)||'{}');return(p.projects||[]).length>0}catch(e){return false}}
+function showAccount(){
+ $('authForm').classList.toggle('hidden',!!user);
+ $('signedInBox').classList.toggle('hidden',!user);
+ $('orgCreateBox').classList.toggle('hidden',!user||!!organisation);
+ $('migrationBox').classList.add('hidden');
+ if(user){
+  $('signedInEmail').textContent=user.email||'Compte connecté';
+  $('orgStatus').textContent=organisation?'Organisation : '+organisation.nom+' · rôle : membre autorisé':'Aucune organisation associée à ce compte.';
+  $('connectionTag').textContent=organisation?'Cloud connecté':'Compte connecté';
+  $('modeNotice').textContent=organisation?'Vos données sont chargées depuis votre espace sécurisé. Les fichiers privés sont accessibles aux membres autorisés.':'Votre compte est connecté, mais aucun espace de travail n’est encore créé.';
+ }else{
+  $('connectionTag').textContent='Mode local';
+  $('modeNotice').textContent='Mode local : les données restent dans le navigateur de cet appareil. Connectez-vous pour activer la sauvegarde cloud.';
+ }
+}
+function showMigration(show){
+ $('migrationBox').classList.toggle('hidden',!show);
+}
+async function login(){
+ const email=$('authEmail').value.trim(),password=$('authPassword').value;
+ if(!email||!password){toast('Saisissez votre e-mail et votre mot de passe.');return}
+ try{setBusy(true);const {data,error}=await db.auth.signInWithPassword({email,password});if(error)throw error;user=data.user;await refreshCloud();toast('Connexion réussie.')}
+ catch(e){toast(cloudError(e))}
+ finally{setBusy(false)}
+}
+async function signup(){
+ const email=$('authEmail').value.trim(),password=$('authPassword').value;
+ if(!email||password.length<8){toast('Indiquez un e-mail et un mot de passe de 8 caractères minimum.');return}
+ try{setBusy(true);const {data,error}=await db.auth.signUp({email,password,options:{emailRedirectTo:location.href.split('#')[0]}});if(error)throw error;
+ if(data.session){user=data.user;await refreshCloud();toast('Compte créé.')}else toast('Compte créé. Vérifiez votre e-mail pour confirmer votre inscription, puis connectez-vous.')}
+ catch(e){toast(cloudError(e))}
+ finally{setBusy(false)}
+}
+async function logout(){
+ try{const {error}=await db.auth.signOut();if(error)throw error;user=null;organisation=null;cloudReady=false;state=loadState();selectedProject=state.projects[0]?.id||null;showAccount();refresh();toast('Déconnexion effectuée. Les données locales restent sur cet appareil.')}
+ catch(e){toast(cloudError(e))}
+}
+async function resetPassword(){
+ const email=$('authEmail').value.trim();if(!email){toast('Saisissez d’abord votre adresse e-mail.');return}
+ const {error}=await db.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});
+ toast(error?cloudError(error):'Un lien de réinitialisation a été envoyé si ce compte existe.');
+}
+async function createOrganisation(){
+ const nom=$('orgName').value.trim(),description=$('orgDescription').value.trim();
+ if(!nom){toast('Indiquez le nom de votre organisation.');return}
+ try{setBusy(true);const {data,error}=await db.rpc('confiance_creer_organisation',{p_nom:nom,p_description:description||null});if(error)throw error;if(!data)throw new Error('La création n’a pas renvoyé d’identifiant.');await refreshCloud();toast('Organisation créée avec succès.')}
+ catch(e){toast(cloudError(e))}
+ finally{setBusy(false)}
 }
 
-function save(){
-try{
-localStorage.setItem(STORE_KEY,JSON.stringify(state));
-return true;
-}catch(e){
-console.error('Enregistrement impossible',e);
-toast('Stockage insuffisant. Sauvegardez vos photos puis retirez-en quelques-unes.');
-return false;
+/* Import initial : les identifiants générés sont mémorisés pour permettre une reprise sans doublons. */
+function mappedId(kind,localId){
+ const key=kind+':'+localId;
+ if(!cloudMap[key]){cloudMap[key]=id();saveMap()}
+ return cloudMap[key];
 }
-}
-
-function id(){
-return Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-}
-
-function esc(v=''){
-return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function toast(m){
-const e=$('toast');
-e.textContent=m;
-e.style.display='block';
-clearTimeout(toast.timer);
-toast.timer=setTimeout(()=>e.style.display='none',3000);
-}
-
-function money(v,c){
-return new Intl.NumberFormat('fr-FR',{maximumFractionDigits:2}).format(Number(v)||0)+' '+c;
-}
-
-function formatDate(value){
-if(!value)return'Non précisée';
-const parts=String(value).split('-');
-if(parts.length!==3)return value;
-return parts[2]+'/'+parts[1]+'/'+parts[0];
-}
-
-function project(pid){
-return state.projects.find(p=>p.id===pid);
-}
-
-function projectName(pid){
-return project(pid)?.name||'Chantier supprimé';
-}
-
-function activeProjectId(s){
-return $(s).value||selectedProject;
+async function importLocalData(){
+ if(!cloudReady||!organisation)return;
+ const backup=loadState();
+ if(!backup.projects.length){toast('Aucun ancien chantier à importer.');return}
+ const {count,error}=await db.from('confiance_chantiers').select('id',{count:'exact',head:true}).eq('organisation_id',organisation.id);
+ if(error){toast(cloudError(error));return}
+ if(count>0){toast('L’espace cloud contient déjà des chantiers. Import automatique bloqué pour éviter les doublons.');showMigration(false);return}
+ if(!confirm('Importer les anciennes données locales dans cette organisation ? Les données locales ne seront pas supprimées.'))return;
+ const btn=$('importLocalBtn');btn.disabled=true;btn.textContent='Importation…';
+ try{
+  const projectIds={};
+  for(const p of backup.projects){
+   const pid=mappedId('p',p.id);projectIds[p.id]=pid;
+   const payload={...projectPayload({...p,id:pid}),organisation_id:organisation.id};
+   const {error}=await db.from('confiance_chantiers').upsert(payload,{onConflict:'id'});if(error)throw error;
+  }
+  for(const j of backup.journal){
+   const payload={id:mappedId('j',j.id),organisation_id:organisation.id,chantier_id:projectIds[j.projectId],date_journal:j.date||today(),meteo:j.weather||null,activites:j.activities||'(sans description)',ouvriers:j.workers||null,materiaux:j.materials||null,problemes:j.issues||null,observations:j.observations||null};
+   const {error}=await db.from('confiance_journal').upsert(payload,{onConflict:'id'});if(error)throw error;
+  }
+  for(const f of backup.expenses){
+   const payload={id:mappedId('f',f.id),organisation_id:organisation.id,chantier_id:projectIds[f.projectId],type_mouvement:f.type==='recette'?'recette':'depense',date_operation:f.date||today(),categorie:f.category||null,designation:f.label||'Mouvement financier',montant:Number(f.amount)||0,devise:f.currency||'USD',note:f.note||null,mode_paiement:f.payment||null,reference_piece:f.reference||null};
+   const {error}=await db.from('confiance_mouvements_financiers').upsert(payload,{onConflict:'id'});if(error)throw error;
+  }
+  for(const m of (backup.milestones||[])){
+   const payload={id:mappedId('m',m.id),organisation_id:organisation.id,chantier_id:projectIds[m.projectId],titre:m.title,description:m.description||null,date_debut_prevue:m.start||null,date_fin_prevue:m.end||null,statut:m.status||'a_faire',avancement:clamp(m.progress)};
+   const {error}=await db.from('confiance_etapes').upsert(payload,{onConflict:'id'});if(error)throw error;
+  }
+  for(const ph of backup.photos){
+   if(!projectIds[ph.projectId]||!ph.data)continue;
+   const did=mappedId('d',ph.id),path=organisation.id+'/'+projectIds[ph.projectId]+'/'+did+'.jpg';
+   const blob=await(await fetch(ph.data)).blob();
+   const {error:up}=await db.storage.from(BUCKET).upload(path,blob,{contentType:'image/jpeg',upsert:true});if(up)throw up;
+   const payload={id:did,organisation_id:organisation.id,chantier_id:projectIds[ph.projectId],nom_fichier:(ph.caption||'photo')+'.jpg',chemin_fichier:path,type_mime:'image/jpeg',taille_octets:blob.size,legende:ph.caption||null,date_document:ph.date||today()};
+   const {error}=await db.from('confiance_documents').upsert(payload,{onConflict:'id'});if(error)throw error;
+  }
+  localStorage.setItem('serviceKinConfiance_imported_'+organisation.id,'1');
+  await refreshCloud();showMigration(false);toast('Importation terminée. Vos anciennes données locales sont toujours conservées.');
+ }catch(e){toast('Import interrompu : '+cloudError(e)+'. Vous pouvez réessayer, les identifiants d’import sont conservés.')}
+ finally{btn.disabled=false;btn.textContent='Importer mes anciennes données'}
 }
 
+/* Rendu général */
 function setView(v){
-currentView=v;
-document.querySelectorAll('.view').forEach(e=>e.classList.toggle('hidden',e.id!=='view-'+v));
-document.querySelectorAll('.nav-btn').forEach(e=>e.classList.toggle('active',e.dataset.view===v));
-renderView();
-window.scrollTo({top:0,behavior:'smooth'});
+ currentView=v;document.querySelectorAll('.view').forEach(e=>e.classList.toggle('hidden',e.id!=='view-'+v));
+ document.querySelectorAll('.nav-btn').forEach(e=>e.classList.toggle('active',e.dataset.view===v));
+ renderView();window.scrollTo({top:0,behavior:'smooth'});
 }
-
 function renderStats(){
-$('statProjects').textContent=state.projects.length;
-$('statActive').textContent=state.projects.filter(p=>p.status==='En cours').length;
-$('statEntries').textContent=state.journal.length;
-$('statExpenses').textContent=state.expenses.length;
+ $('statProjects').textContent=state.projects.length;
+ $('statActive').textContent=state.projects.filter(p=>p.status==='En cours').length;
+ $('statEntries').textContent=state.journal.length;
+ $('statExpenses').textContent=state.expenses.length;
 }
-
 function projectCard(p){
-let n=Math.max(0,Math.min(100,Number(p.progress)||0));
-return`<article class="project-card ${p.id===selectedProject?'selected':''}" data-project="${esc(p.id)}">
-<div class="project-top"><div><h3>${esc(p.name)}</h3><p>${esc(p.type||'Projet')} · ${esc(p.location||'Lieu non précisé')}</p></div><span class="status ${p.status==='En pause'?'pause':''}">${esc(p.status||'En cours')}</span></div>
-<div class="progress-line"><span style="width:${n}%"></span></div>
-<div class="project-foot"><span>Avancement estimé</span><strong>${n}%</strong></div>
-</article>`;
+ const n=clamp(p.progress);
+ return`<article class="project-card ${p.id===selectedProject?'selected':''}" data-project="${esc(p.id)}">
+ <div class="project-top"><div><h3>${esc(p.name)}</h3><p>${esc(p.type||'Projet')} · ${esc(p.location||'Lieu non précisé')}</p></div><span class="status ${p.status==='En pause'?'pause':''}">${esc(p.status||'Planifié')}</span></div>
+ <div class="progress-line"><span style="width:${n}%"></span></div><div class="project-foot"><span>Avancement estimé</span><strong>${n}%</strong></div>
+ <div class="photo-actions no-print"><button class="btn btn-light" data-edit-project="${esc(p.id)}">Modifier</button><button class="btn btn-danger" data-delete-project="${esc(p.id)}">Supprimer</button></div></article>`;
 }
-
 function renderProjectCards(target,items){
-$(target).innerHTML=items.length?items.map(projectCard).join(''):'<div class="empty" style="grid-column:1/-1">Aucun chantier. Créez votre premier dossier pour commencer.</div>';
-$(target).querySelectorAll('[data-project]').forEach(e=>e.onclick=()=>{
-selectedProject=e.dataset.project;
-refresh();
-setView('journal');
-});
+ $(target).innerHTML=items.length?items.map(projectCard).join(''):'<div class="empty" style="grid-column:1/-1">Aucun chantier. Créez votre premier dossier pour commencer.</div>';
+ $(target).querySelectorAll('[data-project]').forEach(e=>e.onclick=ev=>{if(ev.target.closest('button'))return;selectedProject=e.dataset.project;refresh();setView('journal')});
+ $(target).querySelectorAll('[data-edit-project]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();openProjectForm(project(b.dataset.editProject))});
+ $(target).querySelectorAll('[data-delete-project]').forEach(b=>b.onclick=ev=>{ev.stopPropagation();deleteProject(b.dataset.deleteProject)});
 }
-
 function fillSelect(s){
-const e=$(s),old=e.value;
-e.innerHTML=state.projects.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
-if(!state.projects.length){
-e.innerHTML='<option value="">Aucun chantier créé</option>';
-e.disabled=true;
-}else{
-e.disabled=false;
-e.value=state.projects.some(p=>p.id===old)?old:(project(selectedProject)?selectedProject:state.projects[0].id);
+ const e=$(s),old=e.value;
+ e.innerHTML=state.projects.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+ if(!state.projects.length){e.innerHTML='<option value="">Aucun chantier créé</option>';e.disabled=true}
+ else{e.disabled=false;e.value=state.projects.some(p=>p.id===old)?old:(project(selectedProject)?selectedProject:state.projects[0].id)}
 }
-}
-
-function renderSelectors(){
-['journalProject','expenseProject','photoProject','reportProject'].forEach(fillSelect);
-}
-
-function renderDashboard(){
-renderProjectCards('dashboardProjects',state.projects.slice(0,4));
-}
-
-function renderProjects(){
-renderProjectCards('projectList',state.projects);
-}
-
+function renderSelectors(){['journalProject','expenseProject','photoProject','reportProject','milestoneProject'].forEach(fillSelect)}
+function renderDashboard(){renderProjectCards('dashboardProjects',state.projects.slice(0,4))}
+function renderProjects(){renderProjectCards('projectList',state.projects)}
 function renderJournal(){
-let pid=activeProjectId('journalProject');
-let a=state.journal.filter(x=>x.projectId===pid).sort((a,b)=>b.date.localeCompare(a.date));
-$('journalList').innerHTML=a.length?a.map(x=>`<article class="entry">
-<div><h3>${esc(x.activities)}</h3><p>${esc([x.weather&&'Conditions : '+x.weather,x.workers&&'Équipe : '+x.workers,x.materials&&'Matériaux : '+x.materials,x.issues&&'Difficultés : '+x.issues,x.observations&&'À suivre : '+x.observations].filter(Boolean).join('\n'))}</p><small>${esc(formatDate(x.date))} · ${esc(projectName(x.projectId))}</small></div>
-<button class="btn btn-danger no-print" data-del-j="${esc(x.id)}">Supprimer</button>
-</article>`).join(''):'<div class="empty">Aucune note pour ce chantier.</div>';
-$('journalList').querySelectorAll('[data-del-j]').forEach(b=>b.onclick=()=>removeItem('journal',b.dataset.delJ));
+ const pid=activeProjectId('journalProject'),a=state.journal.filter(x=>x.projectId===pid).sort((x,y)=>(y.date||'').localeCompare(x.date||''));
+ $('journalList').innerHTML=a.length?a.map(x=>`<article class="entry"><div><h3>${esc(x.activities)}</h3><p>${esc([x.weather&&'Conditions : '+x.weather,x.workers&&'Équipe : '+x.workers,x.materials&&'Matériaux : '+x.materials,x.issues&&'Difficultés : '+x.issues,x.observations&&'À suivre : '+x.observations].filter(Boolean).join('\n'))}</p><small>${formatDate(x.date)} · ${esc(projectName(x.projectId))}</small></div><button class="btn btn-danger no-print" data-del-j="${esc(x.id)}">Supprimer</button></article>`).join(''):'<div class="empty">Aucune note pour ce chantier.</div>';
+ $('journalList').querySelectorAll('[data-del-j]').forEach(b=>b.onclick=()=>removeRecord('journal',b.dataset.delJ,'confiance_journal'));
 }
-
 function renderExpenses(){
-let pid=activeProjectId('expenseProject');
-let a=state.expenses.filter(x=>x.projectId===pid).sort((a,b)=>b.date.localeCompare(a.date));
-let t={USD:0,CDF:0};
-a.forEach(x=>t[x.currency]=(t[x.currency]||0)+Number(x.amount));
-$('expenseTotals').innerHTML=`Total saisi : <strong>${money(t.USD,'USD')}</strong> · <strong>${money(t.CDF,'CDF')}</strong><br><span style="font-size:10px">Devises affichées séparément, sans conversion.</span>`;
-$('expenseList').innerHTML=a.length?a.map(x=>`<article class="entry">
-<div><h3>${esc(x.label)}</h3><p>${esc(x.category)}${x.note?' · '+esc(x.note):''}</p><small>${esc(formatDate(x.date))} · ${esc(projectName(x.projectId))}</small></div>
-<div style="text-align:right"><div class="amount">${money(x.amount,x.currency)}</div><button class="btn btn-danger no-print" data-del-e="${esc(x.id)}">Supprimer</button></div>
-</article>`).join(''):'<div class="empty">Aucune dépense enregistrée pour ce chantier.</div>';
-$('expenseList').querySelectorAll('[data-del-e]').forEach(b=>b.onclick=()=>removeItem('expenses',b.dataset.delE));
+ const pid=activeProjectId('expenseProject'),a=state.expenses.filter(x=>x.projectId===pid).sort((x,y)=>(y.date||'').localeCompare(x.date||''));
+ const totals={depense:{USD:0,CDF:0},recette:{USD:0,CDF:0}};
+ a.forEach(x=>{const t=totals[x.type]||totals.depense;t[x.currency]=(t[x.currency]||0)+Number(x.amount||0)});
+ $('expenseTotals').innerHTML=`Dépenses : <strong>${money(totals.depense.USD,'USD')}</strong> · <strong>${money(totals.depense.CDF,'CDF')}</strong><br>Recettes : <strong>${money(totals.recette.USD,'USD')}</strong> · <strong>${money(totals.recette.CDF,'CDF')}</strong><br><span>Devises séparées, sans conversion automatique.</span>`;
+ $('expenseList').innerHTML=a.length?a.map(x=>`<article class="entry"><div><h3>${esc(x.label)} <span class="tag">${x.type==='recette'?'Recette':'Dépense'}</span></h3><p>${esc(x.category||'Autre')}${x.note?' · '+esc(x.note):''}${x.payment?' · '+esc(x.payment):''}</p><small>${formatDate(x.date)} · ${esc(projectName(x.projectId))}</small></div><div style="text-align:right"><div class="amount">${money(x.amount,x.currency)}</div><button class="btn btn-danger no-print" data-del-f="${esc(x.id)}">Supprimer</button></div></article>`).join(''):'<div class="empty">Aucun mouvement financier enregistré.</div>';
+ $('expenseList').querySelectorAll('[data-del-f]').forEach(b=>b.onclick=()=>removeRecord('expenses',b.dataset.delF,'confiance_mouvements_financiers'));
 }
-
+function renderMilestones(){
+ const pid=activeProjectId('milestoneProject'),a=state.milestones.filter(x=>x.projectId===pid).sort((x,y)=>(x.start||'').localeCompare(y.start||''));
+ $('milestoneList').innerHTML=a.length?a.map(x=>`<article class="entry"><div><h3>${esc(x.title)} · ${esc(milestoneUi(x.status))}</h3><p>${esc(x.description||'')}<br>Début : ${formatDate(x.start)} · Fin : ${formatDate(x.end)}</p><div class="progress-line"><span style="width:${clamp(x.progress)}%"></span></div><small>${clamp(x.progress)} % · ${esc(projectName(x.projectId))}</small></div><button class="btn btn-danger no-print" data-del-m="${esc(x.id)}">Supprimer</button></article>`).join(''):'<div class="empty">Aucune étape planifiée pour ce chantier.</div>';
+ $('milestoneList').querySelectorAll('[data-del-m]').forEach(b=>b.onclick=()=>removeRecord('milestones',b.dataset.delM,'confiance_etapes'));
+}
 function renderPhotos(){
-const pid=activeProjectId('photoProject');
-const a=state.photos.filter(x=>x.projectId===pid).sort((x,y)=>(y.date||'').localeCompare(x.date||''));
-$('photoGrid').innerHTML=a.length?a.map(x=>`
-<article class="photo-card">
-<button type="button" class="photo-image-button" data-preview-photo="${esc(x.id)}" aria-label="Voir la photo en grand : ${esc(x.caption||'Photo de chantier')}">
-<img src="${esc(x.data)}" alt="${esc(x.caption||'Photo de chantier')}" loading="lazy">
-<span class="photo-image-hint">⌕ Voir la photo</span>
-</button>
-<div class="photo-meta">
-<strong>${esc(x.caption||'Avancement du chantier')}</strong>
-<div class="photo-date">Date : ${esc(formatDate(x.date))}</div>
-<div class="photo-actions no-print">
-<button type="button" class="btn btn-primary" data-edit-photo="${esc(x.id)}">✎ Modifier description et date</button>
-<button type="button" class="btn btn-danger" data-delete-photo="${esc(x.id)}">Supprimer la photo</button>
-</div>
-</div>
-</article>`).join(''):'<div class="empty" style="grid-column:1/-1">Aucune photo pour ce chantier. Ajoutez une image pour suivre visuellement l’évolution des travaux.</div>';
-
-$('photoGrid').querySelectorAll('[data-preview-photo]').forEach(b=>b.onclick=()=>openPhotoPreview(b.dataset.previewPhoto));
-$('photoGrid').querySelectorAll('[data-edit-photo]').forEach(b=>b.onclick=()=>openPhotoEditor(b.dataset.editPhoto));
-$('photoGrid').querySelectorAll('[data-delete-photo]').forEach(b=>b.onclick=()=>removeItem('photos',b.dataset.deletePhoto));
+ const pid=activeProjectId('photoProject'),a=state.photos.filter(x=>x.projectId===pid).sort((x,y)=>(y.date||'').localeCompare(x.date||''));
+ $('photoGrid').innerHTML=a.length?a.map(x=>`<article class="photo-card"><button type="button" style="border:0;padding:0;width:100%;background:#f2f4f7" data-preview="${esc(x.id)}"><img src="${esc(x.data||'')}" alt="${esc(x.caption||'Photo de chantier')}" loading="lazy"></button><div class="photo-meta"><strong>${esc(x.caption||'Photo de chantier')}</strong>Date : ${formatDate(x.date)}<div class="photo-actions no-print"><button class="btn btn-primary" data-edit-photo="${esc(x.id)}">Modifier</button><button class="btn btn-danger" data-delete-photo="${esc(x.id)}">Supprimer</button></div></div></article>`).join(''):'<div class="empty" style="grid-column:1/-1">Aucune photo pour ce chantier.</div>';
+ $('photoGrid').querySelectorAll('[data-preview]').forEach(b=>b.onclick=()=>openPhotoPreview(b.dataset.preview));
+ $('photoGrid').querySelectorAll('[data-edit-photo]').forEach(b=>b.onclick=()=>openPhotoEditor(b.dataset.editPhoto));
+ $('photoGrid').querySelectorAll('[data-delete-photo]').forEach(b=>b.onclick=()=>deleteDocument(b.dataset.deletePhoto,true));
+ const docs=state.documents.filter(x=>x.projectId===pid);
+ $('documentList').innerHTML=docs.length?docs.map(x=>`<article class="entry"><div><h3>${esc(x.name||x.caption||'Document')}</h3><p>${esc(x.caption||'Document joint')} · ${esc(x.mime||'Fichier')}</p><small>${formatDate(x.date)} · ${x.size?Math.round(x.size/1024)+' Ko':''}</small>${x.url?`<a href="${esc(x.url)}" target="_blank" rel="noopener">Ouvrir le document</a>`:''}</div><button class="btn btn-danger no-print" data-delete-doc="${esc(x.id)}">Supprimer</button></article>`).join(''):'<div class="empty">Aucun document PDF ou autre fichier.</div>';
+ $('documentList').querySelectorAll('[data-delete-doc]').forEach(b=>b.onclick=()=>deleteDocument(b.dataset.deleteDoc,false));
 }
-
-function openPhotoPreview(photoId){
-const p=state.photos.find(x=>x.id===photoId);
-if(!p)return;
-previewPhotoId=p.id;
-$('photoPreviewImage').src=p.data;
-$('photoPreviewImage').alt=p.caption||'Photo de chantier';
-$('photoPreviewCaption').textContent=p.caption||'Photo de chantier';
-$('photoPreviewDate').textContent='Date : '+formatDate(p.date);
-$('photoPreview').classList.remove('hidden');
-$('photoPreview').setAttribute('aria-hidden','false');
-document.body.style.overflow='hidden';
-}
-
-function closePhotoPreview(){
-$('photoPreview').classList.add('hidden');
-$('photoPreview').setAttribute('aria-hidden','true');
-$('photoPreviewImage').src='';
-previewPhotoId=null;
-document.body.style.overflow='';
-}
-
-function openPhotoEditor(photoId){
-const p=state.photos.find(x=>x.id===photoId);
-if(!p)return;
-closePhotoPreview();
-$('editPhotoId').value=p.id;
-$('editPhotoCaption').value=p.caption||'';
-$('editPhotoDate').value=p.date||today();
-$('photoEditorTitle').textContent='Modifier les informations de la photo';
-$('photoEditor').classList.remove('hidden');
-$('photoEditor').scrollIntoView({behavior:'smooth',block:'center'});
-}
-
-function closePhotoEditor(){
-$('photoEditor').classList.add('hidden');
-$('photoEditForm').reset();
-$('editPhotoId').value='';
-}
-
-/* Rapport complet : toutes les informations utiles du dossier sont reprises. */
 function renderReport(){
-let pid=activeProjectId('reportProject');
-let p=project(pid);
-if(!p){
-$('reportContent').innerHTML='<div class="empty">Créez un chantier pour générer un rapport.</div>';
-return;
+ const pid=activeProjectId('reportProject'),p=project(pid);
+ if(!p){$('reportContent').innerHTML='<div class="empty">Créez un chantier pour générer un rapport.</div>';return}
+ const j=state.journal.filter(x=>x.projectId===pid).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+ const f=state.expenses.filter(x=>x.projectId===pid).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+ const ms=state.milestones.filter(x=>x.projectId===pid);
+ const ph=state.photos.filter(x=>x.projectId===pid);
+ const totals={depense:{USD:0,CDF:0},recette:{USD:0,CDF:0}};
+ f.forEach(x=>{const t=totals[x.type]||totals.depense;t[x.currency]=(t[x.currency]||0)+Number(x.amount||0)});
+ const rows=j.length?j.map(x=>`<tr><td>${formatDate(x.date)}</td><td>${esc(x.activities)}</td><td>${esc(x.weather||'—')}</td><td>${esc(x.workers||'—')}</td></tr>`).join(''):'<tr><td colspan="4">Aucune activité enregistrée.</td></tr>';
+ const fin=f.length?f.map(x=>`<tr><td>${formatDate(x.date)}</td><td>${esc(x.label)}</td><td>${x.type==='recette'?'Recette':'Dépense'}</td><td>${esc(x.category||'—')}</td><td>${esc(money(x.amount,x.currency))}</td></tr>`).join(''):'<tr><td colspan="5">Aucun mouvement enregistré.</td></tr>';
+ $('reportContent').innerHTML=`
+ <div class="report-cover"><div class="report-kicker">SERVICE KIN CONFIANCE · DOCUMENT DE SUIVI</div><div class="report-title">RAPPORT DE CHANTIER</div><div style="font-size:16px;font-weight:800;color:#172945">${esc(p.name)}</div><div>${esc(p.type||'Projet')} · ${esc(p.location||'Lieu non précisé')}</div></div>
+ <div class="report-meta"><div><small>Référence</small><strong>${esc(p.reference||'Non précisée')}</strong></div><div><small>Client</small><strong>${esc(p.client||'Non précisé')}</strong></div><div><small>Lieu</small><strong>${esc(p.location||'Non précisé')}</strong></div><div><small>Début / fin prévue</small><strong>${formatDate(p.start)} / ${formatDate(p.end)}</strong></div><div><small>Statut</small><strong>${esc(p.status)}</strong></div><div><small>Avancement</small><strong>${clamp(p.progress)} %</strong></div><div><small>Budget prévisionnel</small><strong>${p.budget?money(p.budget,p.currency):'Non renseigné'}</strong></div><div><small>Contact client</small><strong>${esc(p.phone||'Non renseigné')}</strong></div></div>
+ ${p.description?`<h3>Présentation du projet</h3><p>${esc(p.description)}</p>`:''}
+ <div class="report-summary"><strong>Synthèse</strong><br>${j.length} note(s) · ${f.length} mouvement(s) financier(s) · ${ms.length} étape(s) · ${ph.length} photo(s)<br>Avancement déclaré : ${clamp(p.progress)} %</div>
+ <h3>1. Journal des activités</h3><table class="report-table"><thead><tr><th>Date</th><th>Activités</th><th>Conditions</th><th>Équipe</th></tr></thead><tbody>${rows}</tbody></table>
+ <h3>2. Situation financière</h3><div class="report-summary">Dépenses : ${money(totals.depense.USD,'USD')} · ${money(totals.depense.CDF,'CDF')}<br>Recettes : ${money(totals.recette.USD,'USD')} · ${money(totals.recette.CDF,'CDF')}<br><small>Les devises ne sont pas converties entre elles.</small></div><table class="report-table"><thead><tr><th>Date</th><th>Désignation</th><th>Type</th><th>Catégorie</th><th>Montant</th></tr></thead><tbody>${fin}</tbody></table>
+ <h3>3. Planning des étapes</h3>${ms.length?ms.map(x=>`<p><strong>${esc(x.title)}</strong> — ${esc(milestoneUi(x.status))}, ${clamp(x.progress)} % · ${formatDate(x.start)} au ${formatDate(x.end)}<br>${esc(x.description||'')}</p>`).join(''):'<p>Aucune étape planifiée.</p>'}
+ <h3>4. Suivi photographique</h3>${ph.length?`<div class="report-photo-grid">${ph.map(x=>`<figure class="report-photo-card"><img src="${esc(x.data)}" alt="${esc(x.caption)}"><figcaption><strong>${esc(x.caption||'Photo de chantier')}</strong><br>${formatDate(x.date)}</figcaption></figure>`).join('')}</div>`:'<p>Aucune photo enregistrée.</p>'}
+ <h3>5. Observations et validation</h3><div class="report-disclaimer">Ce rapport reprend les informations saisies dans SERVICE KIN CONFIANCE. Il constitue un document de suivi et ne remplace ni les plans, ni les procès-verbaux, ni les contrôles, ni les validations techniques réglementaires du professionnel responsable.</div>
+ <div class="report-signature"><div class="signature-box"><strong>Responsable du chantier</strong><div>Nom :</div><div class="signature-line"></div><small>Signature et date</small></div><div class="signature-box"><strong>Client / représentant</strong><div>Nom :</div><div class="signature-line"></div><small>Signature et date</small></div></div>
+ <p style="font-size:9px;color:#98a2b3;border-top:1px solid #e6e9ef;padding-top:8px">Rapport généré le ${new Date().toLocaleDateString('fr-FR')} · SERVICE KIN CONFIANCE</p>`;
 }
+function renderView(){({dashboard:renderDashboard,projects:renderProjects,journal:renderJournal,expenses:renderExpenses,milestones:renderMilestones,photos:renderPhotos,reports:renderReport}[currentView]||renderDashboard)()}
+function refresh(){renderStats();renderSelectors();renderView()}
 
-let j=state.journal.filter(x=>x.projectId===pid).sort((a,b)=>a.date.localeCompare(b.date));
-let e=state.expenses.filter(x=>x.projectId===pid).sort((a,b)=>a.date.localeCompare(b.date));
-let ph=state.photos.filter(x=>x.projectId===pid).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
-let t={USD:0,CDF:0};
-e.forEach(x=>t[x.currency]=(t[x.currency]||0)+Number(x.amount));
-
-const journalRows=j.length?j.map(x=>`
-<tr>
-<td>${esc(formatDate(x.date))}</td>
-<td>${esc(x.activities||'—')}</td>
-<td>${esc(x.weather||'—')}</td>
-<td>${esc(x.workers||'—')}</td>
-</tr>`).join(''):'<tr><td colspan="4">Aucune activité enregistrée.</td></tr>';
-
-const expenseRows=e.length?e.map(x=>`
-<tr>
-<td>${esc(formatDate(x.date))}</td>
-<td>${esc(x.label)}</td>
-<td>${esc(x.category||'Autre')}</td>
-<td>${esc(x.note||'—')}</td>
-<td>${esc(money(x.amount,x.currency))}</td>
-</tr>`).join(''):'<tr><td colspan="5">Aucune dépense enregistrée.</td></tr>';
-
-const photoReport=ph.length
-?`<div class="report-photo-grid">${ph.map((x,index)=>`
-<figure class="report-photo-card">
-<img src="${esc(x.data)}" alt="${esc(x.caption||'Photo de chantier '+(index+1))}">
-<figcaption>
-<strong>${esc(x.caption||'Photo de chantier')}</strong>
-<span>Date de prise de vue : ${esc(formatDate(x.date))}</span>
-</figcaption>
-</figure>`).join('')}</div>`
-:'<p>Aucune photo enregistrée pour ce chantier.</p>';
-
-const journalDetails=j.map(x=>`
-<div style="margin:8px 0;padding:9px;border-left:3px solid #d6ad58;background:#fafbfc;break-inside:avoid;page-break-inside:avoid">
-<strong>${esc(formatDate(x.date))} — ${esc(x.activities)}</strong>
-${x.weather?`<p><strong>Conditions :</strong> ${esc(x.weather)}</p>`:''}
-${x.workers?`<p><strong>Équipe :</strong> ${esc(x.workers)}</p>`:''}
-${x.materials?`<p><strong>Matériaux :</strong> ${esc(x.materials)}</p>`:''}
-${x.issues?`<p><strong>Difficultés / incidents :</strong> ${esc(x.issues)}</p>`:''}
-${x.observations?`<p><strong>Observations et actions à suivre :</strong> ${esc(x.observations)}</p>`:''}
-</div>`).join('');
-
-$('reportContent').innerHTML=`
-<div class="report-cover">
-<div class="report-kicker">SERVICE KIN CONFIANCE · DOCUMENT DE SUIVI</div>
-<div class="report-title">RAPPORT DE CHANTIER</div>
-<div style="font-size:17px;font-weight:800;color:#172945">${esc(p.name)}</div>
-<div class="report-subtitle">${esc(p.type||'Projet')} · ${esc(p.location||'Lieu non précisé')}</div>
-</div>
-
-<div class="report-meta">
-<div><small>Client / maître d’ouvrage</small><strong>${esc(p.client||'Non précisé')}</strong></div>
-<div><small>Lieu du chantier</small><strong>${esc(p.location||'Non précisé')}</strong></div>
-<div><small>Date de début</small><strong>${esc(formatDate(p.start))}</strong></div>
-<div><small>Statut du chantier</small><strong>${esc(p.status||'Non précisé')}</strong></div>
-<div><small>Avancement estimé</small><strong>${Math.max(0,Math.min(100,Number(p.progress)||0))}%</strong></div>
-<div><small>Devise principale</small><strong>${esc(p.currency||'USD')}</strong></div>
-</div>
-
-${p.description?`<h3>Présentation et objectifs du projet</h3><p>${esc(p.description)}</p>`:''}
-
-<div class="report-summary">
-<strong>Synthèse du dossier</strong><br>
-${j.length} note(s) de journal · ${e.length} dépense(s) enregistrée(s) · ${ph.length} photo(s) archivée(s)<br>
-<strong>Avancement déclaré : ${Math.max(0,Math.min(100,Number(p.progress)||0))}%</strong>
-</div>
-
-<h3>1. Journal des activités (${j.length})</h3>
-${j.length?`
-<table class="report-table">
-<thead><tr><th>Date</th><th>Activités réalisées</th><th>Conditions</th><th>Équipe</th></tr></thead>
-<tbody>${journalRows}</tbody>
-</table>
-<h3>Détails des observations de chantier</h3>
-${journalDetails}
-`:'<p>Aucune activité enregistrée pour ce chantier.</p>'}
-
-<h3>2. Dépenses et matériaux (${e.length})</h3>
-<div class="report-summary">
-<strong>Récapitulatif financier</strong><br>
-Total en USD : <strong>${money(t.USD,'USD')}</strong><br>
-Total en CDF : <strong>${money(t.CDF,'CDF')}</strong><br>
-<span style="font-size:10px">Les montants sont présentés séparément. Aucune conversion entre devises n’a été effectuée.</span>
-</div>
-<table class="report-table">
-<thead><tr><th>Date</th><th>Désignation</th><th>Catégorie</th><th>Référence / note</th><th>Montant</th></tr></thead>
-<tbody>${expenseRows}</tbody>
-</table>
-
-<h3>3. Suivi photographique (${ph.length} photo(s))</h3>
-${photoReport}
-
-<h3>4. Observations et validation</h3>
-<div class="report-disclaimer">Ce rapport reprend les informations saisies dans SERVICE KIN CONFIANCE. Il constitue un document de suivi et ne remplace ni les plans, ni les procès-verbaux, ni les contrôles, ni les validations techniques réglementaires du professionnel responsable.</div>
-
-<div class="report-signature">
-<div class="signature-box">
-<strong>Responsable du chantier</strong>
-<div>Nom :</div>
-<div class="signature-line"></div>
-<div style="font-size:9px;color:#667085;margin-top:5px">Signature et date</div>
-</div>
-<div class="signature-box">
-<strong>Client / représentant</strong>
-<div>Nom :</div>
-<div class="signature-line"></div>
-<div style="font-size:9px;color:#667085;margin-top:5px">Signature et date</div>
-</div>
-</div>
-
-<div class="report-end">Rapport généré le ${esc(new Date().toLocaleDateString('fr-FR'))} · SERVICE KIN CONFIANCE · Document issu de la version locale.</div>`;
-}
-
-function renderView(){
-({
-dashboard:renderDashboard,
-projects:renderProjects,
-journal:renderJournal,
-expenses:renderExpenses,
-photos:renderPhotos,
-reports:renderReport
-}[currentView]||renderDashboard)();
-}
-
-function refresh(){
-renderStats();
-renderSelectors();
-renderView();
-}
-
+/* Chantiers */
 function openProjectForm(p=null){
-$('projectForm').reset();
-$('projectId').value=p?.id||'';
-$('projectFormTitle').textContent=p?'Modifier le chantier':'Créer un chantier';
-$('pName').value=p?.name||'';
-$('pType').value=p?.type||'Construction';
-$('pLocation').value=p?.location||'';
-$('pClient').value=p?.client||'';
-$('pStart').value=p?.start||today();
-$('pStatus').value=p?.status||'En cours';
-$('pProgress').value=p?.progress??0;
-$('pCurrency').value=p?.currency||'USD';
-$('pDescription').value=p?.description||'';
-$('projectFormPanel').classList.remove('hidden');
-$('projectFormPanel').scrollIntoView({behavior:'smooth'});
+ $('projectForm').reset();$('projectId').value=p?.id||'';
+ $('projectFormTitle').textContent=p?'Modifier le chantier':'Créer un chantier';
+ $('pName').value=p?.name||'';$('pReference').value=p?.reference||'';$('pType').value=p?.type||'Construction';
+ $('pLocation').value=p?.location||'';$('pClient').value=p?.client||'';$('pPhone').value=p?.phone||'';
+ $('pStart').value=p?.start||today();$('pEnd').value=p?.end||'';$('pStatus').value=p?.status||'En cours';
+ $('pProgress').value=p?.progress??0;$('pBudget').value=p?.budget??'';$('pCurrency').value=p?.currency||'USD';$('pDescription').value=p?.description||'';
+ $('projectFormPanel').classList.remove('hidden');$('projectFormPanel').scrollIntoView({behavior:'smooth'});
 }
-
-function closeForms(){
-['projectFormPanel','journalFormPanel','expenseFormPanel'].forEach(x=>$(x).classList.add('hidden'));
+function closeForms(){['projectFormPanel','journalFormPanel','expenseFormPanel','milestoneFormPanel'].forEach(x=>$(x).classList.add('hidden'))}
+async function deleteProject(pid){
+ if(!confirm('Supprimer ce chantier et ses journaux, finances, étapes et documents associés ? Cette action est définitive.'))return;
+ const related=[...state.photos,...state.documents].filter(x=>x.projectId===pid);
+ try{
+  if(cloudReady){
+   for(const d of related)if(d.path)await db.storage.from(BUCKET).remove([d.path]);
+   for(const table of ['confiance_documents','confiance_etapes','confiance_journal','confiance_mouvements_financiers']){
+    const {error}=await db.from(table).delete().eq('chantier_id',pid);if(error)throw error;
+   }
+   const {error}=await db.from('confiance_chantiers').delete().eq('id',pid);if(error)throw error;
+  }
+  state.projects=state.projects.filter(x=>x.id!==pid);
+  ['journal','expenses','photos','milestones','documents'].forEach(k=>state[k]=state[k].filter(x=>x.projectId!==pid));
+  if(selectedProject===pid)selectedProject=state.projects[0]?.id||null;
+  saveLocal();refresh();toast('Chantier supprimé.');
+ }catch(e){toast(cloudError(e))}
 }
-
-function removeItem(collection,itemId){
-if(!confirm('Confirmer la suppression de cet élément ?'))return;
-const previous=state[collection];
-state[collection]=previous.filter(x=>x.id!==itemId);
-if(save()){
-closePhotoEditor();
-closePhotoPreview();
-refresh();
-toast('Élément supprimé.');
-}else{
-state[collection]=previous;
-}
-}
-
-/* Navigation */
-document.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>setView(b.dataset.view));
-document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>setView(b.dataset.goto));
-
-['quickProject','dashboardAdd','addProject'].forEach(x=>$(x).onclick=()=>{
-setView('projects');
-openProjectForm();
-});
-
-$('cancelProject').onclick=closeForms;
-
-$('projectForm').onsubmit=e=>{
-e.preventDefault();
-let pid=$('projectId').value;
-let d={
-id:pid||id(),
-name:$('pName').value.trim(),
-type:$('pType').value,
-location:$('pLocation').value.trim(),
-client:$('pClient').value.trim(),
-start:$('pStart').value,
-status:$('pStatus').value,
-progress:Math.max(0,Math.min(100,Number($('pProgress').value)||0)),
-currency:$('pCurrency').value,
-description:$('pDescription').value.trim()
+$('projectForm').onsubmit=async e=>{
+ e.preventDefault();
+ const pid=$('projectId').value||id();
+ const p={id:pid,name:$('pName').value.trim(),reference:$('pReference').value.trim(),type:$('pType').value,location:$('pLocation').value.trim(),client:$('pClient').value.trim(),phone:$('pPhone').value.trim(),start:$('pStart').value,end:$('pEnd').value,status:$('pStatus').value,progress:clamp($('pProgress').value),budget:$('pBudget').value===''?null:Number($('pBudget').value),currency:$('pCurrency').value,description:$('pDescription').value.trim()};
+ try{
+  if(cloudReady){const {error}=await db.from('confiance_chantiers').upsert(projectPayload(p),{onConflict:'id'});if(error)throw error}
+  const i=state.projects.findIndex(x=>x.id===pid);if(i>=0)state.projects[i]=p;else state.projects.unshift(p);
+  selectedProject=pid;saveLocal();closeForms();refresh();toast('Chantier enregistré.');
+ }catch(err){toast(cloudError(err))}
 };
-const previous=state.projects;
-if(pid){
-state.projects=state.projects.map(p=>p.id===pid?d:p);
-}else{
-state.projects=[d,...state.projects];
-selectedProject=d.id;
-}
-if(save()){
-closeForms();
-refresh();
-toast('Chantier enregistré.');
-}else{
-state.projects=previous;
-if(!pid)selectedProject=state.projects[0]?.id||null;
-}
-};
-
-$('projectList').addEventListener('contextmenu',e=>{
-let c=e.target.closest('[data-project]');
-if(!c)return;
-e.preventDefault();
-let p=project(c.dataset.project);
-if(p&&confirm('Modifier ce chantier ?'))openProjectForm(p);
-});
 
 /* Journal */
-$('addJournal').onclick=()=>{
-if(!state.projects.length){
-toast('Créez d’abord un chantier.');
-return;
-}
-$('journalForm').reset();
-$('jDate').value=today();
-$('journalFormPanel').classList.remove('hidden');
-};
-$('cancelJournal').onclick=closeForms;
-
-$('journalForm').onsubmit=e=>{
-e.preventDefault();
-let pid=activeProjectId('journalProject');
-if(!pid)return;
-const entry={
-id:id(),projectId:pid,date:$('jDate').value,
-weather:$('jWeather').value.trim(),
-activities:$('jActivities').value.trim(),
-workers:$('jWorkers').value.trim(),
-materials:$('jMaterials').value.trim(),
-issues:$('jIssues').value.trim(),
-observations:$('jObservations').value.trim()
-};
-state.journal.push(entry);
-if(save()){
-closeForms();
-refresh();
-toast('Note ajoutée au journal.');
-}else{
-state.journal=state.journal.filter(x=>x.id!==entry.id);
-}
+$('journalForm').onsubmit=async e=>{
+ e.preventDefault();const pid=activeProjectId('journalProject');if(!pid)return;
+ const x={id:id(),projectId:pid,date:$('jDate').value,weather:$('jWeather').value.trim(),activities:$('jActivities').value.trim(),workers:$('jWorkers').value.trim(),materials:$('jMaterials').value.trim(),issues:$('jIssues').value.trim(),observations:$('jObservations').value.trim()};
+ try{if(cloudReady){const {error}=await db.from('confiance_journal').insert({id:x.id,organisation_id:organisation.id,chantier_id:pid,date_journal:x.date,meteo:x.weather||null,activites:x.activities,ouvriers:x.workers||null,materiaux:x.materials||null,problemes:x.issues||null,observations:x.observations||null});if(error)throw error}
+ state.journal.push(x);saveLocal();closeForms();refresh();toast('Note ajoutée au journal.')}catch(err){toast(cloudError(err))}
 };
 
-/* Dépenses */
-$('addExpense').onclick=()=>{
-if(!state.projects.length){
-toast('Créez d’abord un chantier.');
-return;
-}
-$('expenseForm').reset();
-$('eDate').value=today();
-$('expenseFormPanel').classList.remove('hidden');
-};
-$('cancelExpense').onclick=closeForms;
-
-$('expenseForm').onsubmit=e=>{
-e.preventDefault();
-let pid=activeProjectId('expenseProject');
-if(!pid)return;
-const expense={
-id:id(),projectId:pid,date:$('eDate').value,
-category:$('eCategory').value,
-label:$('eLabel').value.trim(),
-amount:Number($('eAmount').value),
-currency:$('eCurrency').value,
-note:$('eNote').value.trim()
-};
-state.expenses.push(expense);
-if(save()){
-closeForms();
-refresh();
-toast('Dépense enregistrée.');
-}else{
-state.expenses=state.expenses.filter(x=>x.id!==expense.id);
-}
+/* Finances */
+$('expenseForm').onsubmit=async e=>{
+ e.preventDefault();const pid=activeProjectId('expenseProject');if(!pid)return;
+ const x={id:id(),projectId:pid,type:$('eType').value,date:$('eDate').value,category:$('eCategory').value,label:$('eLabel').value.trim(),amount:Number($('eAmount').value),currency:$('eCurrency').value,note:$('eNote').value.trim(),payment:$('ePayment').value.trim(),reference:$('eReference').value.trim()};
+ try{if(cloudReady){const {error}=await db.from('confiance_mouvements_financiers').insert({id:x.id,organisation_id:organisation.id,chantier_id:pid,type_mouvement:x.type,date_operation:x.date,categorie:x.category,designation:x.label,montant:x.amount,devise:x.currency,note:x.note||null,mode_paiement:x.payment||null,reference_piece:x.reference||null});if(error)throw error}
+ state.expenses.push(x);saveLocal();closeForms();refresh();toast('Mouvement financier enregistré.')}catch(err){toast(cloudError(err))}
 };
 
-/* Ajout des photos */
-$('addPhoto').onclick=()=>{
-if(!state.projects.length){
-toast('Créez d’abord un chantier.');
-return;
-}
-$('photoInput').click();
+/* Planning */
+$('milestoneForm').onsubmit=async e=>{
+ e.preventDefault();const pid=activeProjectId('milestoneProject');if(!pid)return;
+ const x={id:id(),projectId:pid,title:$('mTitle').value.trim(),description:$('mDescription').value.trim(),start:$('mStart').value,end:$('mEnd').value,status:$('mStatus').value,progress:clamp($('mProgress').value)};
+ try{if(cloudReady){const {error}=await db.from('confiance_etapes').insert({id:x.id,organisation_id:organisation.id,chantier_id:pid,titre:x.title,description:x.description||null,date_debut_prevue:x.start||null,date_fin_prevue:x.end||null,statut:x.status,avancement:x.progress});if(error)throw error}
+ state.milestones.push(x);saveLocal();closeForms();refresh();toast('Étape ajoutée au planning.')}catch(err){toast(cloudError(err))}
 };
 
-$('photoInput').onchange=async e=>{
-let files=[...e.target.files];
-let pid=activeProjectId('photoProject');
-let addedPhotos=[];
-for(const f of files){
-if(!f.type.startsWith('image/'))continue;
-try{
-let data=await compressImage(f);
-addedPhotos.push({
-id:id(),projectId:pid,date:today(),
-caption:f.name.replace(/\.[^.]+$/,''),
-data
-});
-}catch(err){
-console.error(err);
-toast('Une photo n’a pas pu être traitée.');
+/* Suppression commune */
+async function removeRecord(collection,itemId,table){
+ if(!confirm('Confirmer la suppression de cet élément ?'))return;
+ try{if(cloudReady){const {error}=await db.from(table).delete().eq('id',itemId);if(error)throw error}
+ state[collection]=state[collection].filter(x=>x.id!==itemId);saveLocal();refresh();toast('Élément supprimé.')}catch(e){toast(cloudError(e))}
 }
-}
-if(addedPhotos.length){
-state.photos.push(...addedPhotos);
-if(save()){
-refresh();
-toast(addedPhotos.length+' photo(s) ajoutée(s).');
-}else{
-const addedIds=new Set(addedPhotos.map(x=>x.id));
-state.photos=state.photos.filter(x=>!addedIds.has(x.id));
-}
-}
-e.target.value='';
-};
 
-/* Modification des informations d'une photo */
-$('photoEditForm').onsubmit=e=>{
-e.preventDefault();
-let p=state.photos.find(x=>x.id===$('editPhotoId').value);
-if(!p)return;
-let caption=$('editPhotoCaption').value.trim();
-let date=$('editPhotoDate').value;
-if(!caption||!date){
-toast('Veuillez renseigner la description et la date.');
-return;
-}
-let oldCaption=p.caption,oldDate=p.date;
-p.caption=caption;
-p.date=date;
-if(save()){
-closePhotoEditor();
-refresh();
-toast('Description et date mises à jour.');
-}else{
-p.caption=oldCaption;
-p.date=oldDate;
-}
-};
-
-$('cancelPhotoEdit').onclick=closePhotoEditor;
-$('closePhotoPreview').onclick=closePhotoPreview;
-$('previewCloseButton').onclick=closePhotoPreview;
-$('photoPreview').addEventListener('click',e=>{
-if(e.target===$('photoPreview'))closePhotoPreview();
-});
-$('previewEditPhoto').onclick=()=>{
-if(previewPhotoId)openPhotoEditor(previewPhotoId);
-};
-
-/* Compression des images avant stockage local */
+/* Photos et documents privés */
 function compressImage(file){
-return new Promise((resolve,reject)=>{
-let r=new FileReader();
-r.onerror=()=>reject(new Error('Lecture du fichier impossible'));
-r.onload=()=>{
-let im=new Image();
-im.onerror=()=>reject(new Error('Image illisible'));
-im.onload=()=>{
-let max=1100;
-let s=Math.min(1,max/Math.max(im.width,im.height));
-let c=document.createElement('canvas');
-c.width=Math.max(1,Math.round(im.width*s));
-c.height=Math.max(1,Math.round(im.height*s));
-let ctx=c.getContext('2d');
-if(!ctx){
-reject(new Error('Canvas indisponible'));
-return;
+ return new Promise((resolve,reject)=>{const r=new FileReader();r.onerror=()=>reject(new Error('Lecture impossible'));r.onload=()=>{const im=new Image();im.onerror=()=>reject(new Error('Image illisible'));im.onload=()=>{const s=Math.min(1,1100/Math.max(im.width,im.height));const c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));const ctx=c.getContext('2d');if(!ctx)return reject(new Error('Canvas indisponible'));ctx.drawImage(im,0,0,c.width,c.height);try{resolve(c.toDataURL('image/jpeg',.72))}catch(e){reject(e)}};im.src=r.result};r.readAsDataURL(file)});
 }
-ctx.drawImage(im,0,0,c.width,c.height);
-try{resolve(c.toDataURL('image/jpeg',.72));}
-catch(err){reject(err);}
+async function addCloudFile(file,pid){
+ let uploadFile=file,caption=file.name.replace(/\.[^.]+$/,''),mime=file.type||'application/octet-stream';
+ if(file.type.startsWith('image/')){const data=await compressImage(file);uploadFile=await(await fetch(data)).blob();mime='image/jpeg'}
+ const did=id(),ext=mime==='image/jpeg'?'jpg':(file.name.split('.').pop()||'bin').replace(/[^a-z0-9]/gi,'');
+ const path=organisation.id+'/'+pid+'/'+did+'.'+ext;
+ const {error:up}=await db.storage.from(BUCKET).upload(path,uploadFile,{contentType:mime,upsert:false});if(up)throw up;
+ const payload={id:did,organisation_id:organisation.id,chantier_id:pid,nom_fichier:file.name,chemin_fichier:path,type_mime:mime,taille_octets:uploadFile.size,legende:caption,date_document:today()};
+ const {error}=await db.from('confiance_documents').insert(payload);
+ if(error){await db.storage.from(BUCKET).remove([path]);throw error}
+ const {data:signed}=await db.storage.from(BUCKET).createSignedUrl(path,3600);
+ return{id:did,projectId:pid,date:today(),caption,name:file.name,path,mime,size:uploadFile.size,url:signed?.signedUrl||'',data:signed?.signedUrl||''};
+}
+$('fileInput').onchange=async e=>{
+ const files=[...e.target.files],pid=activeProjectId('photoProject');if(!pid){e.target.value='';return}
+ try{
+  for(const f of files){
+   if(cloudReady){
+    const item=await addCloudFile(f,pid);
+    if(item.mime.startsWith('image/'))state.photos.push(item);else state.documents.push(item);
+   }else if(f.type.startsWith('image/')){
+    const data=await compressImage(f);state.photos.push({id:id(),projectId:pid,date:today(),caption:f.name.replace(/\.[^.]+$/,''),data});
+   }else toast('En mode local, seuls les fichiers image sont conservés. Connectez-vous pour archiver les PDF et autres documents.');
+  }
+  saveLocal();refresh();toast(files.length+' fichier(s) traité(s).');
+ }catch(err){toast('Envoi interrompu : '+cloudError(err))}
+ e.target.value='';
 };
-im.src=r.result;
-};
-r.readAsDataURL(file);
-});
+async function deleteDocument(docId,isPhoto){
+ const collection=isPhoto?'photos':'documents',item=state[collection].find(x=>x.id===docId);if(!item)return;
+ if(!confirm('Supprimer définitivement ce fichier ?'))return;
+ try{
+  if(cloudReady){if(item.path){const {error:se}=await db.storage.from(BUCKET).remove([item.path]);if(se)throw se}const {error}=await db.from('confiance_documents').delete().eq('id',docId);if(error)throw error}
+  state[collection]=state[collection].filter(x=>x.id!==docId);saveLocal();refresh();toast('Fichier supprimé.');
+ }catch(e){toast(cloudError(e))}
 }
-
-/* Changement de chantier */
-['journalProject','expenseProject','photoProject','reportProject'].forEach(x=>{
-$(x).onchange=()=>{
-closePhotoEditor();
-closePhotoPreview();
-renderView();
-};
-});
-
-/* Attendre le chargement des photos avant d'ouvrir la boîte d'impression. */
-function waitForReportImages(){
-const images=[...$('reportContent').querySelectorAll('img')];
-return Promise.all(images.map(img=>{
-if(img.complete&&img.naturalWidth>0)return Promise.resolve();
-return new Promise(resolve=>{
-const done=()=>resolve();
-img.addEventListener('load',done,{once:true});
-img.addEventListener('error',done,{once:true});
-setTimeout(done,5000);
-});
-}));
+function openPhotoPreview(pid){
+ const p=state.photos.find(x=>x.id===pid);if(!p)return;previewPhotoId=pid;
+ $('photoPreviewImage').src=p.data;$('photoPreviewCaption').textContent=p.caption||'Photo de chantier';$('photoPreviewDate').textContent='Date : '+formatDate(p.date);
+ $('photoPreview').classList.remove('hidden');document.body.style.overflow='hidden';
 }
-
-$('printReport').onclick=async()=>{
-renderReport();
-const button=$('printReport');
-button.disabled=true;
-button.textContent='Préparation du rapport…';
-try{
-await waitForReportImages();
-window.print();
-}catch(err){
-console.error('Préparation impression',err);
-toast('Impossible de préparer le rapport. Réessayez.');
-}finally{
-button.disabled=false;
-button.textContent='Imprimer / PDF';
+function closePhotoPreview(){$('photoPreview').classList.add('hidden');$('photoPreviewImage').src='';previewPhotoId=null;document.body.style.overflow=''}
+function openPhotoEditor(pid){
+ const p=state.photos.find(x=>x.id===pid);if(!p)return;closePhotoPreview();
+ $('editPhotoId').value=p.id;$('editPhotoCaption').value=p.caption||'';$('editPhotoDate').value=p.date||today();$('photoEditor').classList.remove('hidden');$('photoEditor').scrollIntoView({behavior:'smooth',block:'center'});
 }
+$('photoEditForm').onsubmit=async e=>{
+ e.preventDefault();const p=state.photos.find(x=>x.id===$('editPhotoId').value);if(!p)return;
+ const caption=$('editPhotoCaption').value.trim(),date=$('editPhotoDate').value;
+ try{if(cloudReady){const {error}=await db.from('confiance_documents').update({legende:caption,date_document:date}).eq('id',p.id);if(error)throw error}
+ p.caption=caption;p.date=date;saveLocal();$('photoEditor').classList.add('hidden');refresh();toast('Photo mise à jour.')}catch(err){toast(cloudError(err))}
 };
 
-window.addEventListener('afterprint',()=>{
-const button=$('printReport');
-if(button){
-button.disabled=false;
-button.textContent='Imprimer / PDF';
-}
-});
+/* Navigation et formulaires */
+document.querySelectorAll('.nav-btn').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+document.querySelectorAll('[data-goto]').forEach(b=>b.onclick=()=>setView(b.dataset.goto));
+['quickProject','dashboardAdd','addProject'].forEach(x=>$(x).onclick=()=>{setView('projects');openProjectForm()});
+$('cancelProject').onclick=closeForms;
+$('addJournal').onclick=()=>{if(!requireProject())return;$('journalForm').reset();$('jDate').value=today();$('journalFormPanel').classList.remove('hidden')};
+$('cancelJournal').onclick=closeForms;
+$('addExpense').onclick=()=>{if(!requireProject())return;$('expenseForm').reset();$('eDate').value=today();$('expenseFormPanel').classList.remove('hidden')};
+$('cancelExpense').onclick=closeForms;
+$('addMilestone').onclick=()=>{if(!requireProject())return;$('milestoneForm').reset();$('mStart').value=today();$('milestoneFormPanel').classList.remove('hidden')};
+$('cancelMilestone').onclick=closeForms;
+$('addPhoto').onclick=()=>{if(!requireProject())return;$('fileInput').click()};
+$('cancelPhotoEdit').onclick=()=>$('photoEditor').classList.add('hidden');
+$('closePhotoPreview').onclick=closePhotoPreview;
+$('photoPreview').onclick=e=>{if(e.target===$('photoPreview'))closePhotoPreview()};
+$('previewEditPhoto').onclick=()=>{if(previewPhotoId)openPhotoEditor(previewPhotoId)};
+['journalProject','expenseProject','photoProject','reportProject','milestoneProject'].forEach(x=>$(x).onchange=()=>{closePhotoPreview();$('photoEditor').classList.add('hidden');renderView()});
+$('printReport').onclick=async()=>{renderReport();const b=$('printReport');b.disabled=true;b.textContent='Préparation…';try{const imgs=[...$('reportContent').querySelectorAll('img')];await Promise.all(imgs.map(i=>i.complete?Promise.resolve():new Promise(r=>{i.onload=r;i.onerror=r;setTimeout(r,5000)})));window.print()}finally{b.disabled=false;b.textContent='Imprimer / PDF'}};
 
-document.addEventListener('keydown',e=>{
-if(e.key==='Escape'){
-closeForms();
-closePhotoEditor();
-closePhotoPreview();
-}
-});
+/* Compte */
+$('loginBtn').onclick=login;$('signupBtn').onclick=signup;$('logoutBtn').onclick=logout;$('resetPasswordBtn').onclick=resetPassword;$('createOrgBtn').onclick=createOrganisation;$('importLocalBtn').onclick=importLocalData;
+$('authPassword').addEventListener('keydown',e=>{if(e.key==='Enter')login()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeForms();$('photoEditor').classList.add('hidden');closePhotoPreview()}});
+window.addEventListener('online',()=>toast('Connexion Internet rétablie. Actualisez la page pour recharger les données cloud.'));
+window.addEventListener('afterprint',()=>{$('printReport').disabled=false;$('printReport').textContent='Imprimer / PDF'});
 
-refresh();
+/* Initialisation Supabase et chargement du compte */
+async function init(){
+ refresh();
+ try{
+  if(!window.supabase?.createClient){$('cloudMessage').textContent='La bibliothèque de connexion n’a pas pu être chargée. Le mode local reste disponible.';return}
+  db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const {data,error}=await db.auth.getSession();if(error)throw error;
+  user=data.session?.user||null;
+  if(user){await refreshCloud()}else showAccount();
+  db.auth.onAuthStateChange((event,session)=>{
+   user=session?.user||null;
+   if(user){setTimeout(()=>refreshCloud().catch(e=>{$('cloudMessage').textContent=cloudError(e);toast(cloudError(e))}),0)}
+   else{organisation=null;cloudReady=false;showAccount()}
+  });
+ }catch(e){$('cloudMessage').textContent='Connexion cloud indisponible : '+cloudError(e);showAccount()}
+}
+init();
 })();
 </script>
 </body>
