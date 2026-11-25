@@ -106,6 +106,14 @@ textarea{min-height:92px;resize:vertical}
 .report{line-height:1.65;font-size:13px;color:#475467}
 .report h3{color:var(--navy);font-size:14px;margin:17px 0 6px}
 .report ul{padding-left:19px}
+
+/* Photos intégrées au rapport de chantier */
+.report-photo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:12px 0 20px}
+.report-photo-card{margin:0;border:1px solid #e2e6ed;border-radius:9px;padding:8px;background:#fff;min-width:0;break-inside:avoid;page-break-inside:avoid}
+.report-photo-card img{display:block;width:100%;height:210px;object-fit:contain;background:#f4f6f9;border-radius:5px}
+.report-photo-card figcaption{padding:8px 2px 2px;font-size:11px;line-height:1.5;color:#475467;overflow-wrap:anywhere}
+.report-photo-card figcaption strong{display:block;color:#101d35;margin-bottom:3px}
+.report-photo-card figcaption span{display:block;color:#667085;font-size:10px}
 .footer{text-align:center;color:#98a2b3;font-size:10px;padding:0 20px 25px}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#172945;color:#fff;padding:11px 16px;border-radius:10px;font-size:12px;box-shadow:var(--shadow);z-index:1100;display:none;max-width:90vw}
 @media(max-width:850px){
@@ -131,6 +139,8 @@ textarea{min-height:92px;resize:vertical}
 .top-link{font-size:11px}
 .photo-preview{padding:12px}
 .photo-preview-image{max-height:68vh}
+.report-photo-grid{grid-template-columns:1fr}
+.report-photo-card img{height:230px}
 }
 @media print{
 body{background:#fff}
@@ -140,6 +150,10 @@ body{background:#fff}
 .stats{grid-template-columns:repeat(4,1fr)}
 .main{width:100%}
 .report{font-size:12px}
+.report-photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.report-photo-card{break-inside:avoid;page-break-inside:avoid;border:1px solid #d5d9e0}
+.report-photo-card img{height:180px;max-width:100%;object-fit:contain}
+.report-photo-card figcaption{font-size:10px}
 }
 </style>
 </head>
@@ -539,9 +553,21 @@ return;
 
 let j=state.journal.filter(x=>x.projectId===pid).sort((a,b)=>a.date.localeCompare(b.date));
 let e=state.expenses.filter(x=>x.projectId===pid);
-let ph=state.photos.filter(x=>x.projectId===pid);
+let ph=state.photos.filter(x=>x.projectId===pid).sort((a,b)=>(a.date||'').localeCompare(b.date||''));
 let t={USD:0,CDF:0};
 e.forEach(x=>t[x.currency]=(t[x.currency]||0)+Number(x.amount));
+
+/* Chaque photo est intégrée au rapport avec sa légende et sa date. */
+let photoReport=ph.length
+?`<div class="report-photo-grid">${ph.map((x,index)=>`
+<figure class="report-photo-card">
+<img src="${esc(x.data)}" alt="${esc(x.caption||'Photo de chantier '+(index+1))}">
+<figcaption>
+<strong>${esc(x.caption||'Photo de chantier')}</strong>
+<span>Date de prise de vue : ${esc(x.date||'Non précisée')}</span>
+</figcaption>
+</figure>`).join('')}</div>`
+:'<p>Aucune photo enregistrée pour ce chantier.</p>';
 
 $('reportContent').innerHTML=`
 <div style="border-bottom:2px solid #d6ad58;padding-bottom:13px">
@@ -558,7 +584,7 @@ ${j.length?'<ul>'+j.map(x=>`<li><strong>${esc(x.date)} :</strong> ${esc(x.activi
 <p><strong>Total USD :</strong> ${money(t.USD,'USD')}<br><strong>Total CDF :</strong> ${money(t.CDF,'CDF')}</p>
 ${e.length?'<ul>'+e.map(x=>`<li>${esc(x.date)} — ${esc(x.label)} : <strong>${money(x.amount,x.currency)}</strong></li>`).join('')+'</ul>':'<p>Aucune dépense enregistrée.</p>'}
 <h3>4. Suivi photographique (${ph.length})</h3>
-${ph.length?'<ul>'+ph.map(x=>`<li>${esc(x.date||'Date non précisée')} — ${esc(x.caption||'Photo de chantier')}</li>`).join('')+'</ul>':'<p>Aucune photo.</p>'}
+${photoReport}
 <h3>5. Observations et validation</h3>
 <p>Les mesures, quantités et conclusions techniques doivent être vérifiées et validées par le professionnel responsable.</p>
 <p style="margin-top:35px">Nom et signature du responsable : ______________________________</p>
@@ -848,7 +874,10 @@ renderView();
 };
 });
 
-$('printReport').onclick=()=>window.print();
+$('printReport').onclick=()=>{
+renderReport();
+window.print();
+};
 
 document.addEventListener('keydown',e=>{
 if(e.key==='Escape'){
